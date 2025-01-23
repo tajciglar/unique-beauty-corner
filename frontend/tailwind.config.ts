@@ -9,6 +9,11 @@ export default {
   theme: {
     extend: {
       colors: {
+        beige: "#F5F0E8",
+        terracotta: "#E76F51",
+        sage: "#A3B18A",
+        cream: "#FAF4E6",
+        brown: "#8D674B",
         background: "var(--background)",
         foreground: "var(--foreground)",
       },

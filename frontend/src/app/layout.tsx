@@ -29,7 +29,7 @@ export default function RootLayout({
           {children}
         </div>
         <footer>
-          <p className="">© 2023 Unique Beauty Corner</p>
+          <p className="flex justify-center">© 2023 Unique Beauty Corner</p>
         </footer>
       </body>
     </html>
