@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
+import { ServiceProvider } from "@/context/ServiceContext";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -17,16 +17,14 @@ export const metadata: Metadata = {
   description: "Welcome to Unique Beauty Corner",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode;}>) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased grid bg-background`} style={{ display: 'grid', gridTemplateRows: '1fr auto' }}>
         <div>
-          {children}
+          <ServiceProvider>
+            {children}
+          </ServiceProvider>
         </div>
         <footer>
           <p className="flex justify-center">© 2025 Unique Beauty Corner</p>

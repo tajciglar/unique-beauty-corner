@@ -1,6 +1,5 @@
 'use client'
 import { Bodoni_Moda } from "next/font/google";
-import { useState } from "react";
 
 const bodoniModa = Bodoni_Moda({
   variable: "--font-bodoni-moda",
@@ -17,7 +16,7 @@ interface Service {
   title: string;
   items: ServiceItem[];
 }
-
+// TODO: Backend implementation
 const services: Service[] = [
   {
     title: "Trepalnice 1/1",
@@ -64,15 +63,24 @@ const services: Service[] = [
   },
 ];
 
+import { useRouter } from "next/navigation";
+import { useService } from "@/context/ServiceContext";
 export default function Home() {
-  const [servicePicked, setServicePicked] = useState<ServiceItem | null>(null);
 
+const { servicesPicked, setServicesPicked } = useService();
+console.log(servicesPicked, setServicesPicked);
+const router = useRouter();
   const getService = (service: ServiceItem) => {
-    if (service) {
-      setServicePicked(service);
-      
+        if (service) {
+          setServicesPicked((prevServices: ServiceItem[]) => prevServices ? [...prevServices, service] : [service]);
+        }
+      };
+
+    const bookService = () => {
+      if (servicesPicked) {
+        router.push('/narocanje');
+        }
     }
-  };
 
   return (
     <div>
@@ -84,7 +92,7 @@ export default function Home() {
           >
             Unique Beauty Corner
           </h1>
-          <p className="italic">Dobrodošli v Unique Beauty Corner</p>
+          <h2 className="italic text-lg ">Dobrodošli v Unique Beauty Corner</h2>
         </div>
         <div className="w-3/4 flex flex-col items-center gap-4">
           <a href="#storitve" className="w-full">
@@ -96,8 +104,8 @@ export default function Home() {
       </section>
 
       {/* Services Section */}
-      <section className="min-h-screen bg-[var(--cream-white)] text-[var(--earth-brown)]">
-        <div className="text-center w-3/4 flex flex-col items-center p-10 mx-auto">
+      <section className="min-h-screen bg-[var(--cream-white)] text-[var(--earth-brown)] grid grid-cols-[3fr_1fr]">
+        <div className="text-center w-full flex flex-col items-center p-10 mx-auto">
           <h2 id="storitve" className="text-4xl font-bold mb-8 text-[var(--terracotta)]">Storitve</h2>
           <div className="flex flex-col w-3/4 gap-7">
             {services.map((service) => (
@@ -127,9 +135,28 @@ export default function Home() {
             ))}
           </div>
         </div>
-        {/* TODO: Add a picked service section to calculate time and price and list picked services */}
-        { servicePicked && (    
-            <div>{servicePicked.name}</div>
+        { servicesPicked.length && (    
+            <div className="flex justify-center items-center p-10 mx-auto w-full">
+                <div className="flex flex-col gap-4 justify-center items-center border-2 border-[var(--warm-gray)] p-6 bg-[var(--beige)] shadow-lg w-full">
+                    <div className="flex flex-col gap-4 justify-center items-center">
+                        <h2>Storitve:</h2>
+                            {servicesPicked.map((service, index) => (
+                            <div key={index}>
+                                <p>{service.name}</p>
+                                <p>Cena: {service.price} €</p>
+                                <p>Trajanje: {service.time ? `${service.time} min` : 'N/A'}</p>
+                                <button className="text-sm px-2 py-1" onClick={() => setServicesPicked((prevServices: ServiceItem[]) => prevServices.filter((s) => s.name !== service.name))}>Odstrani</button>
+                            </div>
+                            ))}
+                    </div>
+                    <div className="mt-4">
+                        <h3>Skupaj:</h3>
+                        <p>Skupni čas: {servicesPicked.reduce((total, service) => total + (service.time || 0), 0)} min</p>
+                        <p>Skupna cena: {servicesPicked.reduce((total, service) => total + service.price, 0)} €</p>
+                    </div>
+                    <button onClick={bookService}>Naroči se</button>
+                </div>
+            </div>
         )}
       </section>
     </div>
