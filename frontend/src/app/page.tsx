@@ -127,6 +127,7 @@ export default function Home() {
             ))}
           </div>
         </div>
+        {/* TODO: Add a picked service section to calculate time and price and list picked services */}
         { servicePicked && (    
             <div>{servicePicked.name}</div>
         )}
