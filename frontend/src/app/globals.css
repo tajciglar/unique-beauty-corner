@@ -3,39 +3,49 @@
 @tailwind utilities;
 
 :root {
-  --light-orange: #F4A261;
-  --beige: "#F5F0E8";
-  --terracotta: #E76F51;
-  --sage-green: #A3B18A;
-  --cream-white: #FAF4E6;
-  --earth-brown: #8D674B;
-  --dusty-rose: #D8A7B1;
-  --warm-gray: #CBC5B9;
+  --soft-rose: #D7B9A8; /* Warm pinkish beige */
+  --terracotta: #B77A65; /* Earthy terracotta tone */
+  --beige: #F5E8D3; /* Soft beige background */
+  --dark-brown: #5A3F35; /* Rich dark brown for text */
+  --warm-gray: #D4C7BE; /* Neutral soft gray */
+  --ivory: #FDFBF8; /* Light creamy white for highlights */
+  --highlight-gold: #C89B6B; /* Subtle golden tone for accents */
 }
 
 body {
-  background-color: var(--beige);
-  color: var(--earth-brown);
+  @apply bg-[var(--beige)] text-[var(--dark-brown)];
 }
 
 h1, h2, h3 {
-  color: var(--terracotta);
+  color: var(--terracotta); /* Titles use terracotta */
 }
 
 a {
-  color: var(--light-orange);
+  color: var(--highlight-gold); /* Links get a subtle gold tone */
 }
 
 button {
-  background-color: var(--terracotta);
-  color: var(--cream-white);
+  @apply bg-[var(--terracotta)] text-[var(--ivory)] px-4 py-2 rounded-lg shadow-md hover:bg-[var(--soft-rose)] hover:text-[var(--dark-brown)];
 }
 
 section {
-  background-color: var(--beige);
+  @apply bg-[var(--ivory)] p-6 shadow-lg rounded-md;
 }
 
 footer {
-  background-color: var(--sage-green);
-  color: var(--cream-white);
+  @apply bg-[var(--warm-gray)] text-[var(--dark-brown)] py-4 text-center;
+}
+
+/* Additional utility classes for customization */
+.card {
+  @apply bg-[var(--soft-rose)] border border-[var(--warm-gray)] rounded-lg p-4 shadow-sm;
+}
+
+.card-title {
+  color: var(--dark-brown);
+  font-weight: bold;
+}
+
+.card-content {
+  color: var(--terracotta);
 }
