@@ -68,7 +68,6 @@ import { useService } from "@/context/ServiceContext";
 export default function Home() {
 
 const { servicesPicked, setServicesPicked } = useService();
-console.log(servicesPicked, setServicesPicked);
 const router = useRouter();
   const getService = (service: ServiceItem) => {
         if (service) {
@@ -77,7 +76,7 @@ const router = useRouter();
       };
 
     const bookService = () => {
-      if (servicesPicked) {
+      if (servicesPicked.length) {
         router.push('/narocanje');
         }
     }
@@ -135,7 +134,7 @@ const router = useRouter();
             ))}
           </div>
         </div>
-        { servicesPicked.length && (    
+           { servicesPicked.length && (    
             <div className="flex justify-center items-center p-10 mx-auto w-full">
                 <div className="flex flex-col gap-4 justify-center items-center border-2 border-[var(--warm-gray)] p-6 bg-[var(--beige)] shadow-lg w-full">
                     <div className="flex flex-col gap-4 justify-center items-center">

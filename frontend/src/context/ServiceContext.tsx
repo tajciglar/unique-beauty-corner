@@ -14,11 +14,22 @@ interface ServiceContextType {
  setServicesPicked: React.Dispatch<React.SetStateAction<ServiceItem[]>>;
 }
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
 // kreiranje konteksta za storitev (services)
 const ServiceContext = createContext<ServiceContextType | undefined>(undefined);
 
 export const ServiceProvider = ({ children }: { children: ReactNode }) => {
   const [servicesPicked, setServicesPicked] = useState<ServiceItem[]>([]);
+
+  const router = useRouter();
+  useEffect(() => {
+  const accessGranted = localStorage.getItem('accessGranted');
+  if (!accessGranted) {
+    router.push('/login');
+  }
+}, [router]);
 
   return (
     <ServiceContext.Provider value={{ servicesPicked, setServicesPicked }}>
