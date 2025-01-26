@@ -49,3 +49,7 @@ footer {
 .card-content {
   color: var(--terracotta);
 }
+
+.rdp-chevron {
+  fill: var(--terracotta) !important; /* Use your custom color */
+}
