@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ServiceProvider } from "@/context/ServiceContext";
+import "react-day-picker/style.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,19 +19,17 @@ export const metadata: Metadata = {
   description: "Welcome to Unique Beauty Corner",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode;}>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen grid`} style={{ display: 'grid', gridTemplateRows: '1fr auto' }}>
-        <div className="h-full">
-          {children}
+    <html lang="sl">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased grid bg-background`} style={{ display: 'grid', gridTemplateRows: '1fr auto' }}>
+        <div>
+          <ServiceProvider>
+            {children}
+          </ServiceProvider>
         </div>
         <footer>
-          <p className="flex justify-center">© 2023 Unique Beauty Corner</p>
+          <p className="flex justify-center">© 2025 Unique Beauty Corner</p>
         </footer>
       </body>
     </html>

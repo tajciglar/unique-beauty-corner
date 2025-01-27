@@ -9,13 +9,24 @@ export default {
   theme: {
     extend: {
       colors: {
-        beige: "#F5F0E8",
-        terracotta: "#E76F51",
-        sage: "#A3B18A",
-        cream: "#FAF4E6",
-        brown: "#8D674B",
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        background: {
+          DEFAULT: "#F5F0E8", // Beige background
+        },
+        primary: {
+          DEFAULT: "#8D674B", // Earthy brown for titles and text
+        },
+        secondary: {
+          DEFAULT: "#D8A7B1", // Dusty rose for highlights
+        },
+        accent: {
+          DEFAULT: "#E76F51", // Terracotta for buttons or special elements
+        },
+        muted: {
+          DEFAULT: "#CBC5B9", // Warm gray for subtle text or borders
+        },
+        border: {
+          DEFAULT: "#C2B6AE", // Light beige for borders or dividers
+        },
       },
     },
   },

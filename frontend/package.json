@@ -9,8 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fullcalendar/daygrid": "^6.1.15",
+    "@fullcalendar/interaction": "^6.1.15",
+    "@fullcalendar/react": "^6.1.15",
+    "@fullcalendar/timegrid": "^6.1.15",
     "next": "15.1.6",
     "react": "^19.0.0",
+    "react-day-picker": "^9.5.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
