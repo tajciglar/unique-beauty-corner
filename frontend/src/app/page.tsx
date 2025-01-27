@@ -77,7 +77,7 @@ const router = useRouter();
 
     const bookService = () => {
       if (servicesPicked.length) {
-        router.push('/narocanje');
+        router.push('/termin');
         }
     }
 
@@ -153,7 +153,7 @@ const router = useRouter();
                         <p>Skupni čas: {servicesPicked.reduce((total, service) => total + (service.time || 0), 0)} min</p>
                         <p>Skupna cena: {servicesPicked.reduce((total, service) => total + service.price, 0)} €</p>
                     </div>
-                    <button onClick={bookService}>Naroči se</button>
+                    <button onClick={bookService}>Izberi termin</button>
                 </div>
             </div>
         )}
