@@ -1,24 +1,118 @@
-import React from 'react';
+import React, { useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 
 export default function UrnikStrank() {
+  interface Termin {
+    datum: Date;
+    startTime: string;
+    endTime: string;
+  }
+
+  const [openForm, setOpenForm] = useState<boolean>(false);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [startTime, setStartTime] = useState<string>('');
+  const [endTime, setEndTime] = useState<string>('');
+  const [termini, setTermini] = useState<Termin[]>([]);
+
   const handleDateClick = (info: { dateStr: string }) => {
-    console.log('Selected Date:', info.dateStr);
-    // Fetch available times for the selected date
+    setSelectedDate(new Date(info.dateStr));
+    setOpenForm(true);
+  };
+
+  const dodajTermin = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (!selectedDate) {
+      alert('Izberite datum.');
+      return;
+    }
+
+    if (startTime >= endTime) {
+      alert('Konec termina mora biti po začetku termina.');
+      return;
+    }
+
+    const newTermin: Termin = {
+      datum: selectedDate,
+      startTime,
+      endTime,
+    };
+
+    setTermini((prev) => [...prev, newTermin]);
+    setOpenForm(false);
+    setStartTime('');
+    setEndTime('');
   };
 
   return (
-    <FullCalendar
-      plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-      initialView="dayGridMonth"
-      dateClick={handleDateClick}
-      events={[
-        { title: 'Available', start: '2025-01-27' },
-        { title: 'Unavailable', start: '2025-01-28', color: 'red' },
-      ]}
-    />
+    <>
+      <FullCalendar
+        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+        initialView="dayGridMonth"
+        dateClick={handleDateClick}
+        headerToolbar={{
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay',
+        }}
+        events={[
+          ...termini.map((termin) => ({
+            title: 'Prosti termin',
+            start: `${termin.datum.toISOString().split('T')[0]}T${termin.startTime}`,
+            end: `${termin.datum.toISOString().split('T')[0]}T${termin.endTime}`,
+          })),
+        ]}
+        locale="sl"
+      />
+      {openForm && (
+        <div className="fixed z-10 top-0 left-0 w-full h-full flex items-center justify-center bg-[rgba(0,0,0,0.5)]">
+          <div className="absolute bg-[var(--soft-rose)] bg-opacity-90 p-4 rounded-lg text-base flex flex-col gap-4">
+            <form
+              className="flex flex-col gap-3 items-center"
+              onSubmit={dodajTermin}
+            >
+              <h3 className="text-xl">
+                Dodaj prosti termin za datum{' '}
+                {selectedDate?.toLocaleDateString('sl-SI')}:
+              </h3>
+              <label htmlFor="start">Začetek</label>
+              <input
+                type="time"
+                id="start"
+                className="w-1/2"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                required
+              />
+              <label htmlFor="end">Konec</label>
+              <input
+                type="time"
+                id="end"
+                className="w-1/2"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                required
+              />
+              <button
+                type="submit"
+                className="bg-blue-500 text-white py-1 px-3 rounded-lg"
+              >
+                Dodaj
+              </button>
+              <button
+                type="button"
+                className="bg-gray-500 text-white py-1 px-3 rounded-lg"
+                onClick={() => setOpenForm(false)}
+              >
+                Zapri
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
