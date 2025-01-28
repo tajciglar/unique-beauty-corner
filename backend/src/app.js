@@ -12,7 +12,7 @@ app.use(express.json());
 
 // Routes
 app.get('/termini', async (req, res) => {
-    const termini = await prisma.findMany();
+    
     res.json(termini);
 });
 

@@ -4,7 +4,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 
-export default function BookingCalendar() {
+export default function UrnikStrank() {
   const handleDateClick = (info: { dateStr: string }) => {
     console.log('Selected Date:', info.dateStr);
     // Fetch available times for the selected date

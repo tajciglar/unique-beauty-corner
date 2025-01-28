@@ -8,11 +8,14 @@ export default function Login() {
   const router = useRouter();
 
   const handleLogin = () => {
-    const accessCode = "unique2025"; // Your hardcoded code
+    const accessCode = "unique2025"; 
 
     if (code === accessCode) {
-      sessionStorage.setItem("accessGranted", "true"); // Keep track of login in session
-      router.push("/"); // Redirect to the main page after successful login
+      sessionStorage.setItem("accessGranted", "true"); 
+      router.push("/");
+    } else if (code === "admin"){
+      sessionStorage.setItem("accessGranted", "true");
+      router.push("/admin");
     } else {
       setError("Invalid code. Please try again.");
     }
