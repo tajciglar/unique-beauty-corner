@@ -19,22 +19,26 @@ model Admin {
   password String
 }
 
-model TerminiNaVoljo {
-  id        Int      @id @default(autoincrement())
+model Termin {
+  terminId  Int         @id @default(autoincrement())
   date      DateTime
-  timeSlot  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  startTime String
+  endTime   String
+  naVoljo   Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  Naročila Naročila[]
 }
 
 model Naročila {
-  id        Int      @id @default(autoincrement())
-  ime       String
-  email     String
-  telefon   String
-  storitve  String[]
-  cena      Int
-  termin    DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  naročiloId Int      @id @default(autoincrement())
+  ime         String
+  email       String
+  telefon     String
+  storitve    String[]
+  cena        Int
+  terminId    Int
+  termin      Termin   @relation(fields: [terminId], references: [terminId])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

@@ -4,9 +4,10 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 
+
 export default function UrnikStrank() {
   interface Termin {
-    datum: Date;
+    date: Date;
     startTime: string;
     endTime: string;
   }
@@ -16,13 +17,15 @@ export default function UrnikStrank() {
   const [startTime, setStartTime] = useState<string>('');
   const [endTime, setEndTime] = useState<string>('');
   const [termini, setTermini] = useState<Termin[]>([]);
+  const [openTermin, setOpenTermin] = useState<boolean>(false);
 
+  // dodaj nov termin z klikom na določen datum
   const handleDateClick = (info: { dateStr: string }) => {
     setSelectedDate(new Date(info.dateStr));
     setOpenForm(true);
   };
 
-  const dodajTermin = (event: React.FormEvent) => {
+  const dodajTermin = async (event: React.FormEvent) => {
     event.preventDefault();
 
     if (!selectedDate) {
@@ -36,10 +39,28 @@ export default function UrnikStrank() {
     }
 
     const newTermin: Termin = {
-      datum: selectedDate,
+      date: selectedDate,
       startTime,
       endTime,
     };
+
+    try {
+      const response = await fetch('http://localhost:3000/api/termin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newTermin),
+      });
+
+      if (!response.ok) {
+        throw new Error('Napaka pri dodajanju termina.');
+      }
+    } catch (error) {
+      alert(error);
+      return;
+    }
+
 
     setTermini((prev) => [...prev, newTermin]);
     setOpenForm(false);
@@ -47,14 +68,31 @@ export default function UrnikStrank() {
     setEndTime('');
   };
 
+
+  // odpri termin z klikom
+  const getTermin = (event: any) => {
+    if (event) {
+      setOpenTermin(true);
+    }
+  }
+
+  // izbriši termin
+  const izbrišiTermin = () => { 
+    setTermini(termini.filter((termin) => termin !== termin));
+    setOpenTermin(false);
+  }
+
+
+
   return (
     <>
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+        editable={true}
         initialView="dayGridMonth"
         dateClick={handleDateClick}
         headerToolbar={{
-          left: 'prev,next today',
+          left: 'prev next today',
           center: 'title',
           right: 'dayGridMonth,timeGridWeek,timeGridDay',
         }}
@@ -65,6 +103,7 @@ export default function UrnikStrank() {
             end: `${termin.datum.toISOString().split('T')[0]}T${termin.endTime}`,
           })),
         ]}
+        eventClick={(info) => getTermin(info.event)}
         locale="sl"
       />
       {openForm && (
@@ -113,6 +152,25 @@ export default function UrnikStrank() {
           </div>
         </div>
       )}
+      { openTermin && (
+        <div className="fixed z-10 top-0 left-0 w-full h-full flex items-center justify-center bg-[rgba(0,0,0,0.5)]">
+          <div className="absolute bg-[var(--soft-rose)] bg-opacity-90 p-4 rounded-lg text-base flex flex-col gap-4">
+            <h2 className="text-xl">Podrobnosti termina</h2>
+            <p>Podrobnosti termina</p>
+            <button className="bg-red-500 text-white py-1 px-3 rounded-lg" onClick={() => izbrišiTermin()}>
+              Izbriši termin
+            </button>
+            <button
+              className="bg-blue-500 text-white py-1 px-3 rounded-lg"
+              onClick={() => setOpenTermin(false)}
+            >
+              Zapri
+            </button>
+          </div>
+        </div>
+      )
+
+      }
     </>
   );
 }

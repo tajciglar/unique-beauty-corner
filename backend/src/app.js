@@ -11,10 +11,25 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.get('/termini', async (req, res) => {
+// Get termins
+app.get('api/termini', async (req, res) => {
     
     res.json(termini);
 });
+
+// Add new termin
+app.post('api/termini', async (req, res) => {
+    console.log(req.body);
+});
+
+// Update termin
+app.put('api/termini/:id', async (req, res) => {   });
+
+
+// Izbriši termin
+app.delete('api/termini/:id', async (req, res) => {   });
+
+
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
