@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"  # Maps container port 3000 to host port 3000
+    volumes:
+      - ./frontend:/app  # Mount local frontend for live updates
+      - /app/node_modules  # Prevents conflicts with container's node_modules
+      - /app/.next  # Prevents Next.js cache issues
+    networks:
+      - default
+    environment:
+      - NODE_ENV=development
+    command: "npm run dev"  # Ensure Next.js starts in dev mode
+
+  backend:
+    build: ./backend
+    ports:
+      - "4000:4000"  # Expose backend API on port 4000
+    depends_on:
+      - db  # Ensure db is ready before starting backend
+    environment:
+      DATABASE_URL: postgresql://postgres:password@db:5432/unique_beauty_studio
+    volumes:
+      - ./backend:/app  # Mount local backend for live updates
+      - /app/node_modules  # Prevent conflicts
+    networks:
+      - default
+    command: "npm run dev"  # Ensure Express.js runs in dev mode with nodemon
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: unique_beauty_studio
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - default
+
+volumes:
+  postgres_data: {}

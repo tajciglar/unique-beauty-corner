@@ -7,7 +7,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 
 export default function UrnikStrank() {
   interface Termin {
-    date: Date;
+    datum: Date;
     startTime: string;
     endTime: string;
   }
@@ -18,10 +18,12 @@ export default function UrnikStrank() {
   const [endTime, setEndTime] = useState<string>('');
   const [termini, setTermini] = useState<Termin[]>([]);
   const [openTermin, setOpenTermin] = useState<boolean>(false);
-
+  
   // dodaj nov termin z klikom na določen datum
   const handleDateClick = (info: { dateStr: string }) => {
-    setSelectedDate(new Date(info.dateStr));
+    const localDate = new Date(info.dateStr).toLocaleDateString('sl-SI');
+    console.log(localDate);
+    setSelectedDate(new Date(localDate));
     setOpenForm(true);
   };
 
@@ -39,13 +41,14 @@ export default function UrnikStrank() {
     }
 
     const newTermin: Termin = {
-      date: selectedDate,
+      datum: selectedDate,
       startTime,
       endTime,
     };
 
     try {
-      const response = await fetch('http://localhost:3000/api/termin', {
+      console.log(process.env.NEXT_PUBLIC_API_URL);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/termini`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
