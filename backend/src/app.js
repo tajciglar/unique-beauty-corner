@@ -28,7 +28,15 @@ app.get('/api/termini', async (req, res) => {
 
 // Add new termin
 app.post('/api/termini', async (req, res) => {
-    console.log(req)
+    const termin = req.body;
+
+    await prisma.termin.create({
+        data: {
+            ...termin
+        }
+    });
+
+    res.json({ message: 'Termin dodan',  });
 });
 
 // Update termin

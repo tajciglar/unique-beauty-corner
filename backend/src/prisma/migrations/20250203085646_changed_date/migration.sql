@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Termin" ALTER COLUMN "date" SET DATA TYPE TEXT;

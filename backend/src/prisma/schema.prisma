@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
@@ -16,13 +10,13 @@ datasource db {
 
 model Admin {
   id       Int    @id @default(autoincrement())
-  username String
+  username String @unique
   password String
 }
 
 model Termin {
   terminId  Int         @id @default(autoincrement())
-  date      DateTime
+  datum     String
   startTime String
   endTime   String
   naVoljo   Boolean     @default(true)
@@ -32,14 +26,32 @@ model Termin {
 }
 
 model Naročila {
-  naročiloId Int      @id @default(autoincrement())
+  naročiloId Int        @id @default(autoincrement())
   ime         String
   email       String
   telefon     String
-  storitve    String[]
-  cena        Int
+  cena        Decimal
   terminId    Int
-  termin      Termin   @relation(fields: [terminId], references: [terminId])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  termin      Termin     @relation(fields: [terminId], references: [terminId])
+  storitveId  Int
+  storitve    Storitve[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model KategorijaStoritev {
+  id               Int        @id @default(autoincrement())
+  naslovKategorije String     @unique
+  storitve         Storitve[]
+}
+
+model Storitve {
+  idStoritve           Int                @id @default(autoincrement())
+  imeStoritve          String
+  cena                 Decimal
+  časStoritve         Int? // Optional time field (in minutes)
+  kategorijaStoritevId Int
+  kategorijaStoritev   KategorijaStoritev @relation(fields: [kategorijaStoritevId], references: [id])
+  Naročila            Naročila?         @relation(fields: [naročilaNaročiloId], references: [naročiloId])
+  naročilaNaročiloId Int?
 }
