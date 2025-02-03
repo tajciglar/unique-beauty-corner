@@ -49,5 +49,29 @@ app.delete('/api/termini/:id', async (req, res) => {
     console.log(req)
 });
 
+
+app.get('/api/services', async (req, res) => {
+    try {
+        const storitve = await prisma.kategorijaStoritev.findMany(
+            {
+                include: {
+                    storitve: true
+                }
+            }
+        );
+        if(!storitve) {
+            return res.status(404).json({ message: 'Ni storitev' });
+        }
+
+        res.json(storitve);
+    } catch (error) {
+        console.error(error);
+    }
+});
+
+app.post('/api/narocila', async (req, res) => {
+    const narocilo = req.body;
+    console.log(narocilo)
+});
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));

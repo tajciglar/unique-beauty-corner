@@ -14,6 +14,7 @@ export default function Login() {
       sessionStorage.setItem("accessGranted", "true"); 
       router.push("/");
     } else if (code === "admin"){
+
       sessionStorage.setItem("accessGranted", "true");
       router.push("/admin");
     } else {
