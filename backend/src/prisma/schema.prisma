@@ -33,7 +33,6 @@ model Naročila {
   cena        Decimal
   terminId    Int
   termin      Termin     @relation(fields: [terminId], references: [terminId])
-  storitveId  Int
   storitve    Storitve[]
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt

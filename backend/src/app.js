@@ -70,8 +70,50 @@ app.get('/api/services', async (req, res) => {
 });
 
 app.post('/api/narocila', async (req, res) => {
-    const narocilo = req.body;
-    console.log(narocilo)
+    const { ime, telefon, email, datum, startTime, endTime, storitve } = req.body;
+    let termin = await prisma.termin.findFirst({
+        where: {datum, startTime, endTime}
+    })
+    
+    if(!termin) {
+        termin = await prisma.termin.create({
+            data: {
+                datum,
+                startTime,
+                endTime,
+                naVoljo: false,
+            }
+        });
+
+        const novoNarocilo = await prisma.naročila.create({
+            data: {
+                ime,
+                email,
+                telefon,
+                cena: storitve.reduce((sum, s) => sum + Number(s.cena), 0),
+                terminId: termin.terminId,
+                storitve: {
+                    connect: storitve.map((storitev) => ({
+                        idStoritve: storitev.idStoritve,
+                    }))
+                }
+            },
+            include: {
+                termin: true,
+                storitve: true,
+            }
+        })
+        if(!novoNarocilo) {
+            return res.status(404).json({ message: 'Naročila ni mogoče ustvariti' });
+        }
+
+        res.status(200).send(novoNarocilo);
+    }
+    res.status(200).send({message: "Termin zaseden"})
+
+    
+
+    
 });
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));

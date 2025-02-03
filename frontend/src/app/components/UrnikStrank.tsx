@@ -153,7 +153,8 @@ export default function UrnikStrank() {
       if (!response.ok) {
         throw new Error("Napaka pri dodajanju termina za stranko.");
       }
-      
+      const data = await response.json();
+      console.log(data.message)
       setTermini((prev) => [...prev, narocilo]);
     } catch (error) {
       alert(error);
