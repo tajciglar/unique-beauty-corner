@@ -62,7 +62,7 @@ app.get('/api/services', async (req, res) => {
         if(!storitve) {
             return res.status(404).json({ message: 'Ni storitev' });
         }
-
+        console.log(storitve)
         res.json(storitve);
     } catch (error) {
         console.error(error);
@@ -71,9 +71,13 @@ app.get('/api/services', async (req, res) => {
 
 app.post('/api/narocila', async (req, res) => {
     const { ime, telefon, email, datum, startTime, endTime, storitve } = req.body;
+
     let termin = await prisma.termin.findFirst({
         where: {datum, startTime, endTime}
     })
+    if(termin){
+        res.status(400).send({message: "Termin zaseden"})
+    }
     
     if(!termin) {
         termin = await prisma.termin.create({
@@ -103,16 +107,13 @@ app.post('/api/narocila', async (req, res) => {
                 storitve: true,
             }
         })
+        console.log(novoNarocilo)
         if(!novoNarocilo) {
             return res.status(404).json({ message: 'Naročila ni mogoče ustvariti' });
         }
 
         res.status(200).send(novoNarocilo);
     }
-    res.status(200).send({message: "Termin zaseden"})
-
-    
-
     
 });
 const PORT = process.env.PORT || 4000;

@@ -47,7 +47,7 @@ model KategorijaStoritev {
 model Storitve {
   idStoritve           Int                @id @default(autoincrement())
   imeStoritve          String
-  cena                 Decimal
+  cena                 Int
   časStoritve         Int? // Optional time field (in minutes)
   kategorijaStoritevId Int
   kategorijaStoritev   KategorijaStoritev @relation(fields: [kategorijaStoritevId], references: [id])

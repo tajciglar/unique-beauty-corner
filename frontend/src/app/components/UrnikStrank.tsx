@@ -22,6 +22,7 @@ export default function UrnikStrank() {
     ime: string;
     telefon: string;
     email: string;
+    cena: number,
     storitve: object[];
   }
 
@@ -33,6 +34,7 @@ export default function UrnikStrank() {
   }
 
 
+  
 
   const [openForm, setOpenForm] = useState<boolean>(false);
   const [selectedDate, setSelectedDate] = useState<string | undefined>();
@@ -40,9 +42,11 @@ export default function UrnikStrank() {
   const [startTime, setStartTime] = useState<string>('');
   const [endTime, setEndTime] = useState<string>('');
   const [termini, setTermini] = useState<Termin[]>([]);
+  const [clientTermin, setClientTermin] = useState<ClientTermin[]>([]) 
   const [openTermin, setOpenTermin] = useState<boolean>(false);
   const [kategorija, setKategorija] = useState<KategorijaStoritev[] | undefined>();
   const [selectedServices, setSelectedServices] = useState<object[]>([]);
+  const [cena, setCena] = useState<number>()
   // podatki za stranko
   const [ime, setName] = useState<string>('');
   const [telefon, setTel] = useState<string>('');
@@ -66,6 +70,7 @@ export default function UrnikStrank() {
       }
 
       const data = await response.json();
+      console.log(data)
       setKategorija(data as KategorijaStoritev[]);
     } catch (error) { 
       console.log(error);
@@ -94,33 +99,37 @@ export default function UrnikStrank() {
 
     // Handle different cases based on 'namen'
     if (namen === "prostiTermin") {
+      
       const newTermin: Termin = {
         datum: selectedDate,
         startTime,
         endTime,
       };
 
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/termini`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newTermin),
-        }
-      );
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/termini`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newTermin),
+          }
+        );
 
       if (!response.ok) {
         throw new Error("Napaka pri dodajanju termina.");
       }
 
-      setTermini((prev) => [...prev, newTermin]);
-    } catch (error) {
-      alert(error);
-      return;
-    }
+        setTermini((prev) => [...prev, newTermin]);
+
+      } catch (error) {
+        alert(error);
+        return;
+      }
+
+  // Dodajanje stranke
   } else if (namen === "stranka") {
     // Check if all required client fields are filled
     if (!ime || !telefon || !email || selectedServices.length === 0) {
@@ -135,9 +144,10 @@ export default function UrnikStrank() {
       datum: selectedDate,
       startTime,
       endTime,
+      cena: cena || 0,
       storitve: selectedServices,
     };
-
+    console.log("Narocilo", narocilo)
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/narocila`,
@@ -154,8 +164,8 @@ export default function UrnikStrank() {
         throw new Error("Napaka pri dodajanju termina za stranko.");
       }
       const data = await response.json();
-      console.log(data.message)
-      setTermini((prev) => [...prev, narocilo]);
+      console.log(data)
+      setClientTermin((prev) => [...prev, narocilo as ClientTermin]);
     } catch (error) {
       alert(error);
       return;
@@ -197,14 +207,25 @@ export default function UrnikStrank() {
   };
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>, service: object) => {
-    if (e.target.checked) {
-      setSelectedServices([...selectedServices, service]);
-      console.log(selectedServices)
-      console.log()
-    } else {
-      setSelectedServices(selectedServices.filter(id => id !== service));
-    }
-  };
+  if (e.target.checked) {
+    console.log(e.target.checked, service)
+    setSelectedServices(prevSelectedServices => {
+      const newSelectedServices = [...prevSelectedServices, service];
+      console.log(newSelectedServices)
+      const totalCena = newSelectedServices.reduce((total, srv: any) => total + srv.cena, 0);
+      console.log(totalCena)
+      setCena(totalCena);  // Update the total price here
+      return newSelectedServices;
+    });
+  } else {
+    setSelectedServices(prevSelectedServices => {
+      const newSelectedServices = prevSelectedServices.filter(srv => srv !== service);
+      const totalCena = newSelectedServices.reduce((total, srv: any) => total + srv.cena, 0);
+      setCena(totalCena); 
+      return newSelectedServices;
+    });
+  }
+};
 
   return (
     <>
@@ -227,13 +248,24 @@ export default function UrnikStrank() {
               end: `${termin.datum}T${termin.endTime}:00`,     
             };
           }),
+        ...clientTermin.map((termin) => {
+          return {
+            id:`${termin.datum}-${termin.startTime}`,
+            title: termin.ime,
+            email: termin.email,
+            storitve: termin.storitve,
+            cena: termin.cena,
+            start: `${termin.datum}T${termin.startTime}:00`,
+            end: `${termin.datum}T${termin.endTime}:00`, 
+          }
+        })
         ]}
         eventClick={(info) => getTermin(info.event)}
         locale="sl"
       />
       {openForm && (
         <div className="fixed z-10 top-0 left-0 w-full h-full flex items-center justify-center bg-[rgba(0,0,0,0.5)]">
-          <div className="absolute bg-[var(--soft-rose)] bg-opacity-90 p-4 rounded-lg text-base flex flex-col gap-4">
+          <div className="absolute bg-[var(--soft-rose)] bg-opacity-90 p-4 rounded-lg text-base flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
             <form
               className="flex flex-col gap-3 items-center"
               onSubmit={dodajTermin}
@@ -254,7 +286,7 @@ export default function UrnikStrank() {
                     }
                   }}
                   >
-                  <option defaultValue="" disabled selected>Izberi namen</option>
+                  <option defaultValue="Izberi namen" >Izberi namen</option>
                   <option value="prostiTermin">Prosti termin</option>
                   <option value="stranka">Stranka</option>
                 </select>
@@ -321,25 +353,28 @@ export default function UrnikStrank() {
                   <label>Storitev</label>
                   {kategorija && (
                     <div>
-                      {kategorija.map((kat) => (
-                        <div key={kat.id}>
+                      {kategorija.map((kat, katIndex) => (
+                        <div key={kat.id || katIndex}>
                           <h3>{kat.naslovKategorije}</h3>
-                          {kat.storitve.map((storitev) => (
-                            <div key={storitev.id}>
+                          {kat.storitve.map((storitev, storitevIndex) => (
+                            <div key={storitev.id || `${katIndex}-${storitevIndex}`}>
                               <input
                                 type="checkbox"
-                                id={`storitev-${storitev.id}`}
+                                id={`storitev-${storitev.id || `${katIndex}-${storitevIndex}`}`}
                                 value={storitev.imeStoritve}
-                
                                 onChange={(e) => handleCheckboxChange(e, storitev)}
                               />
-                              <label htmlFor={`storitev-${storitev.id}`}>{storitev.imeStoritve}</label>
+                              <label htmlFor={`storitev-${storitev.id || `${katIndex}-${storitevIndex}`}`}>
+                                {storitev.imeStoritve}
+                              </label>
                             </div>
                           ))}
                         </div>
                       ))}
                     </div>
                   )}
+                  <label>Cena</label>
+                  <div>{cena}</div>
                 </>
               )}
 
@@ -367,6 +402,7 @@ export default function UrnikStrank() {
           <div className="absolute bg-[var(--soft-rose)] bg-opacity-90 p-4 rounded-lg text-base flex flex-col gap-4">
             <h2 className="text-xl">Podrobnosti termina</h2>
             <p>Podrobnosti termina</p>
+          
             <button className="bg-red-500 text-white py-1 px-3 rounded-lg" onClick={() => izbrišiTermin()}>
               Izbriši termin
             </button>
