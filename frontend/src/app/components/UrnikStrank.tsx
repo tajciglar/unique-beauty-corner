@@ -29,7 +29,7 @@ export default function UrnikStrank() {
   interface Storitev {
     id: number;
     imeStoritve: string;
-    cenaStoritve: number;
+    cena: number;
     časStoritve: number
   }
 
@@ -45,8 +45,9 @@ export default function UrnikStrank() {
   const [clientTermin, setClientTermin] = useState<ClientTermin[]>([]) 
   const [openTermin, setOpenTermin] = useState<boolean>(false);
   const [kategorija, setKategorija] = useState<KategorijaStoritev[] | undefined>();
-  const [selectedServices, setSelectedServices] = useState<object[]>([]);
+  const [selectedServices, setSelectedServices] = useState<Storitev[]>([]);
   const [cena, setCena] = useState<number>()
+  const [time, setTime] = useState<number>()
   // podatki za stranko
   const [ime, setName] = useState<string>('');
   const [telefon, setTel] = useState<string>('');
@@ -172,17 +173,31 @@ export default function UrnikStrank() {
     }
   }
 
-  // Reset form state after submission
-  setOpenForm(false);
-  setNamen("");
-  setStartTime("");
-  setEndTime("");
-  setName("");
-  setTel("");
-  setMail("");
-  setSelectedServices([]);
+    // Reset form state after submission
+    setOpenForm(false);
+    setNamen("");
+    setStartTime("");
+    setEndTime("");
+    setName("");
+    setTel("");
+    setMail("");
+    setSelectedServices([]);
+    setCena(0);
+    setTime(0);
   };
 
+  const Reset = () => {
+      setOpenForm(false);
+      setNamen("");
+      setStartTime("");
+      setEndTime("");
+      setName("");
+      setTel("");
+      setMail("");
+      setSelectedServices([]);
+      setCena(0);
+      setTime(0);
+  }
 
 
   // odpri termin z klikom
@@ -206,26 +221,32 @@ export default function UrnikStrank() {
     return `${day}-${month}-${year}`;
   };
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>, service: object) => {
-  if (e.target.checked) {
-    console.log(e.target.checked, service)
-    setSelectedServices(prevSelectedServices => {
-      const newSelectedServices = [...prevSelectedServices, service];
-      console.log(newSelectedServices)
-      const totalCena = newSelectedServices.reduce((total, srv: any) => total + srv.cena, 0);
-      console.log(totalCena)
-      setCena(totalCena);  // Update the total price here
-      return newSelectedServices;
-    });
-  } else {
-    setSelectedServices(prevSelectedServices => {
-      const newSelectedServices = prevSelectedServices.filter(srv => srv !== service);
-      const totalCena = newSelectedServices.reduce((total, srv: any) => total + srv.cena, 0);
-      setCena(totalCena); 
-      return newSelectedServices;
-    });
-  }
-};
+
+
+  // checkbox 
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>, service: Storitev) => {
+      if (e.target.checked) {
+        console.log(e.target.checked, service)
+        setSelectedServices(prevSelectedServices => {
+          const newSelectedServices = [...prevSelectedServices, service];
+          console.log(newSelectedServices)
+          const totalCena = newSelectedServices.reduce((total, srv) => total + srv.cena, 0);
+          const totalTime = newSelectedServices.reduce((total, srv) => total + srv.časStoritve, 0)
+          setCena(totalCena); 
+          setTime(totalTime)
+          return newSelectedServices;
+        });
+      } else {
+        setSelectedServices(prevSelectedServices => {
+          const newSelectedServices = prevSelectedServices.filter(srv => srv !== service);
+          const totalCena = newSelectedServices.reduce((total, srv) => total + srv.cena, 0);
+          const totalTime = newSelectedServices.reduce((total, srv) => total + srv.časStoritve, 0)
+          setCena(totalCena); 
+          setTime(totalTime)
+          return newSelectedServices;
+        });
+      }
+  };
 
   return (
     <>
@@ -375,10 +396,10 @@ export default function UrnikStrank() {
                   )}
                   <label>Cena</label>
                   <div>{cena}</div>
+                  <label>Čas</label>
+                  <div>{time}</div>
                 </>
               )}
-
-
               <button
                 type="submit"
                 className="bg-blue-500 text-white py-1 px-3 rounded-lg"
@@ -388,7 +409,7 @@ export default function UrnikStrank() {
               <button
                 type="button"
                 className="bg-gray-500 text-white py-1 px-3 rounded-lg"
-                onClick={() => { setOpenForm(false); setNamen(''); }}
+                onClick={() => { setOpenForm(false); setNamen(''); Reset(); }}
               >
                 Zapri
               </button>
@@ -408,7 +429,7 @@ export default function UrnikStrank() {
             </button>
             <button
               className="bg-blue-500 text-white py-1 px-3 rounded-lg"
-              onClick={() => setOpenTermin(false)}
+              onClick={() => {setOpenTermin(false); Reset();}}
             >
               Zapri
             </button>
