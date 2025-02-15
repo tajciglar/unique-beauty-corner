@@ -14,15 +14,25 @@ app.use(express.json());
 // Get all termini
 app.get('/api/termini', async (req, res) => {
     try {
-        const termini = await prisma.termin.findMany();
+        const terminiNaVoljo = await prisma.termin.findMany({
+            where: {
+                naVoljo: true,
+            }
+        });
 
-        if(!termini) {
-            return res.status(404).json({ message: 'Ni prostih terminov' });
-        }
+        const bookiraniTermini = await prisma.termin.findMany({
+            where: {
+                naVoljo: false,
+            },
+            include: {
+                Naročila: true,
+            },
+        });
 
-        res.json(termini);
+        res.status(200).json({terminiNaVoljo, bookiraniTermini});
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching termini:", error);
+        res.status(500).json({ message: 'Napaka na strežniku' });
     }
 });
 

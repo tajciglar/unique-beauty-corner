@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -10,6 +10,7 @@ export default function UrnikStrank() {
     datum: string;
     startTime: string;
     endTime: string;
+    naročilo: ClientTermin;
   }
 
   interface KategorijaStoritev {
@@ -23,6 +24,7 @@ export default function UrnikStrank() {
     telefon: string;
     email: string;
     cena: number,
+    čas: number,
     storitve: object[];
   }
 
@@ -33,8 +35,6 @@ export default function UrnikStrank() {
     časStoritve: number
   }
 
-
-  
 
   const [openForm, setOpenForm] = useState<boolean>(false);
   const [selectedDate, setSelectedDate] = useState<string | undefined>();
@@ -78,7 +78,30 @@ export default function UrnikStrank() {
     }
   }
 
-  
+  const getAllEvents = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/termini`, {
+        method: 'GET',
+        headers: {
+         'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error('Napaka pri pridobivanju terminov.');
+      }
+
+      const {terminiNaVoljo, bookiraniTermini} = await response.json();
+      console.log(terminiNaVoljo, bookiraniTermini)
+
+      setTermini(terminiNaVoljo);
+      
+
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   // dodaj nov termin z klikom na določen datum
   const handleDateClick = (info: { dateStr: string }) => {
     setSelectedDate(info.dateStr);
@@ -248,6 +271,9 @@ export default function UrnikStrank() {
       }
   };
 
+  useEffect(() => {
+    getAllEvents();
+  }, [])
   return (
     <>
       <FullCalendar
