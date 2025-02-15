@@ -10,6 +10,7 @@ export default function UrnikStrank() {
     datum: string;
     startTime: string;
     endTime: string;
+    lokacija: string;
     naročilo: ClientTermin;
   }
 
@@ -128,6 +129,7 @@ export default function UrnikStrank() {
         datum: selectedDate,
         startTime,
         endTime,
+        lokacija,
       };
 
       try {
@@ -354,7 +356,14 @@ export default function UrnikStrank() {
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
                   />
+                  <label htmlFor="lokacija">Izberi lokacijo</label>
+                  <select name='lokacija'>
+                    <option >Izberi lokacijo</option>
+                    <option value="DOMŽALE">Domžale</option>
+                    <option value="LJUBLJANA">Ljubljana</option>
+                  </select>
                 </>
+                
               )}
 
               {namen === 'stranka' && (

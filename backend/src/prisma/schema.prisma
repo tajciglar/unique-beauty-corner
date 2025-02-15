@@ -20,6 +20,7 @@ model Termin {
   startTime String
   endTime   String
   naVoljo   Boolean     @default(true)
+  lokacija  Lokacija    @default(DOMŽALE)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   Naročila Naročila[]
@@ -53,4 +54,9 @@ model Storitve {
   kategorijaStoritev   KategorijaStoritev @relation(fields: [kategorijaStoritevId], references: [id])
   Naročila            Naročila?         @relation(fields: [naročilaNaročiloId], references: [naročiloId])
   naročilaNaročiloId Int?
+}
+
+enum Lokacija {
+  DOMŽALE
+  LJUBLJANA
 }

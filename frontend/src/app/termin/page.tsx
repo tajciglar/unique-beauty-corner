@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useService } from "@/context/ServiceContext";
-import KoledarZaStranke from "../components/KoledarZaStranke";
+import KoledarZaStranke from "../../components/KoledarZaStranke";
 
 export default function Termini() {
   const { servicesPicked } = useService();

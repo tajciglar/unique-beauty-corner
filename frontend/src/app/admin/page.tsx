@@ -1,6 +1,6 @@
 'use client';
 
-import UrnikStrank from "../components/UrnikStrank";
+import UrnikStrank from "../../components/UrnikStrank";
 
 export default function AdminPage() {
 
