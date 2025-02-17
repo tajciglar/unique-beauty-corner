@@ -3,50 +3,21 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import { Appointment, ClientAppointment } from '@/types/types';
 
+interface AdminCalendarProps {
+  clientAppointments: ClientAppointment[];
+  availableAppointments: Appointment[];
+}
 
-export default function UrnikStrank() {
-  interface Termin {
-    datum: string;
-    startTime: string;
-    endTime: string;
-    lokacija: string;
-    naročilo: ClientTermin;
-  }
-
-  interface KategorijaStoritev {
-    id: number;
-    naslovKategorije: string;
-    storitve: Storitev[];
-  }
-
-  interface ClientTermin extends Termin {
-    ime: string;
-    telefon: string;
-    email: string;
-    cena: number,
-    čas: number,
-    storitve: object[];
-  }
-
-  interface Storitev {
-    id: number;
-    imeStoritve: string;
-    cena: number;
-    časStoritve: number
-  }
-
+const AdminCalendar: React.FC<AdminCalendarProps> = ({clientAppointments, availableAppointments}) => {
 
   const [openForm, setOpenForm] = useState<boolean>(false);
   const [selectedDate, setSelectedDate] = useState<string | undefined>();
   const [namen, setNamen] = useState<string>('');
   const [startTime, setStartTime] = useState<string>('');
   const [endTime, setEndTime] = useState<string>('');
-  const [termini, setTermini] = useState<Termin[]>([]);
-  const [clientTermin, setClientTermin] = useState<ClientTermin[]>([]) 
-  const [openTermin, setOpenTermin] = useState<boolean>(false);
-  const [kategorija, setKategorija] = useState<KategorijaStoritev[] | undefined>();
-  const [selectedServices, setSelectedServices] = useState<Storitev[]>([]);
+  const [openTermin, setOpenTermin] = useState<boolean>(false);;
   const [cena, setCena] = useState<number>()
   const [time, setTime] = useState<number>()
   // podatki za stranko
@@ -54,55 +25,7 @@ export default function UrnikStrank() {
   const [telefon, setTel] = useState<string>('');
   const [email, setMail] = useState<string>('');
 
-
-  // pridobi storitve
-  const getServices = async () => { 
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/services`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Napaka pri pridobivanju storitev.');
-      }
-
-      const data = await response.json();
-      console.log(data)
-      setKategorija(data as KategorijaStoritev[]);
-    } catch (error) { 
-      console.log(error);
-    }
-  }
-
-  const getAllEvents = async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/termini`, {
-        method: 'GET',
-        headers: {
-         'Content-Type': 'application/json',
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error('Napaka pri pridobivanju terminov.');
-      }
-
-      const {terminiNaVoljo, bookiraniTermini} = await response.json();
-      console.log(terminiNaVoljo, bookiraniTermini)
-
-      setTermini(terminiNaVoljo);
-      
-
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
+  console.log(clientAppointments, availableAppointments);
   // dodaj nov termin z klikom na določen datum
   const handleDateClick = (info: { dateStr: string }) => {
     setSelectedDate(info.dateStr);
@@ -273,9 +196,6 @@ export default function UrnikStrank() {
       }
   };
 
-  useEffect(() => {
-    getAllEvents();
-  }, [])
   return (
     <>
       <FullCalendar
@@ -289,23 +209,24 @@ export default function UrnikStrank() {
           right: 'dayGridMonth,timeGridWeek,timeGridDay',
         }}
        events={[
-          ...termini.map((termin) => {
+          ...availableAppointments.map((appointment) => {
             return {
-              id: `${termin.datum}-${termin.startTime}`, 
+              id: `${appointment.date}-${appointment.startTime}`, 
               title: "Prosti termin",
-              start: `${termin.datum}T${termin.startTime}:00`, 
-              end: `${termin.datum}T${termin.endTime}:00`,     
+              start: `${appointment.date}T${appointment.startTime}:00`, 
+              end: `${appointment.date}T${appointment.endTime}:00`,     
             };
           }),
-        ...clientTermin.map((termin) => {
+        ...clientAppointments.map((appointment) => {
+          console.log(appointment.order.name)
           return {
-            id:`${termin.datum}-${termin.startTime}`,
-            title: termin.ime,
-            email: termin.email,
-            storitve: termin.storitve,
-            cena: termin.cena,
-            start: `${termin.datum}T${termin.startTime}:00`,
-            end: `${termin.datum}T${termin.endTime}:00`, 
+            id:`${appointment.date}-${appointment.startTime}`,
+            title: appointment.name,
+            email: appointment.email,
+            services: appointment.services,
+            pricce: appointment.price,
+            start: `${appointment.date}T${appointment.startTime}:00`,
+            end: `${appointment.date}T${appointment.endTime}:00`, 
           }
         })
         ]}
@@ -476,3 +397,5 @@ export default function UrnikStrank() {
     </>
   );
 }
+
+export default AdminCalendar;

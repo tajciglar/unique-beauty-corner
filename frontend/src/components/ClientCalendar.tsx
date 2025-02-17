@@ -11,6 +11,8 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: KoledarZaStrankeP
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [timeSlots, setTimeSlots] = useState<string[]>([]);
 
+  //TODO: Fetch all the avalible appointments so that they can be shown for the client
+
   const availableSlots: { [key: string]: string[] } = {
     "27.1.2025": ["10:00 AM", "11:30 AM", "13:00"],
     "28.1.2025": ["9:00 AM", "12:00 PM", "2:30 PM"],
@@ -24,7 +26,7 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: KoledarZaStrankeP
     }
   };
 
-  const izbiraTermina = (date: Date, time: string) => {
+  const pickAppointment = (date: Date, time: string) => {
     const dateTimeString = `${date.toLocaleDateString('sl-SI').replace(/\s+/g, "")} ${time}`;
     onSelectTimeSlot(dateTimeString)
   };
@@ -65,7 +67,7 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: KoledarZaStrankeP
                 <li key={index}>
                   <button
                     className="px-4 py-2 bg-[var(--terracotta)] text-white rounded-lg hover:bg-[var(--soft-rose)] w-full"
-                    onClick={() => izbiraTermina(selectedDate, slot)}
+                    onClick={() => pickAppointment(selectedDate, slot)}
                   >
                     {slot}
                   </button>

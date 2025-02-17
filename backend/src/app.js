@@ -11,118 +11,118 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-// Get all termini
-app.get('/api/termini', async (req, res) => {
+// Get all appointments
+app.get('/api/appointments', async (req, res) => {
     try {
-        const terminiNaVoljo = await prisma.termin.findMany({
+        const availableAppointments = await prisma.appointment.findMany({
             where: {
-                naVoljo: true,
+                available: true,
             }
         });
 
-        const bookiraniTermini = await prisma.termin.findMany({
+        const bookedAppointments = await prisma.appointment.findMany({
             where: {
-                naVoljo: false,
+                available: false,
             },
             include: {
-                Naročila: true,
+                orders: true,
             },
         });
 
-        res.status(200).json({terminiNaVoljo, bookiraniTermini});
+        res.status(200).json({availableAppointments, bookedAppointments});
     } catch (error) {
         console.error("Error fetching termini:", error);
-        res.status(500).json({ message: 'Napaka na strežniku' });
+        res.status(500).json({ message: 'Server error' });
     }
 });
 
 // Add new termin
-app.post('/api/termini', async (req, res) => {
-    const termin = req.body;
+app.post('/api/appointments', async (req, res) => {
+    const appointment = req.body;
 
-    await prisma.termin.create({
+    await prisma.appointment.create({
         data: {
-            ...termin
+            ...appointment
         }
     });
 
-    res.json({ message: 'Termin dodan',  });
+    res.json({ message: 'New appointment added',  });
 });
 
 // Update termin
-app.put('/api/termini/:id', async (req, res) => {
+app.put('/api/appointment/:id', async (req, res) => {
     console.log(req)
 });
 
 // Delete termin
-app.delete('/api/termini/:id', async (req, res) => {
+app.delete('/api/appointment/:id', async (req, res) => {
     console.log(req)
 });
 
 
 app.get('/api/services', async (req, res) => {
     try {
-        const storitve = await prisma.kategorijaStoritev.findMany(
+        const services = await prisma.serviceCategory.findMany(
             {
                 include: {
-                    storitve: true
+                    services: true
                 }
             }
         );
-        if(!storitve) {
-            return res.status(404).json({ message: 'Ni storitev' });
+        if(!services) {
+            return res.status(404).json({ message: 'Error getting services' });
         }
-        console.log(storitve)
-        res.json(storitve);
+        console.log(services)
+        res.json(services);
     } catch (error) {
         console.error(error);
     }
 });
 
-app.post('/api/narocila', async (req, res) => {
-    const { ime, telefon, email, datum, startTime, endTime, storitve } = req.body;
+app.post('/api/orders', async (req, res) => {
+    const { name, phone, email, date, startTime, endTime, services } = req.body;
 
-    let termin = await prisma.termin.findFirst({
-        where: {datum, startTime, endTime}
+    let appointment = await prisma.appointment.findFirst({
+        where: {date, startTime, endTime}
     })
-    if(termin){
+    if(appointment){
         res.status(400).send({message: "Termin zaseden"})
     }
     
-    if(!termin) {
-        termin = await prisma.termin.create({
+    if(!appointment) {
+        appointment = await prisma.appointment.create({
             data: {
-                datum,
+                date,
                 startTime,
                 endTime,
-                naVoljo: false,
+                avaliable: false,
             }
         });
 
-        const novoNarocilo = await prisma.naročila.create({
+        const newOrder = await prisma.orders.create({
             data: {
-                ime,
+                name,
                 email,
-                telefon,
-                cena: storitve.reduce((sum, s) => sum + Number(s.cena), 0),
-                terminId: termin.terminId,
-                storitve: {
-                    connect: storitve.map((storitev) => ({
-                        idStoritve: storitev.idStoritve,
+                phone,
+                price: services.reduce((sum, s) => sum + Number(s.price), 0),
+                appointmentId: appointment.appointmentId,
+                services: {
+                    connect: services.map((service) => ({
+                        serviceId: service.serviceId,
                     }))
                 }
             },
             include: {
-                termin: true,
-                storitve: true,
+                appointment: true,
+                services: true,
             }
         })
-        console.log(novoNarocilo)
-        if(!novoNarocilo) {
-            return res.status(404).json({ message: 'Naročila ni mogoče ustvariti' });
+        console.log(newOrder)
+        if(!newOrder) {
+            return res.status(404).json({ message: 'New order can not be made' });
         }
 
-        res.status(200).send(novoNarocilo);
+        res.status(200).send(newOrder);
     }
     
 });

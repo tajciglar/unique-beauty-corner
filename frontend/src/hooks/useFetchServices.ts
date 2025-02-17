@@ -24,4 +24,4 @@ const getServices = async (): Promise<ServiceCategory[] | null> => {
     }
 }
 
-export default getServices
+export default getServices;

@@ -14,49 +14,49 @@ model Admin {
   password String
 }
 
-model Termin {
-  terminId  Int         @id @default(autoincrement())
-  datum     String
+model Appointment {
+  id        Int      @id @default(autoincrement())
+  date      String
   startTime String
   endTime   String
-  naVoljo   Boolean     @default(true)
-  lokacija  Lokacija    @default(DOMŽALE)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  Naročila Naročila[]
+  available Boolean  @default(true)
+  location  Location @default(DOMŽALE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Orders[]
 }
 
-model Naročila {
-  naročiloId Int        @id @default(autoincrement())
-  ime         String
-  email       String
-  telefon     String
-  cena        Decimal
-  terminId    Int
-  termin      Termin     @relation(fields: [terminId], references: [terminId])
-  storitve    Storitve[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+model Orders {
+  id            Int         @id @default(autoincrement())
+  name          String
+  email         String
+  phone         String
+  price         Decimal
+  appointmentId Int
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  services      Services[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
-model KategorijaStoritev {
-  id               Int        @id @default(autoincrement())
-  naslovKategorije String     @unique
-  storitve         Storitve[]
+model ServiceCategory {
+  id           Int        @id @default(autoincrement())
+  categoryName String     @unique
+  services     Services[]
 }
 
-model Storitve {
-  idStoritve           Int                @id @default(autoincrement())
-  imeStoritve          String
-  cena                 Int
-  časStoritve         Int? // Optional time field (in minutes)
-  kategorijaStoritevId Int
-  kategorijaStoritev   KategorijaStoritev @relation(fields: [kategorijaStoritevId], references: [id])
-  Naročila            Naročila?         @relation(fields: [naročilaNaročiloId], references: [naročiloId])
-  naročilaNaročiloId Int?
+model Services {
+  id                Int             @id @default(autoincrement())
+  serviceName       String
+  servicePrice      Decimal
+  serviceTime       Int? // Optional time field (in minutes)
+  serviceCategoryId Int
+  serviceCategory   ServiceCategory @relation(fields: [serviceCategoryId], references: [id])
+  Orders            Orders?         @relation(fields: [OrdersId], references: [id])
+  OrdersId          Int?
 }
 
-enum Lokacija {
+enum Location {
   DOMŽALE
   LJUBLJANA
 }
