@@ -23,7 +23,8 @@ model Appointment {
   location  Location @default(DOMŽALE)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  orders    Orders[]
+  orders    Orders?
+  ordersId  Int? // Nullable since an appointment may not have an order
 }
 
 model Orders {
@@ -32,7 +33,7 @@ model Orders {
   email         String
   phone         String
   price         Decimal
-  appointmentId Int
+  appointmentId Int         @unique // Ensures one-to-one relationship
   appointment   Appointment @relation(fields: [appointmentId], references: [id])
   services      Services[]
   createdAt     DateTime    @default(now())
