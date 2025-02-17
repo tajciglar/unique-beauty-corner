@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("Seeding categories, services, appointments, and orders...");
 
+  // Seed Service Categories
   await prisma.serviceCategory.createMany({
     data: [
       { categoryName: "Trepalnice 1/1" },
@@ -16,6 +17,7 @@ async function main() {
     ]
   });
 
+  // Seed Services
   await prisma.services.createMany({
     data: [
       { serviceName: "Podaljševanje na novo", servicePrice: 35, serviceTime: 90, serviceCategoryId: 1 },
@@ -39,7 +41,10 @@ async function main() {
     ]
   });
 
+  // Fetch all services
   const allServices = await prisma.services.findMany();
+
+  // Create appointments with random availability
   const appointments = [];
   const orders = [];
 
@@ -51,30 +56,46 @@ async function main() {
     const available = Math.random() > 0.3; // 70% available, 30% booked
     const location = Math.random() > 0.5 ? "DOMŽALE" : "LJUBLJANA";
     
-    appointments.push({
-      date: format(randomDate, "yyyy-MM-dd"),
-      startTime: format(startTime, "HH:mm"),
-      endTime: format(endTime, "HH:mm"),
-      available,
-      location,
-      ordersId: available ? null : undefined // Only set ordersId for booked appointments
+    const appointment = await prisma.appointment.create({
+      data: {
+        date: format(randomDate, "yyyy-MM-dd"),
+        startTime: format(startTime, "HH:mm"),
+        endTime: format(endTime, "HH:mm"),
+        available,
+        location
+      }
     });
-  }
 
-  await prisma.appointment.createMany({ data: appointments });
-  const allAppointments = await prisma.appointment.findMany();
+    appointments.push(appointment);
 
-  for (const appointment of allAppointments) {
-    if (!appointment.available) {
+    // If booked, create an order with customer details and services
+    if (!available) {
+      const randomServices = [];
+      const numServices = Math.floor(Math.random() * 2) + 1; // Randomly select 1 or 2 services
+
+      // Randomly pick services for the order
+      for (let j = 0; j < numServices; j++) {
+        const randomService = allServices[Math.floor(Math.random() * allServices.length)];
+        randomServices.push(randomService);
+      }
+
+      // Calculate the total price for the order
+      const totalPrice = randomServices.reduce((sum, service) => sum + parseFloat(service.servicePrice.toString()), 0);
+
       const order = await prisma.orders.create({
         data: {
           name: `Customer ${appointment.id}`,
           email: `customer${appointment.id}@example.com`,
           phone: `+123456789${appointment.id}`,
-          price: 100 + Math.floor(Math.random() * 50),
+          price: totalPrice,
           appointmentId: appointment.id,
-        },
+          services: {
+            connect: randomServices.map(service => ({ id: service.id }))
+          }
+        }
       });
+
+      orders.push(order);
     }
   }
 

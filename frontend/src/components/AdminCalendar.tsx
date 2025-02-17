@@ -4,13 +4,14 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { Appointment, ClientAppointment } from '@/types/types';
+import ViewAppointment from './ViewAppointment';
 
 interface AdminCalendarProps {
-  clientAppointments: ClientAppointment[];
+  clientAppointments: Appointment[];
   availableAppointments: Appointment[];
 }
 
-const AdminCalendar: React.FC<AdminCalendarProps> = ({clientAppointments, availableAppointments}) => {
+const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, availableAppointments }) => {
 
   const [openForm, setOpenForm] = useState<boolean>(false);
   const [selectedDate, setSelectedDate] = useState<string | undefined>();
@@ -20,12 +21,13 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({clientAppointments, availa
   const [openTermin, setOpenTermin] = useState<boolean>(false);;
   const [cena, setCena] = useState<number>()
   const [time, setTime] = useState<number>()
+  const [selectedAppointment, setSelectedAppointment] = useState<any | null>(null);
+
   // podatki za stranko
   const [ime, setName] = useState<string>('');
   const [telefon, setTel] = useState<string>('');
   const [email, setMail] = useState<string>('');
 
-  console.log(clientAppointments, availableAppointments);
   // dodaj nov termin z klikom na določen datum
   const handleDateClick = (info: { dateStr: string }) => {
     setSelectedDate(info.dateStr);
@@ -47,14 +49,7 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({clientAppointments, availa
 
     // Handle different cases based on 'namen'
     if (namen === "prostiTermin") {
-      
-      const newTermin: Termin = {
-        datum: selectedDate,
-        startTime,
-        endTime,
-        lokacija,
-      };
-
+   
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/termini`,
@@ -127,7 +122,7 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({clientAppointments, availa
     setStartTime("");
     setEndTime("");
     setName("");
-    setTel("");
+        setTel("");
     setMail("");
     setSelectedServices([]);
     setCena(0);
@@ -150,26 +145,16 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({clientAppointments, availa
 
   // odpri termin z klikom
   const getTermin = (event: any) => {
-    console.log(event)
-    if (event) {
-      setOpenTermin(true);
-    }
-  }
+    console.log(event._def)
+    setSelectedAppointment(event);
+    setOpenTermin(true);
+  };
 
   // izbriši termin
   const izbrišiTermin = () => { 
     setTermini(termini.filter((termin) => termin !== termin));
     setOpenTermin(false);
   }
-
-
-  // formatiraj datum
-  const spremeniDatum = (date: string) => {
-    const [year, month, day] = date.split('-');
-    return `${day}-${month}-${year}`;
-  };
-
-
 
   // checkbox 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>, service: Storitev) => {
@@ -218,13 +203,15 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({clientAppointments, availa
             };
           }),
         ...clientAppointments.map((appointment) => {
-          console.log(appointment.order.name)
+          console.log(clientAppointments)
+           console.log( appointment.orders.services)
           return {
+           
             id:`${appointment.date}-${appointment.startTime}`,
-            title: appointment.name,
-            email: appointment.email,
-            services: appointment.services,
-            pricce: appointment.price,
+            title: appointment.orders.name,
+            email: appointment.orders.email,
+            services: appointment.orders.services,
+            price: appointment.orders.price,
             start: `${appointment.date}T${appointment.startTime}:00`,
             end: `${appointment.date}T${appointment.endTime}:00`, 
           }
@@ -372,28 +359,18 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({clientAppointments, availa
             </form>
           </div>
         </div>
+        
       )}
-
-      { openTermin && (
-        <div className="fixed z-10 top-0 left-0 w-full h-full flex items-center justify-center bg-[rgba(0,0,0,0.5)]">
-          <div className="absolute bg-[var(--soft-rose)] bg-opacity-90 p-4 rounded-lg text-base flex flex-col gap-4">
-            <h2 className="text-xl">Podrobnosti termina</h2>
-            <p>Podrobnosti termina</p>
-          
-            <button className="bg-red-500 text-white py-1 px-3 rounded-lg" onClick={() => izbrišiTermin()}>
-              Izbriši termin
-            </button>
-            <button
-              className="bg-blue-500 text-white py-1 px-3 rounded-lg"
-              onClick={() => {setOpenTermin(false); Reset();}}
-            >
-              Zapri
-            </button>
-          </div>
-        </div>
-      )
-
-      }
+      {openTermin && selectedAppointment && (
+          <ViewAppointment 
+              appointment={selectedAppointment} 
+              onClose={() => setOpenTermin(false)} 
+              onDelete={(id) => {
+                setTermini((prev) => prev.filter((t) => t.id !== id));
+                setOpenTermin(false);
+              }}
+            />
+          )}
     </>
   );
 }

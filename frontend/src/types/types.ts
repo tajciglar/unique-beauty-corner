@@ -1,9 +1,11 @@
 interface Appointment {
+    id: number;
     date: string;
     startTime: string;
     endTime: string;
+    avalible: boolean;
     location: string;
-    order: ClientAppointment;
+    orders: ClientAppointment;
   }
 
 interface ServiceCategory {
@@ -13,6 +15,7 @@ interface ServiceCategory {
 }
 
 interface ClientAppointment extends Appointment {
+    orderId: number;
     name: string;
     phone: string;
     email: string;

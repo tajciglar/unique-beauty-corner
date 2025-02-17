@@ -1,6 +1,6 @@
-import { Appointment, ClientAppointment } from "@/types/types";
+import { Appointment } from "@/types/types";
 
-const fetchAppointments = async (): Promise<{ availableAppointments: Appointment[]; bookedAppointments: ClientAppointment[] } | null> => {
+const fetchAppointments = async (): Promise<{ availableAppointments: Appointment[]; bookedAppointments: Appointment[] } | null> => {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments`, {
       method: 'GET',
@@ -14,11 +14,11 @@ const fetchAppointments = async (): Promise<{ availableAppointments: Appointment
     }
 
     const { availableAppointments, bookedAppointments } = await response.json();
-
+    console.log(bookedAppointments)
     // Return both arrays wrapped in an object
     return {
       availableAppointments: availableAppointments as Appointment[],
-      bookedAppointments: bookedAppointments as ClientAppointment[],
+      bookedAppointments: bookedAppointments as Appointment[],
     };
     
   } catch (err) {

@@ -25,10 +25,14 @@ app.get('/api/appointments', async (req, res) => {
                 available: false,
             },
             include: {
-                orders: true,
+                orders: {
+                    include: {
+                        services: true,
+                    }
+                }
             },
         });
-
+        console.log(bookedAppointments)
         res.status(200).json({availableAppointments, bookedAppointments});
     } catch (error) {
         console.error("Error fetching termini:", error);

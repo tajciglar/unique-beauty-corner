@@ -24,7 +24,6 @@ model Appointment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   orders    Orders?
-  ordersId  Int? // Nullable since an appointment may not have an order
 }
 
 model Orders {
