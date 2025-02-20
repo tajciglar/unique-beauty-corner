@@ -14,7 +14,6 @@ const fetchAppointments = async (): Promise<{ availableAppointments: Appointment
     }
 
     const { availableAppointments, bookedAppointments } = await response.json();
-    console.log(bookedAppointments)
     // Return both arrays wrapped in an object
     return {
       availableAppointments: availableAppointments as Appointment[],

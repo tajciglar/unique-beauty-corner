@@ -3,8 +3,9 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { Appointment, ClientAppointment } from '@/types/types';
+import { Appointment } from '@/types/types';
 import ViewAppointment from './ViewAppointment';
+import AddAppointment from './AddAppointment';
 
 interface AdminCalendarProps {
   clientAppointments: Appointment[];
@@ -13,8 +14,6 @@ interface AdminCalendarProps {
 
 const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, availableAppointments }) => {
 
-  const [openForm, setOpenForm] = useState<boolean>(false);
-  const [selectedDate, setSelectedDate] = useState<string | undefined>();
   const [namen, setNamen] = useState<string>('');
   const [startTime, setStartTime] = useState<string>('');
   const [endTime, setEndTime] = useState<string>('');
@@ -29,9 +28,18 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, avail
   const [email, setMail] = useState<string>('');
 
   // dodaj nov termin z klikom na določen datum
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
   const handleDateClick = (info: { dateStr: string }) => {
     setSelectedDate(info.dateStr);
-    setOpenForm(true);
+    setShowAddForm(true);
+  };
+
+  const handleSaveAppointment = (appointmentData: any) => {
+    console.log("New Appointment:", appointmentData);
+    // Here, you can send the data to the API or update state
+    setShowAddForm(false);
   };
 
   const dodajTermin = async (event: React.FormEvent) => {
@@ -129,20 +137,6 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, avail
     setTime(0);
   };
 
-  const Reset = () => {
-      setOpenForm(false);
-      setNamen("");
-      setStartTime("");
-      setEndTime("");
-      setName("");
-      setTel("");
-      setMail("");
-      setSelectedServices([]);
-      setCena(0);
-      setTime(0);
-  }
-
-
   // odpri termin z klikom
   const getTermin = (event: any) => {
     console.log(event._def)
@@ -200,13 +194,11 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, avail
               title: "Prosti termin",
               start: `${appointment.date}T${appointment.startTime}:00`, 
               end: `${appointment.date}T${appointment.endTime}:00`,     
+              location: `${appointment.location}`
             };
           }),
         ...clientAppointments.map((appointment) => {
-          console.log(clientAppointments)
-           console.log( appointment.orders.services)
           return {
-           
             id:`${appointment.date}-${appointment.startTime}`,
             title: appointment.orders.name,
             email: appointment.orders.email,
@@ -214,153 +206,13 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, avail
             price: appointment.orders.price,
             start: `${appointment.date}T${appointment.startTime}:00`,
             end: `${appointment.date}T${appointment.endTime}:00`, 
+            location: `${appointment.location}`
           }
         })
         ]}
         eventClick={(info) => getTermin(info.event)}
         locale="sl"
       />
-      {openForm && (
-        <div className="fixed z-10 top-0 left-0 w-full h-full flex items-center justify-center bg-[rgba(0,0,0,0.5)]">
-          <div className="absolute bg-[var(--soft-rose)] bg-opacity-90 p-4 rounded-lg text-base flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
-            <form
-              className="flex flex-col gap-3 items-center"
-              onSubmit={dodajTermin}
-            >
-              <h3 className="text-xl">
-                Dodaj termin za datum{' '}
-                <b>{spremeniDatum(selectedDate as string)}:</b>
-              </h3>
-              <label htmlFor="namen">Namen</label>
-                <select
-                  name="namen"
-                  id="namen"
-                  className="w-1/2"
-                  onChange={(e) => {
-                    setNamen(e.target.value);
-                    if (e.target.value === 'stranka') {
-                    getServices();
-                    }
-                  }}
-                  >
-                  <option defaultValue="Izberi namen" >Izberi namen</option>
-                  <option value="prostiTermin">Prosti termin</option>
-                  <option value="stranka">Stranka</option>
-                </select>
-
-              {namen === 'prostiTermin' && (
-                <>
-                  <label htmlFor="startTime">Začetek termina</label>
-                  <input
-                    type="time"
-                    id="startTime"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                  />
-                  <label htmlFor="endTime">Konec termina</label>
-                  <input
-                    type="time"
-                    id="endTime"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                  />
-                  <label htmlFor="lokacija">Izberi lokacijo</label>
-                  <select name='lokacija'>
-                    <option >Izberi lokacijo</option>
-                    <option value="DOMŽALE">Domžale</option>
-                    <option value="LJUBLJANA">Ljubljana</option>
-                  </select>
-                </>
-                
-              )}
-
-              {namen === 'stranka' && (
-                <>
-                  <label htmlFor="ime">Ime stranke</label>
-                  <input
-                    type="text"
-                    id="ime"
-                    value={ime}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                  <label htmlFor="tel">Telefon</label>
-                  <input
-                    type="tel"
-                    id="tel"
-                    value={telefon}
-                    onChange={(e) => setTel(e.target.value)}
-                    required
-                  />
-                  <label htmlFor="mail">E-pošta</label>
-                  <input
-                    type="email"
-                    id="mail"
-                    value={email}
-                    onChange={(e) => setMail(e.target.value)}
-                    required
-                  />
-                  <label htmlFor="startTime">Začetek termina</label>
-                  <input
-                    type="time"
-                    id="startTime"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                  />
-                  <label htmlFor="endTime">Konec termina</label>
-                  <input
-                    type="time"
-                    id="endTime"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                  />
-                  <label>Storitev</label>
-                  {kategorija && (
-                    <div>
-                      {kategorija.map((kat, katIndex) => (
-                        <div key={kat.id || katIndex}>
-                          <h3>{kat.naslovKategorije}</h3>
-                          {kat.storitve.map((storitev, storitevIndex) => (
-                            <div key={storitev.id || `${katIndex}-${storitevIndex}`}>
-                              <input
-                                type="checkbox"
-                                id={`storitev-${storitev.id || `${katIndex}-${storitevIndex}`}`}
-                                value={storitev.imeStoritve}
-                                onChange={(e) => handleCheckboxChange(e, storitev)}
-                              />
-                              <label htmlFor={`storitev-${storitev.id || `${katIndex}-${storitevIndex}`}`}>
-                                {storitev.imeStoritve}
-                              </label>
-                            </div>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <label>Cena</label>
-                  <div>{cena}</div>
-                  <label>Čas</label>
-                  <div>{time}</div>
-                </>
-              )}
-              <button
-                type="submit"
-                className="bg-blue-500 text-white py-1 px-3 rounded-lg"
-              >
-                Dodaj
-              </button>
-              <button
-                type="button"
-                className="bg-gray-500 text-white py-1 px-3 rounded-lg"
-                onClick={() => { setOpenForm(false); setNamen(''); Reset(); }}
-              >
-                Zapri
-              </button>
-            </form>
-          </div>
-        </div>
-        
-      )}
       {openTermin && selectedAppointment && (
           <ViewAppointment 
               appointment={selectedAppointment} 
@@ -370,9 +222,18 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, avail
                 setOpenTermin(false);
               }}
             />
-          )}
+        )}
+        {showAddForm && (
+          <AddAppointment 
+            selectedDate={selectedDate} 
+            onClose={() => setShowAddForm(false)} 
+            onSave={handleSaveAppointment} 
+          />
+        )}
     </>
   );
 }
 
 export default AdminCalendar;
+
+

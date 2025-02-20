@@ -15,12 +15,11 @@ interface ServiceCategory {
 }
 
 interface ClientAppointment extends Appointment {
-    orderId: number;
     name: string;
     phone: string;
     email: string;
     price: number,
-    time: number,
+    duration: number,
     services: object[];
 }
 
