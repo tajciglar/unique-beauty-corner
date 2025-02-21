@@ -1,34 +1,37 @@
-interface Appointment {
-    id: number;
-    date: string;
-    startTime: string;
-    endTime: string;
-    avalible: boolean;
-    location: string;
-    orders: ClientAppointment;
-  }
 
-interface ServiceCategory {
-    id: number;
-    categoryName: string;
-    services: Service[];
+export interface Appointment {
+  id: number;
+  date: string;
+  startTime: string;
+  endTime: string;
+  available: boolean;
+  location: string;
+  orders?: Order; 
 }
 
-interface ClientAppointment extends Appointment {
-    name: string;
-    phone: string;
-    email: string;
-    price: number,
-    duration: number,
-    services: object[];
-}
-
-interface Service {
-    id: number;
-    serviceName: string;
-    servicePrice: number;
-    serviceTime: number
+export interface Order extends Appointment {
+  name: string;
+  email: string;
+  phone: string;
+  price: number;
+  duration: number; 
+  services: Service[];  
 }
 
 
-export type { Appointment, ServiceCategory, ClientAppointment, Service}
+export interface ServiceCategory {
+  id: number;
+  categoryName: string;
+  services: Service[];
+}
+
+// Service type (for each individual service)
+export interface Service {
+  id: number;
+  serviceName: string;
+  servicePrice: number;
+  serviceTime: number;  
+  serviceCategoryId: number;  
+  serviceCategory: ServiceCategory; 
+  orders?: Order[]; 
+}

@@ -1,7 +1,9 @@
 import { formatTime } from "@/utility/changeDate";
 
+
 interface ViewAppointmentProps {
-  appointment: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  appointment: any | null;
   onClose: () => void;
   onDelete: (id: string) => void;
 }
@@ -25,11 +27,15 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({ appointment, onClose,
           <>
             <h2 className="text-xl">Podrobnosti termina</h2>
             <p><strong>Ime:</strong> {appointment.title}</p>
-            <p><strong>E-pošta:</strong> {appointment.email}</p>
-            <p><strong>Storitve:</strong> {appointment.services?.join(', ') || 'Ni storitev'}</p>
-            <p><strong>Cena:</strong> {appointment.price ? `${appointment.price}€` : 'Ni podatka'}</p>
+            <p><strong>E-pošta:</strong> {appointment.extendedProps.email}</p>
+            <p><strong>Telefon:</strong> {appointment.extendedProps.phone}</p>
+            <p><strong>Začetek:</strong> {formatTime(appointment.start)}</p>
+            <p><strong>Konec:</strong> {formatTime(appointment.end)}</p>
+            <ul><strong>Storitve:</strong> {appointment.extendedProps.services.map((service: { serviceName: string }) => (
+              <li key={service.serviceName}>{service.serviceName}</li>
+            ))}</ul>
+            <p><strong>Cena:</strong> {appointment.extendedProps.price ? `${appointment.extendedProps.price}€` : 'Ni podatka'}</p>
             <p><strong>Lokacija:</strong>{appointment.extendedProps.location}</p>
-            <p><strong>Opombe:</strong> {appointment.notes || 'Ni opomb'}</p>
           </>
         )}
         <button className="bg-red-500 text-white py-1 px-3 rounded-lg" onClick={() => onDelete(appointment.id)}>

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { changeDate } from "@/utility/changeDate";
-import { Appointment, Service, ServiceCategory } from "@/types/types";
+import { Appointment, Order, Service, ServiceCategory } from "@/types/types";
 import getServices from "@/hooks/useFetchServices";
 
 interface AddAppointmentProps {
   selectedDate: string | null;
   onClose: () => void;
-  onSave: (appointmentData: ClientAppointment) => void;
+  onSave: (appointmentData: Order) => void;
 }
 
 const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, onSave }) => {
@@ -22,12 +22,10 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
   const [services, setServices] = useState<ServiceCategory[] | null>(null);
   const [selectedServices, setSelectedServices] = useState<Service[]>([]);
 
-  // Fetch services when "client" is selected
   useEffect(() => {
     if (purpose === "client") {
       const fetchServices = async () => {
         const data = await getServices();
-        console.log(data)
         if (data) {
           setServices(data);
         }
@@ -36,24 +34,40 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
     }
   }, [purpose]);
 
+  // Update total duration and price when services are selected
   const handleServiceChange = (e: React.ChangeEvent<HTMLInputElement>, service: Service) => {
-      setSelectedServices((prev) => {
-        let updatedServices;
-        if (e.target.checked) {
-          updatedServices = [...prev, service];
-        } else {
-          updatedServices = prev.filter((s) => s.id !== service.id);
-        }
+    setSelectedServices((prev) => {
+      let updatedServices;
+      if (e.target.checked) {
+        updatedServices = [...prev, service];
+      } else {
+        updatedServices = prev.filter((s) => s.id !== service.id);
+      }
 
-        // Correct price and duration calculations
-        const totalPrice = updatedServices.reduce((sum, s) => sum + Number(s.servicePrice), 0);
-        console.log(totalPrice)
-        const totalDuration = updatedServices.reduce((sum, s) => sum + s.serviceTime, 0);
-        
-        setPrice(totalPrice);
-        setDuration(totalDuration);
-        return updatedServices;
-      });
+      const totalPrice = updatedServices.reduce((sum, s) => sum + Number(s.servicePrice), 0);
+      const totalDuration = updatedServices.reduce((sum, s) => sum + s.serviceTime, 0);
+      
+      setPrice(totalPrice);
+      setDuration(totalDuration);
+      
+      if (startTime) {
+        const newEndTime = calculateEndTime(startTime, totalDuration);
+        setEndTime(newEndTime);
+      }
+      
+      return updatedServices;
+    });
+  };
+
+  // Calculate end time based on start time and total duration
+  const calculateEndTime = (start: string, durationInMinutes: number): string => {
+    const startDate = new Date(`1970-01-01T${start}:00`); 
+    startDate.setMinutes(startDate.getMinutes() + durationInMinutes);
+    
+    const hours = String(startDate.getHours()).padStart(2, "0");
+    const minutes = String(startDate.getMinutes()).padStart(2, "0");
+    
+    return `${hours}:${minutes}`;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -68,17 +82,22 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
       return;
     }
 
-    onSave({
+    const newAppointment: Order = {
+      id: Date.now(), // or any other unique identifier
       date: selectedDate,
       startTime,
       endTime,
       name,
+      available: false,
       phone,
       email,
       price,
       duration,
+      location,
       services: selectedServices,
-    });
+    };
+
+    onSave(newAppointment); // No id included
 
     onClose();
   };
@@ -104,7 +123,7 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
               <input type="time" id="startTime" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="border p-2 rounded" />
 
               <label htmlFor="endTime">Konec</label>
-              <input type="time" id="endTime" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="border p-2 rounded" />
+              <input type="time" id="endTime" value={endTime} readOnly className="border p-2 rounded" />
 
               <label htmlFor="location">Lokacija</label>
               <select id="location" className="border p-2 rounded" onChange={(e) => setLocation(e.target.value)}>
@@ -116,10 +135,10 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
 
           {purpose === "client" && (
             <>
-              <label htmlFor="name">Client Name</label>
+              <label htmlFor="name">Ime stranke</label>
               <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} className="border p-2 rounded" required />
 
-              <label htmlFor="phone">Phone</label>
+              <label htmlFor="phone">Telefon</label>
               <input type="tel" id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} className="border p-2 rounded" required />
 
               <label htmlFor="email">Email</label>
@@ -131,12 +150,10 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
               <label htmlFor="services">Storitve</label>
               {services?.map((category) => (
                 <div key={category.id} className="mb-2">
-                  {/* Service Category Checkbox */}
                   <label className="font-bold">
                     {category.categoryName}
                   </label>
 
-                  {/* List of Services with Checkboxes */}
                   <ul className="ml-4">
                     {category.services.map((service) => (
                       <li key={service.id} className="flex items-center">
@@ -156,7 +173,7 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
               ))}
 
               <label htmlFor="endTime">End Time</label>
-              <input type="time" id="endTime" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="border p-2 rounded" />
+              <input type="time" id="endTime" value={endTime} readOnly className="border p-2 rounded" />
 
               <label htmlFor="location">Lokacija</label>
               <select id="location" className="border p-2 rounded" onChange={(e) => setLocation(e.target.value)}>
@@ -167,7 +184,7 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
               <label>Price</label>
               <div className="border p-2 rounded">{price}€</div>
 
-              <label>Duration</label>
+              <label>Čas storitve</label>
               <div className="border p-2 rounded">{duration} mins</div>
             </>
           )}
