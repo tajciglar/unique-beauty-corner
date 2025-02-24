@@ -1,14 +1,15 @@
 
 export interface Appointment {
+  id: number;
   date: string;
   startTime: string;
   endTime: string;
   available: boolean;
   location: string;
-  orders?: Order; 
+  order?: Order; 
 }
 
-export interface Order extends Appointment {
+export interface Order {
   name: string;
   email: string;
   phone: string;

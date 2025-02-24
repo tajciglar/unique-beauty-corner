@@ -45,17 +45,26 @@ async function main() {
   const allServices = await prisma.services.findMany();
 
   // Create appointments with random availability
-  const appointments = [];
-  const orders = [];
-
   for (let i = 0; i < 20; i++) {
     const randomDate = addDays(new Date(), Math.floor(Math.random() * 10));
     const startHour = Math.floor(Math.random() * (18 - 9) + 9);
     const startTime = setMinutes(setHours(randomDate, startHour), 0);
-    const endTime = addMinutes(startTime, 60);
+    
+    let duration = 60; // Default duration for available appointments
+    let endTime = addMinutes(startTime, duration);
     const available = Math.random() > 0.3; // 70% available, 30% booked
     const location = Math.random() > 0.5 ? "DOMŽALE" : "LJUBLJANA";
     
+    // If the appointment is booked, assign a real duration based on services
+    let selectedServices = [];
+    if (!available) {
+      const numServices = Math.floor(Math.random() * 2) + 1; // 1 or 2 services
+      selectedServices = allServices.sort(() => 0.5 - Math.random()).slice(0, numServices);
+
+      duration = selectedServices.reduce((sum, service) => sum + (service.serviceTime || 0), 0);
+      endTime = addMinutes(startTime, duration);
+    }
+
     const appointment = await prisma.appointment.create({
       data: {
         date: format(randomDate, "yyyy-MM-dd"),
@@ -66,36 +75,23 @@ async function main() {
       }
     });
 
-    appointments.push(appointment);
-
     // If booked, create an order with customer details and services
     if (!available) {
-      const randomServices = [];
-      const numServices = Math.floor(Math.random() * 2) + 1; // Randomly select 1 or 2 services
+      const totalPrice = selectedServices.reduce((sum, service) => sum + parseFloat(service.servicePrice.toString()), 0);
 
-      // Randomly pick services for the order
-      for (let j = 0; j < numServices; j++) {
-        const randomService = allServices[Math.floor(Math.random() * allServices.length)];
-        randomServices.push(randomService);
-      }
-
-      // Calculate the total price for the order
-      const totalPrice = randomServices.reduce((sum, service) => sum + parseFloat(service.servicePrice.toString()), 0);
-
-      const order = await prisma.orders.create({
+      await prisma.order.create({
         data: {
           name: `Customer ${appointment.id}`,
           email: `customer${appointment.id}@example.com`,
           phone: `+123456789${appointment.id}`,
           price: totalPrice,
+          duration, // Store the total service duration in minutes
           appointmentId: appointment.id,
           services: {
-            connect: randomServices.map(service => ({ id: service.id }))
+            connect: selectedServices.map(service => ({ id: service.id }))
           }
         }
       });
-
-      orders.push(order);
     }
   }
 

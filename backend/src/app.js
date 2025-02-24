@@ -25,13 +25,14 @@ app.get('/api/appointments', async (req, res) => {
                 available: false,
             },
             include: {
-                orders: {
+                order: {
                     include: {
                         services: true,
                     }
                 }
             },
         });
+       
         res.status(200).json({availableAppointments, bookedAppointments});
     } catch (error) {
         console.error("Error fetching termini:", error);
@@ -41,25 +42,95 @@ app.get('/api/appointments', async (req, res) => {
 
 // Add new termin
 app.post('/api/appointments', async (req, res) => {
-    consoo
+    const appointment = req.body;
 
-    const newAppointment = await prisma.appointment.create({
-        data: {
-            ...appointment,
-        }
-    });
+    let newAppointment;
+   
+    const checkAppointment = await prisma.appointment.findFirst({
+        where: {date: appointment.date, startTime: appointment.startTime}
+    })
 
+    if (checkAppointment) {
+        return res.status(400).json({ message: 'Termin že zaseden' });
+    }
+
+    if (appointment.order) {
+        newAppointment = await prisma.appointment.create({
+            data: {
+                date: appointment.date,
+                startTime: appointment.startTime,
+                endTime: appointment.endTime,
+                available: appointment.available,
+                order: {
+                    create: {
+                        name: appointment.order.name,
+                        email: appointment.order.email,
+                        phone: appointment.order.phone,
+                        price: appointment.order.price,
+                        duration: appointment.order.duration,
+                        services: {
+                            connect: appointment.order.services.map((service) => ({
+                                id: service.id,  
+                            }))
+                        }
+                    }
+                },
+            },
+            include: {
+                    order: {
+                        include: {
+                            services: true,
+                        }
+                    }
+            }
+        });
+
+    } else {
+        newAppointment = await prisma.appointment.create({
+            data: {
+                date: appointment.date,
+                startTime: appointment.startTime,
+                endTime: appointment.endTime,
+                available: appointment.available,
+            }
+        });
+    }
     res.json({ message: 'New appointment added',  newAppointment});
 });
 
 // Update termin
-app.put('/api/appointment/:id', async (req, res) => {
+app.put('/api/appointments/:id', async (req, res) => {
     console.log(req)
 });
 
 // Delete termin
-app.delete('/api/appointment/:id', async (req, res) => {
-    console.log(req)
+app.delete('/api/appointments/:id', async (req, res) => {
+    const appointmentId = req.params.id;
+
+    try {
+        const appointment = await prisma.appointment.findUnique({
+            where: {
+                id: Number(appointmentId),
+            }
+        });
+    } catch (error) {
+        console.error("Error fetching appointment:", error);
+        res.status(500).json({ message: 'Server error' });
+    }
+    try {
+        const deletedAppointment = await prisma.appointment.delete({
+            where: {
+                id: Number(appointmentId),
+            }
+        });
+        res.status(200).json({ message: 'Appointment deleted', deletedAppointment });
+        if (!deletedAppointment) {
+            return res.status(404).json({ message: 'Appointment not found' });
+        } 
+    }   catch (error) { 
+        console.error("Error deleting appointment:", error);
+        res.status(500).json({ message: 'Server error' });
+    }
 });
 
 
@@ -75,7 +146,6 @@ app.get('/api/services', async (req, res) => {
         if(!services) {
             return res.status(404).json({ message: 'Error getting services' });
         }
-        console.log(services)
         res.json(services);
     } catch (error) {
         console.error(error);
@@ -120,7 +190,7 @@ app.post('/api/orders', async (req, res) => {
                 services: true,
             }
         })
-        console.log(newOrder)
+      
         if(!newOrder) {
             return res.status(404).json({ message: 'New order can not be made' });
         }

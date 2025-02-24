@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { changeDate } from "@/utility/changeDate";
-import { Order, Service, ServiceCategory } from "@/types/types";
+import { Appointment, Service, ServiceCategory } from "@/types/types";
 import getServices from "@/hooks/useFetchServices";
 
 interface AddAppointmentProps {
   selectedDate: string | null;
   onClose: () => void;
-  onSave: (appointmentData: Order) => void;
+  onSave: (appointmentData: Appointment) => void;
 }
 
 const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, onSave }) => {
@@ -21,7 +21,7 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
   const [duration, setDuration] = useState<number>(0);
   const [services, setServices] = useState<ServiceCategory[] | null>(null);
   const [selectedServices, setSelectedServices] = useState<Service[]>([]);
-  console.log(location)
+  
   useEffect(() => {
     if (purpose === "client") {
       const fetchServices = async () => {
@@ -82,20 +82,24 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
       return;
     }
     
-    const newAppointment: Order = {
+    const newAppointment: Appointment = {
       date: selectedDate,
       startTime,
       endTime,
-      name,
-      available: services ? false : true,
-      phone,
-      email,
-      price,
-      duration,
       location,
-      services: selectedServices,
+      available: services ? false : true,
+      order: {
+        name,
+        email,
+        phone,
+        price,
+        duration,
+        services: selectedServices,
+      },
+      id: 0
     };
-
+ 
+    console.log(newAppointment)
     onSave(newAppointment); 
 
     onClose();
@@ -162,7 +166,6 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
                           value={service.id}
                           onChange={(e) => handleServiceChange(e, service)}
                           checked={selectedServices.includes(service)}
-                          required
                           className="mr-2"
                         />
                         <label htmlFor={`service-${service.id}`}>{service.serviceName}</label>

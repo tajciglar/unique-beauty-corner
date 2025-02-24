@@ -23,15 +23,16 @@ model Appointment {
   location  Location @default(DOMŽALE)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  orders    Orders?
+  order     Order?
 }
 
-model Orders {
+model Order {
   id            Int         @id @default(autoincrement())
   name          String
   email         String
   phone         String
   price         Decimal
+  duration      Int
   appointmentId Int         @unique // Ensures one-to-one relationship
   appointment   Appointment @relation(fields: [appointmentId], references: [id])
   services      Services[]
@@ -52,8 +53,8 @@ model Services {
   serviceTime       Int? // Optional time field (in minutes)
   serviceCategoryId Int
   serviceCategory   ServiceCategory @relation(fields: [serviceCategoryId], references: [id])
-  Orders            Orders?         @relation(fields: [OrdersId], references: [id])
-  OrdersId          Int?
+  Order             Order?          @relation(fields: [OrderId], references: [id])
+  OrderId           Int?
 }
 
 enum Location {

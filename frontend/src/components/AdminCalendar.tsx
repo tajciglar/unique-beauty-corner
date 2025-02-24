@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { Appointment, Order } from '@/types/types';
+import { Appointment } from '@/types/types';
 import ViewAppointment from './ViewAppointment';
 import AddAppointment from './AddAppointment';
 
@@ -26,26 +26,76 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, avail
     setShowAddForm(true);
   };
 
-  const handleSaveAppointment = async (appointmentData: Order) => {
-    try { 
-      const response = await fetch('http://localhost:4000/api/appointments', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(appointmentData),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
+  const [clientAppointmentsState, setClientAppointmentsState] = useState(clientAppointments);
+  const [availableAppointmentsState, setAvailableAppointmentsState] = useState(availableAppointments);
+  
+  useEffect(() => {
+  setClientAppointmentsState(clientAppointments);
+}, [clientAppointments]);
+
+useEffect(() => {
+  setAvailableAppointmentsState(availableAppointments);
+}, [availableAppointments]);
+
+const handleSaveAppointment = async (appointmentData: Appointment) => {
+
+  const appointmentExists = clientAppointmentsState.some(
+    (appointment) => appointment.date === appointmentData.date && appointment.startTime === appointmentData.startTime
+  ) || availableAppointmentsState.some(
+    (appointment) => appointment.date === appointmentData.date && appointment.startTime === appointmentData.startTime
+  );
+
+  if (appointmentExists) {
+    console.error('Appointment already exists at this time.');
+    alert('Appointment already exists at this time.');
+    return;
+  }
+
+  try { 
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(appointmentData),
+    });
+
+    if (response.ok) {
+      const { newAppointment } = await response.json();
+      console.log(newAppointment)
+      // Update state instantly
+      if (!newAppointment.available) {
+        console.log(newAppointment)
+        setClientAppointmentsState((prev) => [...prev, newAppointment]);
       } else {
-        console.error('Failed to save appointment');
+        setAvailableAppointmentsState((prev) => [...prev, newAppointment]);
+      }
+    } else {
+      console.error('Failed to save appointment');
+    }
+  } catch (err) {
+    console.error(err);
+  }
+
+  setShowAddForm(false);
+};
+
+  const deleteAppointment = async (id: string) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setClientAppointmentsState((prev) => prev.filter((appointment) => `${appointment.id}` !== id));
+        setAvailableAppointmentsState((prev) => prev.filter((appointment) => `${appointment.id}` !== id));
+        console.log('Appointment deleted successfully');
+        setOpenTermin(false)
+      } else {
+        console.error('Failed to delete appointment');
       }
     } catch (err) {
       console.error(err);
     }
-    setShowAddForm(false);
-  };
+  }
 
   // odpri termin z klikom
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -67,23 +117,23 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, avail
           right: 'dayGridMonth,timeGridWeek,timeGridDay',
         }}
        events={[
-          ...availableAppointments.map((appointment) => {
+          ...availableAppointmentsState.map((appointment) => {
             return {
-              id: `${appointment.date}-${appointment.startTime}`, 
+              id: `${appointment.id}`, 
               title: "Prosti termin",
               start: `${appointment.date}T${appointment.startTime}:00`, 
               end: `${appointment.date}T${appointment.endTime}:00`,     
               location: `${appointment.location}`
             };
           }),
-        ...clientAppointments.map((appointment) => {  
+        ...clientAppointmentsState.map((appointment) => { 
           return {
-            id:`${appointment.date}-${appointment.startTime}`,
-            title: appointment.orders?.name || 'Unknown',
-            email: appointment.orders?.email || 'Unknown',
-            phone: appointment.orders?.phone || 'Unknown',
-            services: appointment.orders?.services || [],
-            price: appointment.orders?.price || 0,
+            id:`${appointment.id}`,
+            title: appointment.order?.name || 'Unknown',
+            email: appointment.order?.email || 'Unknown',
+            phone: appointment.order?.phone || 'Unknown',
+            services: appointment.order?.services || [],
+            price: appointment.order?.price || 0,
             start: `${appointment.date}T${appointment.startTime}:00`,
             end: `${appointment.date}T${appointment.endTime}:00`, 
             location: `${appointment.location}`
@@ -96,11 +146,8 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, avail
       {openTermin && selectedAppointment && (
           <ViewAppointment 
               appointment={selectedAppointment} 
-              onClose={() => setOpenTermin(false)} 
-              onDelete={(id) => {
-                setTermini((prev) => prev.filter((t) => t.id !== id));
-                setOpenTermin(false);
-              }}
+              onClose={() => setOpenTermin(false)}
+              onDelete={(id) => deleteAppointment(id)} 
             />
         )}
         {showAddForm && (
