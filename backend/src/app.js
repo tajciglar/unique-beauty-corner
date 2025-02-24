@@ -32,7 +32,6 @@ app.get('/api/appointments', async (req, res) => {
                 }
             },
         });
-        console.log(bookedAppointments)
         res.status(200).json({availableAppointments, bookedAppointments});
     } catch (error) {
         console.error("Error fetching termini:", error);
@@ -42,15 +41,15 @@ app.get('/api/appointments', async (req, res) => {
 
 // Add new termin
 app.post('/api/appointments', async (req, res) => {
-    const appointment = req.body;
+    consoo
 
-    await prisma.appointment.create({
+    const newAppointment = await prisma.appointment.create({
         data: {
-            ...appointment
+            ...appointment,
         }
     });
 
-    res.json({ message: 'New appointment added',  });
+    res.json({ message: 'New appointment added',  newAppointment});
 });
 
 // Update termin

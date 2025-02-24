@@ -3,7 +3,7 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { Appointment } from '@/types/types';
+import { Appointment, Order } from '@/types/types';
 import ViewAppointment from './ViewAppointment';
 import AddAppointment from './AddAppointment';
 
@@ -26,16 +26,30 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, avail
     setShowAddForm(true);
   };
 
-  const handleSaveAppointment = (appointmentData: unknown) => {
-    console.log("New Appointment:", appointmentData);
-    // Here, you can send the data to the API or update state
+  const handleSaveAppointment = async (appointmentData: Order) => {
+    try { 
+      const response = await fetch('http://localhost:4000/api/appointments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(appointmentData),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+      } else {
+        console.error('Failed to save appointment');
+      }
+    } catch (err) {
+      console.error(err);
+    }
     setShowAddForm(false);
   };
 
   // odpri termin z klikom
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getTermin = (event: any) => {
-    console.log(event._def)
     setSelectedAppointment(event);
     setOpenTermin(true);
   };

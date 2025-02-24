@@ -3,17 +3,17 @@
 import AdminCalendar from '../../components/AdminCalendar';
 import fetchAppointments from '@/hooks/useFetchAppointments';
 import { useState, useEffect } from 'react';
-import { ClientAppointment, Appointment } from '@/types/types';
+import { Order, Appointment } from '@/types/types';
 
 export default function AdminPage() {
-  const [clientAppointments, setClientAppointments] = useState<ClientAppointment[]>([]);
+  const [clientAppointments, setClientAppointments] = useState<Order[]>([]);
   const [availableAppointments, setAvailableAppointments] = useState<Appointment[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchAppointments();
       if (data) {
-        setClientAppointments(data.bookedAppointments);
+        setClientAppointments(data.bookedAppointments as Order[]);
         setAvailableAppointments(data.availableAppointments);
       }
     };
