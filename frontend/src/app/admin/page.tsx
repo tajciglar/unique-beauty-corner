@@ -22,7 +22,7 @@ export default function AdminPage() {
   }, []);
 
   return (
-    <div className="">
+    <div className="w-full h-full p-4">
       <h1 className="text-3xl font-bold">Admin Dashboard</h1>
       <AdminCalendar 
         clientAppointments={clientAppointments} 

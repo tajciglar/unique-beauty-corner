@@ -14,7 +14,7 @@ interface AdminCalendarProps {
 
 const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, availableAppointments }) => {
 
-  const [selectedAppointment, setSelectedAppointment] = useState<unknown | null>(null);
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [openTermin, setOpenTermin] = useState(false);
 
   // dodaj nov termin z klikom na določen datum
