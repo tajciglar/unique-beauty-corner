@@ -57,10 +57,9 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(appointmentData),
     });
-
+    console.log(response)
     if (response.ok) {
       const { newAppointment } = await response.json();
-      console.log(newAppointment)
       // Update state instantly
       if (!newAppointment.available) {
         console.log(newAppointment)
@@ -123,7 +122,8 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
               title: "Prosti termin",
               start: `${appointment.date}T${appointment.startTime}:00`, 
               end: `${appointment.date}T${appointment.endTime}:00`,     
-              location: `${appointment.location}`
+              location: `${appointment.location}`,
+              
             };
           }),
         ...clientAppointmentsState.map((appointment) => { 
@@ -136,7 +136,8 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
             price: appointment.order?.price || 0,
             start: `${appointment.date}T${appointment.startTime}:00`,
             end: `${appointment.date}T${appointment.endTime}:00`, 
-            location: `${appointment.location}`
+            location: `${appointment.location}`,
+            backgroundColor: '#FF5733',
           }
         })
         ]}

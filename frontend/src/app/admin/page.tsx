@@ -4,6 +4,7 @@ import AdminCalendar from '../../components/AdminCalendar';
 import fetchAppointments from '@/hooks/useFetchAppointments';
 import { useState, useEffect } from 'react';
 import { Order, Appointment } from '@/types/types';
+import NewAppointment from '@/components/NewAppointment';
 
 export default function AdminPage() {
   const [clientAppointments, setClientAppointments] = useState<Order[]>([]);
@@ -22,12 +23,14 @@ export default function AdminPage() {
   }, []);
 
   return (
-    <div className="w-full h-full p-4">
-      <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-      <AdminCalendar 
+    <div className="w-full h-full p-4 grid grid-cols-[300px_1fr] gap-4">
+      <NewAppointment></NewAppointment>
+      <div className='mt-4'>  
+        <AdminCalendar 
         clientAppointments={clientAppointments} 
         availableAppointments={availableAppointments} 
       />
+      </div>
     </div>
   );
 }

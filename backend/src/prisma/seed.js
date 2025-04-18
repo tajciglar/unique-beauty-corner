@@ -67,7 +67,7 @@ async function main() {
 
     const appointment = await prisma.appointment.create({
       data: {
-        date: format(randomDate, "yyyy-MM-dd"),
+        date: randomDate.toISOString().split("T")[0],
         startTime: format(startTime, "HH:mm"),
         endTime: format(endTime, "HH:mm"),
         available,

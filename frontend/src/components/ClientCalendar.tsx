@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { sl } from "date-fns/locale";
+import fetchAvaliableAppointments from "@/hooks/useFetchAvaliableAppointments";
 
 interface KoledarZaStrankeProps {
   onSelectTimeSlot: (date: string) => void;
@@ -11,20 +12,18 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: KoledarZaStrankeP
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [timeSlots, setTimeSlots] = useState<string[]>([]);
 
-  //TODO: Fetch all the avalible appointments so that they can be shown for the client
 
-  const availableSlots: { [key: string]: string[] } = {
-    "27.1.2025": ["10:00 AM", "11:30 AM", "13:00"],
-    "28.1.2025": ["9:00 AM", "12:00 PM", "2:30 PM"],
-  };
-
-  const handleDateSelect = (date: Date | undefined) => {
+  const handleDateSelect = async (date: Date | undefined) => {
+    if (!date) return;
     setSelectedDate(date);
-    if (date) {
-      const formattedDate = date.toLocaleDateString("sl-SI").replace(/\s+/g, "");
-      setTimeSlots(availableSlots[formattedDate] || []);
+    const response = await fetchAvaliableAppointments(date.toISOString().split("T")[0]);
+    if (response) {
+      const availableTimeSlots = response.map((slot: { startTime: string }) => slot.startTime);
+      setTimeSlots(availableTimeSlots);
+    } else {
+      setTimeSlots([]);
     }
-  };
+};
 
   const pickAppointment = (date: Date, time: string) => {
     const dateTimeString = `${date.toLocaleDateString('sl-SI').replace(/\s+/g, "")} ${time}`;
@@ -57,8 +56,9 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: KoledarZaStrankeP
             Prosti termini:{" "}
             {selectedDate.toLocaleDateString("sl-SI", {
               weekday: "long",
-              day: "numeric",
+              year: "numeric",
               month: "long",
+              day: "numeric",
             })}
           </h3>
           <ul className="grid grid-cols-3 gap-4">

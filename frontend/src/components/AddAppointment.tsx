@@ -98,8 +98,7 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
       },
       id: 0
     };
- 
-    console.log(newAppointment)
+    console.log("Dodajanje termina", newAppointment);
     onSave(newAppointment); 
 
     onClose();
@@ -110,7 +109,7 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
       <div className="absolute bg-white p-4 rounded-lg text-base flex flex-col gap-4 max-h-[90vh] overflow-y-auto shadow-lg">
         <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
           <h3 className="text-xl font-bold">
-            Add Appointment for {selectedDate ? changeDate(selectedDate) : "Invalid Date"}
+            Dodaj termin za: {selectedDate ? changeDate(selectedDate) : "Invalid Date"}
           </h3>
           
           <label htmlFor="purpose">Izberi:</label>
