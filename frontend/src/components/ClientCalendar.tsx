@@ -3,21 +3,25 @@ import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { sl } from "date-fns/locale";
 import fetchAvaliableAppointments from "@/hooks/useFetchAvaliableAppointments";
-
-interface KoledarZaStrankeProps {
-  onSelectTimeSlot: (date: string) => void;
+import { Appointment } from "@/types/types";
+interface ClientCalendarProps {
+  onSelectTimeSlot: (date: Date, time: string, appointment: Appointment) => void;
 }
 
-export default function KoledarZaStranke({ onSelectTimeSlot }: KoledarZaStrankeProps) {
+export default function KoledarZaStranke({ onSelectTimeSlot }: ClientCalendarProps) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [timeSlots, setTimeSlots] = useState<string[]>([]);
+  const [availableAppointments, setAvailableAppointments] = useState<Appointment[]>([]);
 
 
   const handleDateSelect = async (date: Date | undefined) => {
     if (!date) return;
+
     setSelectedDate(date);
     const response = await fetchAvaliableAppointments(date.toISOString().split("T")[0]);
+
     if (response) {
+      setAvailableAppointments(response);
       const availableTimeSlots = response.map((slot: { startTime: string }) => slot.startTime);
       setTimeSlots(availableTimeSlots);
     } else {
@@ -26,8 +30,11 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: KoledarZaStrankeP
 };
 
   const pickAppointment = (date: Date, time: string) => {
-    const dateTimeString = `${date.toLocaleDateString('sl-SI').replace(/\s+/g, "")} ${time}`;
-    onSelectTimeSlot(dateTimeString)
+    const appointment = availableAppointments.find((a) => a.startTime === time);
+
+    if (!appointment) return;
+   
+    onSelectTimeSlot(date, time, appointment); 
   };
 
   return (

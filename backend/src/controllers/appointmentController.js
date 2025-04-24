@@ -31,6 +31,7 @@ const getAppointments = async (req, res) => {
 
 const getAvailableAppointments = async (req, res) => {
     const { date } = req.query;
+
     try {
        
         const availableAppointments = await prisma.appointment.findMany({
@@ -42,7 +43,7 @@ const getAvailableAppointments = async (req, res) => {
                 startTime: 'asc',
             }
         });
-        console.log("Available appointments:", availableAppointments);
+
         res.status(200).json(availableAppointments);
     } catch (error) {
         console.error("Error fetching available appointments:", error);

@@ -1,6 +1,5 @@
 const fetchAvaliableAppointments = async (date: string) => {
     if (!date) return null;
-    console.log(date)
     try {
         const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/appointments/available?date=${date}`,
@@ -13,7 +12,7 @@ const fetchAvaliableAppointments = async (date: string) => {
         );
 
         if (!response.ok) {
-        throw new Error('Error fetching available appointments.');
+            throw new Error('Error fetching available appointments.');
         }
 
         const data = await response.json();

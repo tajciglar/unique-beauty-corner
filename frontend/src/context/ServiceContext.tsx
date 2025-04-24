@@ -4,6 +4,7 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 
 interface ServiceItem {
+  id: string;
   name: string;
   price: number;
   time: number | null;
