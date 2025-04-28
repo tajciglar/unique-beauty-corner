@@ -7,9 +7,24 @@
   --terracotta: #B77A65; /* Earthy terracotta tone */
   --beige: #F5E8D3; /* Soft beige background */
   --dark-brown: #5A3F35; /* Rich dark brown for text */
-  --warm-gray: #D4C7BE; /* Neutral soft gray */
+  --warm-gray: #e3d2c5; /* Neutral soft gray */
   --ivory: #FDFBF8; /* Light creamy white for highlights */
   --highlight-gold: #C89B6B; /* Subtle golden tone for accents */
+}
+
+
+html {
+  font-family: var(--font-bodoni-moda), sans-serif;
+  font-weight: bold;
+  font-size: large;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: 1px;
+  -webkit-text-size-adjust: 100%;
+  -moz-tab-size: 4;
+  tab-size: 4;
+  font-feature-settings: normal;
+  font-variation-settings: normal;
 }
 
 body {

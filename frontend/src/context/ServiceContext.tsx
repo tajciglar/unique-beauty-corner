@@ -1,18 +1,11 @@
 // src/context/ServiceContext.tsx
 'use client';
-
+import { Service } from '@/types/types';
 import { createContext, useContext, useState, ReactNode } from 'react';
 
-interface ServiceItem {
-  id: string;
-  name: string;
-  price: number;
-  time: number | null;
-}
-
 interface ServiceContextType {
-  servicesPicked: ServiceItem[];
- setServicesPicked: React.Dispatch<React.SetStateAction<ServiceItem[]>>;
+  servicesPicked: Service[];
+ setServicesPicked: React.Dispatch<React.SetStateAction<Service[]>>;
 }
 
 import { useEffect } from 'react';
@@ -22,7 +15,7 @@ import { useRouter } from 'next/navigation';
 const ServiceContext = createContext<ServiceContextType | undefined>(undefined);
 
 export const ServiceProvider = ({ children }: { children: ReactNode }) => {
-  const [servicesPicked, setServicesPicked] = useState<ServiceItem[]>([]);
+  const [servicesPicked, setServicesPicked] = useState<Service[]>([]);
 
   const router = useRouter();
   useEffect(() => {

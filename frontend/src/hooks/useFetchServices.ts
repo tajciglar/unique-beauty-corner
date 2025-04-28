@@ -15,8 +15,9 @@ const getServices = async (): Promise<ServiceCategory[] | null> => {
       if (!response.ok) {
         throw new Error('Error with getting the services.');
       }
-
+      console.log("response", response);
       const data = await response.json();
+      console.log("fetched data",data);
       return data as ServiceCategory[];
     } catch (error) { 
       console.log(error);

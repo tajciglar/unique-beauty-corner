@@ -11,8 +11,8 @@ export default function Termini() {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
   const [appointment, setAppointment] = useState<boolean>(false);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
-  const totalTime = servicesPicked.reduce((acc, curr) => acc + (curr.time || 0), 0);
-  const price = servicesPicked.reduce((acc, curr) => acc + (curr.price || 0), 0);
+  const totalTime = servicesPicked.reduce((acc, curr) => acc + (curr.serviceTime || 0), 0);
+  const price = servicesPicked.reduce((acc, curr) => acc + (curr.servicePrice || 0), 0);
   const handleSelectTimeSlot = (date: Date, time: string, selectedAppointment: Appointment) => {
     setSelectedAppointment(selectedAppointment);
     setSelectedDate(date);
@@ -33,13 +33,13 @@ export default function Termini() {
       date: selectedDate,
       startTime: selectedTimeSlot,
       duration: totalTime,  
-      price: servicesPicked.reduce((acc, curr) => acc + (curr.price || 0), 0),
+      price: servicesPicked.reduce((acc, curr) => acc + (curr.servicePrice || 0), 0),
       appointmentId: selectedAppointment?.id,
       services: servicesPicked.map((service) => ({
         id: service.id,
-        name: service.name,
-        price: service.price,
-        time: service.time,
+        name: service.serviceName,
+        price: service.servicePrice,
+        time: service.serviceTime,
       })),
     };
 
@@ -71,24 +71,26 @@ export default function Termini() {
     <>
     <div className="flex items-center justify-center min-h-screen bg-[var(--cream-white)] gap-10">
       <KoledarZaStranke onSelectTimeSlot={handleSelectTimeSlot} />
-      <div className="mb-4 bg-[var(--soft-rose)] p-4 rounded-lg text-base">
-        <h3 className="text-3xl font-bold">Izbrali ste:</h3>
-        <ul>
-          {servicesPicked.map((service, index) => (
-            <li key={index}>
-              {service.name} - {service.price}€
-            </li>
-          ))}
-        </ul>
-        <p>Čas storitve: {totalTime} min</p>
+      <div className="mb-4 bg-[#fff2e2] p-8 rounded-2xl shadow-lg text-base flex flex-col items-center text-center space-y-4 ">
+        <h3 className="text-3xl font-bold text-[var(--terracotta)]">Izbrali ste:</h3>
+        <div className="text-base text-[var(--dark-brown)]">
+          <ul>
+            {servicesPicked.map((service, index) => (
+              <li key={index}>
+                {service.serviceName} - {service.servicePrice}€
+              </li>
+            ))}
+          </ul>
+          <p>Čas storitve: {totalTime} min</p>
+        </div> 
         {selectedTimeSlot && (
             <>
-                <p className="mt-4 text-lg">
-                Izbrani termin: <strong>{selectedTimeSlot}</strong>
-            </p>
-            <div className="flex justify-center">
-                <button className="mt-4" onClick={() => appointmentForm()}>Potrdi</button>
-            </div>
+              <p className="mt-1 text-lg text-[var(--terracotta)]">
+                  Izbrani termin: <span className="font-extrabold text-[var(--dark-brown)]">{selectedDate?.toLocaleDateString("sl").split(" ")} {selectedTimeSlot}</span>
+              </p>
+              <div className="flex justify-center">
+                  <button className="mt-4 py-2 px-6 rounded-full hover:bg-[#ffd6b9] transition transform hover:scale-105" onClick={() => appointmentForm()}>Potrdi</button>
+              </div>
             </>
         )}
       </div>
@@ -108,7 +110,7 @@ export default function Termini() {
             <h3 className="text-lg">Informacije o storitvi:</h3>
               <ul>
                 {servicesPicked.map((service, key) => (
-                <li key={key}>{service.name}</li>
+                <li key={key}>{service.serviceName}</li>
                 ))}
               </ul>
             <p>{selectedTimeSlot} ({totalTime} min )</p>
