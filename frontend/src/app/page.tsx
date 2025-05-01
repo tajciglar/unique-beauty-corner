@@ -69,31 +69,37 @@ export default function Home() {
         <div className="text-center w-full flex flex-col items-center p-10 mx-auto ">
           <h2 id="storitve" className="text-4xl font-bold mb-8 text-[var(--terracotta)] ">Storitve</h2>
           <div className="flex flex-col w-3/4 gap-7 rounde">
-            {serviceCategory.map((category) => (
+            {serviceCategory.length > 0 ? (
+              serviceCategory.map((category) => (
               <div
                 key={category.id}
                 className="border-b-2 p-6 bg-[var(--beige)] shadow-lg rounded-2xl"
               >
                 <h3 className="text-xl font-bold mb-4 text-[var(--terracotta)]">
-                  {category.categoryName}
+                {category.categoryName}
                 </h3>
                 <ul className="space-y-2">
-                  {category.services.map((service) => (
-                    <li
-                      key={service.serviceName}
-                      className="flex justify-between text-lg font-medium"
-                    >
-                      <span>{service.serviceName}</span>
-                      <div className="grid grid-cols-3 gap-2">
-                        <span>{service.servicePrice} €</span>
-                        <span>{service.serviceTime ? `(${service.serviceTime} min)` : ''}</span>
-                        <button onClick={() => getService(service)} className="pt-1 pb-1">Izberi</button>
-                      </div>
-                    </li>
-                  ))}
+                {category.services.map((service) => (
+                  <li
+                  key={service.serviceName}
+                  className="flex justify-between text-lg font-medium"
+                  >
+                  <span>{service.serviceName}</span>
+                  <div className="grid grid-cols-3 gap-2">
+                    <span>{service.servicePrice} €</span>
+                    <span>{service.serviceTime ? `(${service.serviceTime} min)` : ''}</span>
+                    <button onClick={() => getService(service)} className="pt-1 pb-1">Izberi</button>
+                  </div>
+                  </li>
+                ))}
                 </ul>
               </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-center text-lg font-medium text-[var(--terracotta)]">
+              Naročanje preko spleta trenutno ni možno. Obrnite se na +386 70 206 506
+              </p>
+            )}
           </div>
         </div>
            { servicesPicked.length > 0 && (    

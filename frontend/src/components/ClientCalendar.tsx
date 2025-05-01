@@ -3,6 +3,7 @@ import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { sl } from "date-fns/locale";
 import fetchAvaliableAppointments from "@/hooks/useFetchAvaliableAppointments";
+import { formatDateToLocalISO } from "@/utility/changeDate";
 import { Appointment } from "@/types/types";
 interface ClientCalendarProps {
   onSelectTimeSlot: (date: Date, time: string, appointment: Appointment) => void;
@@ -10,7 +11,10 @@ interface ClientCalendarProps {
 
 export default function KoledarZaStranke({ onSelectTimeSlot }: ClientCalendarProps) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
-  const [timeSlots, setTimeSlots] = useState<string[]>([]);
+  const [timeSlots, setTimeSlots] = useState<{ LJUBLJANA: string[]; DOMZALE: string[] }>({
+    LJUBLJANA: [],
+    DOMZALE: [],
+  });
   const [availableAppointments, setAvailableAppointments] = useState<Appointment[]>([]);
 
 
@@ -18,18 +22,31 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: ClientCalendarPro
     if (!date) return;
 
     setSelectedDate(date);
-    const response = await fetchAvaliableAppointments(date.toISOString().split("T")[0]);
+    const response = await fetchAvaliableAppointments(formatDateToLocalISO(date));
 
     if (response) {
+      console.log("Available appointments:", response);
       setAvailableAppointments(response);
-      const availableTimeSlots = response.map((slot: { startTime: string }) => slot.startTime);
-      setTimeSlots(availableTimeSlots);
+      
+      const availableTimeSlotsLjubljana = response
+        .filter((slot: { location: string }) => slot.location === "LJUBLJANA")
+        .map((slot: { startTime: string }) => slot.startTime);
+      const availableTimeSlotsDomzale = response
+        .filter((slot: { location: string }) => slot.location === "DOMŽALE")
+        .map((slot: { startTime: string }) => slot.startTime);
+      setTimeSlots({
+        LJUBLJANA: availableTimeSlotsLjubljana,
+        DOMZALE: availableTimeSlotsDomzale,
+      });
     } else {
-      setTimeSlots([]);
+      setTimeSlots({ LJUBLJANA: [], DOMZALE: [] });
     }
 };
 
   const pickAppointment = (date: Date, time: string) => {
+    console.log("Selected date:", date);
+    console.log("Selected time:", time);
+    
     const appointment = availableAppointments.find((a) => a.startTime === time);
 
     if (!appointment) return;
@@ -58,20 +75,13 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: ClientCalendarPro
         }}
       />
       {selectedDate && (
-        <div className="mt-8 w-full">
-          <h3 className="text-2xl font-semibold mb-4">
-            Prosti termini:{" "}
-            {selectedDate.toLocaleDateString("sl-SI", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </h3>
+      <div className="mt-8 w-full space-y-6">
+        <div>
+          <h4 className="text-xl font-semibold text-[var(--terracotta)] mb-2">Ljubljana</h4>
           <ul className="grid grid-cols-3 gap-4">
-            {timeSlots.length > 0 ? (
-              timeSlots.map((slot, index) => (
-                <li key={index}>
+            {timeSlots.LJUBLJANA.length > 0 ? (
+              timeSlots.LJUBLJANA.map((slot, index) => (
+                <li key={`lj-${index}`}>
                   <button
                     className="px-4 py-2 bg-[var(--terracotta)] text-white rounded-lg hover:bg-[var(--soft-rose)] w-full"
                     onClick={() => pickAppointment(selectedDate, slot)}
@@ -81,13 +91,32 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: ClientCalendarPro
                 </li>
               ))
             ) : (
-              <p className="col-span-3 text-center text-lg">
-                Ni prostih terminov za izbrani datum.
-              </p>
+              <p className="col-span-3 text-center text-lg">Ni prostih terminov za Ljubljano.</p>
             )}
           </ul>
         </div>
-      )}
+
+        <div>
+          <h4 className="text-xl font-semibold text-[var(--terracotta)] mb-2">Domžale</h4>
+          <ul className="grid grid-cols-3 gap-4">
+            {timeSlots.DOMZALE.length > 0 ? (
+              timeSlots.DOMZALE.map((slot, index) => (
+                <li key={`dom-${index}`}>
+                  <button
+                    className="px-4 py-2 bg-[var(--terracotta)] text-white rounded-lg hover:bg-[var(--soft-rose)] w-full"
+                    onClick={() => pickAppointment(selectedDate, slot)}
+                  >
+                    {slot}
+                  </button>
+                </li>
+              ))
+            ) : (
+              <p className="col-span-3 text-center text-lg">Ni prostih terminov za Domžale.</p>
+            )}
+          </ul>
+        </div>
+      </div>
+    )}
     </div>
   );
 }

@@ -31,7 +31,7 @@ const getAppointments = async (req, res) => {
 
 const getAvailableAppointments = async (req, res) => {
     const { date } = req.query;
-
+    
     try {
        
         const availableAppointments = await prisma.appointment.findMany({

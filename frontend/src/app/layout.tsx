@@ -25,7 +25,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           </ServiceProvider>
         </div>
         <footer>
-          <p className="flex justify-center">© 2025 Unique Beauty Corner</p>
+          <p className="flex justify-center text-[var(--terracotta)]">© 2025 Unique Beauty Corner</p>
         </footer>
       </body>
     </html>

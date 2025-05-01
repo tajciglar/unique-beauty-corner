@@ -57,7 +57,7 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(appointmentData),
     });
-    console.log(response)
+    
     if (response.ok) {
       const { newAppointment } = await response.json();
       // Update state instantly

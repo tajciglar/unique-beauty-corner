@@ -13,6 +13,8 @@ export default function Termini() {
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const totalTime = servicesPicked.reduce((acc, curr) => acc + (curr.serviceTime || 0), 0);
   const price = servicesPicked.reduce((acc, curr) => acc + (curr.servicePrice || 0), 0);
+
+
   const handleSelectTimeSlot = (date: Date, time: string, selectedAppointment: Appointment) => {
     setSelectedAppointment(selectedAppointment);
     setSelectedDate(date);
@@ -43,7 +45,6 @@ export default function Termini() {
       })),
     };
 
-    console.log("Data to be sent:", data);
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders`, { 
         method: "POST",
@@ -55,14 +56,11 @@ export default function Termini() {
       if (response.ok) {
         const result = await response.json();
         console.log("Appointment booked successfully:", result);
-        // Handle success (e.g., show a confirmation message)
       } else {
         console.error("Error booking appointment:", response.statusText);
-        // Handle error (e.g., show an error message)
       }
     } catch (error) {
       console.error("Error booking appointment:", error);
-      // Handle error (e.g., show an error message)
     }
   };
 
