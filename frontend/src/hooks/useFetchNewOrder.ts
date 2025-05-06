@@ -1,6 +1,6 @@
-import { Appointment } from "@/types/types";
+import { Order } from "@/types/types";
 
-const fetchNewAppointment = async (): Promise<Appointment | null> => {
+const fetchNewOrder = async (): Promise<Order | null> => {
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders`, {
             method: 'GET',
@@ -17,11 +17,11 @@ const fetchNewAppointment = async (): Promise<Appointment | null> => {
     
         const data = await response.json();
         console.log(data)
-        return data as Appointment;
+        return data as Order;
     } catch (error) {
         console.error("Errow while fetching new orders", error);    
         return null;
     }
 }
 
-export default fetchNewAppointment;
+export default fetchNewOrder;

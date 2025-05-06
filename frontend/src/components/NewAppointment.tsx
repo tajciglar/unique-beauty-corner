@@ -1,9 +1,10 @@
-import fetchNewOrders from "../hooks/useFetchNewAppointment";
+import fetchNewOrders from "../hooks/useFetchNewOrder";
 import { useState, useEffect } from "react";
-import { Appointment } from "@/types/types";
+import { Order } from "@/types/types";
 
 const NewAppointment: React.FC = () => {
-    const [appointments, setAppointments] = useState<Appointment[]>([]);
+    const [newOrders, setNewOrders] = useState<Order[]>([]);
+    console.log("New orders:", newOrders);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -12,7 +13,7 @@ const NewAppointment: React.FC = () => {
             try {
                 const data = await fetchNewOrders();
                 if (data) {
-                    setAppointments(Array.isArray(data) ? data : [data]);
+                    setNewOrders(Array.isArray(data) ? data : [data]);
                     console.log(data);
                 }
             } catch (error) {
@@ -42,26 +43,26 @@ const NewAppointment: React.FC = () => {
             {loading && <p className="text-gray-500">Nalagam...</p>}
             {error && <p className="text-red-500">{error}</p>}
 
-            {appointments.length > 0 ? (
+            {newOrders.length > 0 ? (
                 <ul className="space-y-4">
-                    {appointments.map((appointment) => (
-                        <li key={appointment.id} className="border p-4 rounded shadow-sm">
+                    {newOrders.map((order) => (
+                        <li key={order.appointment.id} className="border p-4 rounded shadow-sm">
                             <div className="flex justify-between items-center">
                                 <div>
-                                    <h2 className="text-xl font-semibold">{appointment.order?.name}</h2>
-                                    <p className="text-sm text-gray-600">{appointment.startTime} – {appointment.endTime}</p>
-                                    <p><strong>Telefon:</strong> {appointment.order?.phone}</p>
-                                    <p><strong>E-pošta:</strong> {appointment.order?.email}</p>
+                                    <h2 className="text-xl font-semibold">{order.name}</h2>
+                                    <p className="text-sm text-gray-600">{order.appointment.startTime} – {order.appointment.endTime}</p>
+                                    <p><strong>Telefon:</strong> {order.phone}</p>
+                                    <p><strong>E-pošta:</strong> {order.email}</p>
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <button
-                                        onClick={() => handleAccept(appointment.id)}
+                                        onClick={() => handleAccept(order?.id.toString())}
                                         className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600"
                                     >
                                         Sprejmi
                                     </button>
                                     <button
-                                        onClick={() => handleReject(appointment.id)}
+                                        onClick={() => handleReject(order.id.toString())}
                                         className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
                                     >
                                         ZavrnI

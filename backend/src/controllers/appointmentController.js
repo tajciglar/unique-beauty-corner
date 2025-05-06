@@ -31,7 +31,7 @@ const getAppointments = async (req, res) => {
 
 const getAvailableAppointments = async (req, res) => {
     const { date } = req.query;
-    
+
     try {
        
         const availableAppointments = await prisma.appointment.findMany({
@@ -106,6 +106,7 @@ const createAppointment = async (req, res) => {
         });
     }
     res.json({ message: 'New appointment added',  newAppointment});
+    console.log("New appointment added:", newAppointment);
 }
 
 const updateAppointment = async (req, res) => {

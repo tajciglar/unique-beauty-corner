@@ -39,6 +39,14 @@ a {
   color: var(--highlight-gold); /* Links get a subtle gold tone */
 }
 
+input {
+  @apply border border-[var(--warm-gray)] bg-[var(--ivory)] text-[var(--dark-brown)] px-4 py-2 rounded-md shadow-sm;
+}
+
+input:focus {
+  @apply border-[var(--highlight-gold)] outline-none shadow-lg;
+}
+
 button {
   @apply bg-[var(--terracotta)] text-[var(--ivory)] px-4 py-2 rounded-lg shadow-md hover:bg-[var(--soft-rose)] hover:text-[var(--dark-brown)];
 }

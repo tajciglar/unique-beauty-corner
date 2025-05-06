@@ -34,6 +34,22 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
     }
   }, [purpose]);
 
+  useEffect(() => {
+    if (selectedDate) {
+      setPurpose("");
+      setStartTime("");
+      setEndTime("");
+      setName("");
+      setPhone("");
+      setEmail("");
+      setLocation("Domžale");
+      setPrice(0);
+      setDuration(0);
+      setSelectedServices([]);
+      setServices(null);
+    }
+  }, [selectedDate]);
+
   // Update total duration and price when services are selected
   const handleServiceChange = (e: React.ChangeEvent<HTMLInputElement>, service: Service) => {
     setSelectedServices((prev) => {
@@ -71,23 +87,45 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedDate || !startTime || !endTime) {
-      alert("Please fill in all required fields.");
+  e.preventDefault();
+
+  if (!selectedDate || !startTime || !endTime) {
+    alert("Please fill in all required fields.");
+    return;
+  }
+
+  if (startTime > endTime) {
+    alert("Začetni čas ne more biti večji od zaključka!");
+    return;
+  }
+
+  let newAppointment: Appointment;
+
+  if (purpose === "client") {
+    if (!name.trim() || !phone.trim() || !email.trim()) {
+      alert("Prosim, izpolnite vsa polja za stranko.");
       return;
     }
 
-    if (startTime > endTime) {
-      alert("Začetni čas ne more biti večji od zaključka!");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[0-9+\-\s()]{6,}$/;
+
+    if (!emailRegex.test(email)) {
+      alert("Prosimo, vnesite veljaven email naslov.");
       return;
     }
-    
-    const newAppointment: Appointment = {
+
+    if (!phoneRegex.test(phone)) {
+      alert("Prosimo, vnesite veljavno telefonsko številko.");
+      return;
+    }
+
+    newAppointment = {
       date: selectedDate,
       startTime,
       endTime,
       location,
-      available: services ? false : true,
+      available: false,
       order: {
         name,
         email,
@@ -95,14 +133,30 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
         price,
         duration,
         services: selectedServices,
+        appointment: {
+          date: selectedDate,
+          startTime,
+          endTime,
+          available: false,
+          location,
+        },
       },
-      id: 0
     };
-    console.log("Dodajanje termina", newAppointment);
-    onSave(newAppointment); 
+  } else {
+    // purpose === "availableSlot"
+    newAppointment = {
+      date: selectedDate,
+      startTime,
+      endTime,
+      location,
+      available: true,
+    };
+  }
 
-    onClose();
-  };
+  console.log("Dodajanje termina", newAppointment);
+  onSave(newAppointment);
+  onClose();
+};
 
   return (
     <div className="fixed z-10 top-0 left-0 w-full h-full flex items-center justify-center bg-[rgba(0,0,0,0.5)]">

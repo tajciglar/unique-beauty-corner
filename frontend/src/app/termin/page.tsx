@@ -1,11 +1,14 @@
 'use client';
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useService } from "@/context/ServiceContext";
 import KoledarZaStranke from "../../components/ClientCalendar";
 import { Appointment } from "@/types/types";
 
+
 export default function Termini() {
+  const router = useRouter();
   const { servicesPicked } = useService();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
@@ -56,6 +59,8 @@ export default function Termini() {
       if (response.ok) {
         const result = await response.json();
         console.log("Appointment booked successfully:", result);
+        localStorage.setItem("lastBooking", JSON.stringify(result));
+        router.push("/termin/confirmation");
       } else {
         console.error("Error booking appointment:", response.statusText);
       }
@@ -96,7 +101,7 @@ export default function Termini() {
     </div>
     {appointment && (
       <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-[rgba(0,0,0,0.5)]">
-          <div className="absolute bg-[var(--soft-rose)] bg-opacity-90 p-4 rounded-lg text-base flex flex-col gap-4">
+          <div className="absolute bg-[#fff2e2] bg-opacity-90 p-4 rounded-lg text-base flex flex-col gap-4">
           <h2 className="text-xl">Obrazec za naročilo</h2>
           <form onSubmit={bookAppointment} className="flex flex-col gap-3">
             <label htmlFor="name">Ime in priimek:</label>
