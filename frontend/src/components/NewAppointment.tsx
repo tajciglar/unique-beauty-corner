@@ -1,12 +1,14 @@
 import fetchNewOrders from "../hooks/useFetchNewOrder";
 import { useState, useEffect } from "react";
 import { Order } from "@/types/types";
+import { changeDate } from "@/utility/changeDate";
 
 const NewAppointment: React.FC = () => {
     const [newOrders, setNewOrders] = useState<Order[]>([]);
-    console.log("New orders:", newOrders);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -26,48 +28,25 @@ const NewAppointment: React.FC = () => {
         fetchOrders();
     }, []);
 
-    const handleAccept = (id: string) => {
-        console.log(`Accepted order with ID: ${id}`);
-        // TODO: Add backend call to update status
-    };
-
-    const handleReject = (id: string) => {
-        console.log(`Rejected order with ID: ${id}`);
-        // TODO: Add backend call to update status
-    };
-
     return (
         <div>
-            <h1 className="text-2xl font-bold mb-4">Naročila</h1>
+            <h1 className="text-2xl font-bold mb-4">Današnja naročila</h1>
 
             {loading && <p className="text-gray-500">Nalagam...</p>}
             {error && <p className="text-red-500">{error}</p>}
 
             {newOrders.length > 0 ? (
-                <ul className="space-y-4">
+                <ul className="space-y-4 overflow-y-auto max-h-screen">
                     {newOrders.map((order) => (
                         <li key={order.appointment.id} className="border p-4 rounded shadow-sm">
                             <div className="flex justify-between items-center">
                                 <div>
                                     <h2 className="text-xl font-semibold">{order.name}</h2>
-                                    <p className="text-sm text-gray-600">{order.appointment.startTime} – {order.appointment.endTime}</p>
-                                    <p><strong>Telefon:</strong> {order.phone}</p>
-                                    <p><strong>E-pošta:</strong> {order.email}</p>
+                                    <p className="text-lg text-gray-600">{changeDate(order.appointment.date)} / {order.appointment.startTime} – {order.appointment.endTime}</p>
+                                    <p className="text-sm">Telefon:{order.phone}</p>
+                                    <p className="text-sm">E-pošta:{order.email}</p>
                                 </div>
-                                <div className="flex flex-col gap-2">
-                                    <button
-                                        onClick={() => handleAccept(order?.id.toString())}
-                                        className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600"
-                                    >
-                                        Sprejmi
-                                    </button>
-                                    <button
-                                        onClick={() => handleReject(order.id.toString())}
-                                        className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
-                                    >
-                                        ZavrnI
-                                    </button>
-                                </div>
+                                
                             </div>
                         </li>
                     ))}

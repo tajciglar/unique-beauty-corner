@@ -1,4 +1,5 @@
 'use client';
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -7,18 +8,27 @@ export default function Login() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleLogin = () => {
-    const accessCode = "unique2025"; 
+  const handleLogin = async () => {
+    try {
+      const res = await fetch("http://localhost:4000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ code }),
+      });
 
-    if (code === accessCode) {
-      sessionStorage.setItem("accessGranted", "true"); 
-      router.push("/");
-    } else if (code === "admin"){
+      const data = await res.json();
 
-      sessionStorage.setItem("accessGranted", "true");
-      router.push("/admin");
-    } else {
-      setError("Invalid code. Please try again.");
+      if (data.success) {
+        sessionStorage.setItem("accessGranted", data.role);
+        router.push(data.role === "admin" ? "/admin" : "/");
+      } else {
+        setError(data.message || "Invalid code");
+      }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) {
+      setError("Something went wrong. Try again.");
     }
   };
 
@@ -29,13 +39,16 @@ export default function Login() {
         type="password"
         placeholder="Enter access code"
         value={code}
-        onChange={(e) => setCode(e.target.value)}
+        onChange={(e) => {
+          setCode(e.target.value);
+          setError(""); // Clear error on input change
+        }}
         className="px-4 py-2 border rounded-md mb-2"
       />
       {error && <p className="text-red-500 mb-2">{error}</p>}
       <button
         onClick={handleLogin}
-        className="px-4 py-2 bg-[var(--terracotta)] text-white rounded-md"
+        className="px-4 py-2 bg-[var(--terracotta)] text-white rounded-md hover:opacity-90 transition-opacity"
       >
         Submit
       </button>

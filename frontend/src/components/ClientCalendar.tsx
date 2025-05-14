@@ -44,8 +44,6 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: ClientCalendarPro
 };
 
   const pickAppointment = (date: Date, time: string) => {
-    console.log("Selected date:", date);
-    console.log("Selected time:", time);
     
     const appointment = availableAppointments.find((a) => a.startTime === time);
 
@@ -83,7 +81,7 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: ClientCalendarPro
               timeSlots.LJUBLJANA.map((slot, index) => (
                 <li key={`lj-${index}`}>
                   <button
-                    className="px-4 py-2 bg-[var(--terracotta)] text-white rounded-lg hover:bg-[var(--soft-rose)] w-full"
+                    className="px-4 py-2 bg-[var(--terracotta)] text-white rounded-lg hover:bg-[var(--soft-rose)] focus:bg-[var(--soft-rose)] w-full"
                     onClick={() => pickAppointment(selectedDate, slot)}
                   >
                     {slot}
@@ -103,7 +101,7 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: ClientCalendarPro
               timeSlots.DOMZALE.map((slot, index) => (
                 <li key={`dom-${index}`}>
                   <button
-                    className="px-4 py-2 bg-[var(--terracotta)] text-white rounded-lg hover:bg-[var(--soft-rose)] w-full"
+                    className="px-4 py-2 bg-[var(--terracotta)] text-white rounded-lg hover:bg-[var(--soft-rose)] focus:bg-[var(--soft-rose)] w-full"
                     onClick={() => pickAppointment(selectedDate, slot)}
                   >
                     {slot}

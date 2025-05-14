@@ -48,8 +48,14 @@ const createOrder = async (req, res) => {
     const appointment = await prisma.appointment.findUnique({
         where: {
             id: appointmentId,
+        },
+        include: {
+            order: true,
         }
-    })
+    });
+    
+
+    
 
     const newOrder = await prisma.order.create({
         data: {
@@ -76,6 +82,7 @@ const createOrder = async (req, res) => {
         },
     });
 
+    console.log("new order", newOrder);
     if (!newOrder) {
         return res.status(404).json({ message: 'New order can not be made' });
     }

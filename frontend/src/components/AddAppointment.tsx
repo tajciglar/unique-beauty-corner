@@ -153,7 +153,6 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
     };
   }
 
-  console.log("Dodajanje termina", newAppointment);
   onSave(newAppointment);
   onClose();
 };

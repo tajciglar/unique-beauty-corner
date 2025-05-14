@@ -16,7 +16,7 @@ export default function Termini() {
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const totalTime = servicesPicked.reduce((acc, curr) => acc + (curr.serviceTime || 0), 0);
   const price = servicesPicked.reduce((acc, curr) => acc + (curr.servicePrice || 0), 0);
-
+  
 
   const handleSelectTimeSlot = (date: Date, time: string, selectedAppointment: Appointment) => {
     setSelectedAppointment(selectedAppointment);
@@ -116,7 +116,7 @@ export default function Termini() {
                 <li key={key}>{service.serviceName}</li>
                 ))}
               </ul>
-            <p>{selectedTimeSlot} ({totalTime} min )</p>
+            <p> {selectedDate ? selectedDate.toLocaleDateString("sl").split(" ") : "Datum ni izbran"} ob {selectedTimeSlot} ({totalTime} min )</p>
             <p>{price} €</p>
             <button type="submit">Naroči se</button>
             <button onClick={() => setAppointment(false)}>Prekliči</button>
