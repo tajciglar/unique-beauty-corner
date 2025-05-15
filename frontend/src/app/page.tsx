@@ -47,7 +47,7 @@ export default function Home() {
   return (
     <div>
       <section className="flex flex-col items-center justify-center h-screen bg-[var(--cream-white)] text-[var(--earth-brown)]">
-        <div className="mb-[30%] mr-[30%]">
+        <div className="mb-[30%] lg:mr-[30%]">
           <h1
             className={`${bodoniModa.variable} text-7xl font-bold m-3`}
           >
@@ -57,7 +57,7 @@ export default function Home() {
         </div>
         <div className="w-3/4 flex flex-col items-center gap-4">
           <a href="#storitve" className="w-full">
-            <button className="px-3 py-2 w-1/4 rounded-lg hover:bg-terracotta-dark focus:outline-none focus:ring-opacity-50">
+            <button className="px-3 py-2 w-full lg:w-1/4 rounded-lg hover:bg-terracotta-dark focus:outline-none focus:ring-opacity-50">
               Naroči se
             </button>
           </a>
@@ -65,15 +65,15 @@ export default function Home() {
       </section>
 
       {/* Services Section */}
-      <section className="min-h-screen bg-[var(--cream-white)] text-[var(--earth-brown)] grid grid-cols-[3fr_1fr]">
-        <div className="text-center w-full flex flex-col items-center p-10 mx-auto ">
+      <section className="min-h-screen flex flex-col lg:flex-row justify-center bg-[var(--cream-white)] text-[var(--earth-brown)] lg:grid grid-cols-[3fr_1fr]">
+        <div className="text-center w-full flex flex-col items-center p-2 lg:p-10 mx-auto ">
           <h2 id="storitve" className="text-4xl font-bold mb-8 text-[var(--terracotta)] ">Storitve</h2>
-          <div className="flex flex-col w-3/4 gap-7 rounde">
+          <div className="flex flex-col w-full lg:w-3/4 gap-7 ">
             {serviceCategory.length > 0 ? (
               serviceCategory.map((category) => (
               <div
                 key={category.id}
-                className="border-b-2 p-6 bg-[var(--beige)] shadow-lg rounded-2xl"
+                className="border-b-2 p-2 lg:p-6 bg-[var(--beige)] shadow-lg rounded-2xl"
               >
                 <h3 className="text-xl font-bold mb-4 text-[var(--terracotta)]">
                 {category.categoryName}
@@ -82,14 +82,14 @@ export default function Home() {
                 {category.services.map((service) => (
                   <li
                   key={service.serviceName}
-                  className="flex justify-between text-lg font-medium"
+                  className="flex flex-col items-center lg:flex-row lg:justify-between text-lg font-normal lg:font-medium"
                   >
-                  <span>{service.serviceName}</span>
-                  <div className="grid grid-cols-3 gap-2">
-                    <span>{service.servicePrice} €</span>
-                    <span>{service.serviceTime ? `(${service.serviceTime} min)` : ''}</span>
-                    <button onClick={() => getService(service)} className="pt-1 pb-1">Izberi</button>
-                  </div>
+                    <span>{service.serviceName}</span>
+                    <div className="grid grid-cols-3">
+                      <span>{service.servicePrice} €</span> ·
+                      <span>{service.serviceTime ? `(${service.serviceTime} min)` : ''}</span>
+                    </div>
+                    <button onClick={() => getService(service)} className="pt-1 pb-1 w-1/">Izberi</button>
                   </li>
                 ))}
                 </ul>
@@ -103,8 +103,8 @@ export default function Home() {
           </div>
         </div>
            { servicesPicked.length > 0 && (    
-            <div className="flex justify-center items-center p-10 mx-auto w-full">
-                <div className="flex flex-col gap-4 justify-center items-center border-2  p-6 bg-[var(--beige)] shadow-lg rounded-2xl w-full sticky top-[10px] bottom-[10px]">
+            <div className=" justify-center items-center p-10 mx-auto w-full">
+                <div className="flex flex-col gap-4 justify-center items-center border-2  p-6 bg-[var(--beige)] shadow-lg rounded-2xl w-full lg:sticky lg:top-[10px] lg:bottom-[10px]">
                     <div className="w-full flex flex-col gap-4 justify-center items-center">
                         <h3 className="text-2xl">Storitve:</h3>
                             {servicesPicked.map((service, index) => (

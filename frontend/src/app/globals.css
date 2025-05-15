@@ -64,15 +64,3 @@ footer {
   @apply bg-[var(--soft-rose)] border border-[var(--warm-gray)] rounded-lg p-4 shadow-sm;
 }
 
-.card-title {
-  color: var(--dark-brown);
-  font-weight: bold;
-}
-
-.card-content {
-  color: var(--terracotta);
-}
-
-.rdp-chevron {
-  fill: var(--terracotta) !important; 
-}
