@@ -24,9 +24,11 @@ export default function AdminPage() {
   }, []);
 
   return (
-    <div className="w-full h-full p-4 grid grid-cols-[300px_1fr] gap-4">
-      <NewAppointment></NewAppointment>
-      <div className='mt-4'>  
+    <div className="w-full h-full p-4 grid grid-cols-1 md:grid-cols-[300px_1fr] gap-4">
+      <div className='h-1/4'>
+        <NewAppointment />
+      </div>
+      <div className="mt-4 md:mt-0 h-screen">  
         <AdminCalendar 
         clientAppointments={clientAppointments} 
         availableAppointments={availableAppointments} 

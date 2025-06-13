@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { sendEmail } from "../utility/sendEmail.js";
 const prisma = new PrismaClient();
 
 const getOrders = async (req, res) => {
@@ -18,7 +19,7 @@ const getOrders = async (req, res) => {
                 createdAt: 'desc',
             },
         });
-        console.log(orders);
+        
         res.status(200).json(orders);
     } catch (error) {
         console.error("Error fetching orders:", error);
@@ -55,8 +56,6 @@ const createOrder = async (req, res) => {
     });
     
 
-    
-
     const newOrder = await prisma.order.create({
         data: {
             name,
@@ -82,7 +81,6 @@ const createOrder = async (req, res) => {
         },
     });
 
-    console.log("new order", newOrder);
     if (!newOrder) {
         return res.status(404).json({ message: 'New order can not be made' });
     }
@@ -91,6 +89,9 @@ const createOrder = async (req, res) => {
         where: { id: appointmentId },
         data: { available: false },
     });
+
+    // Send confirmation email to client
+    sendEmail(name, phone, email, date, startTime, duration, services, price);
 
     res.status(200).send(newOrder);
 };

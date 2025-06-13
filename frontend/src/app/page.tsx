@@ -73,7 +73,7 @@ export default function Home() {
               serviceCategory.map((category) => (
               <div
                 key={category.id}
-                className="border-b-2 p-2 lg:p-6 bg-[var(--beige)] shadow-lg rounded-2xl"
+                className="border-b-1 p-2 lg:p-6 bg-[var(--warm-gray)] shadow-lg rounded-2xl"
               >
                 <h3 className="text-xl font-bold mb-4 text-[var(--terracotta)]">
                 {category.categoryName}
@@ -84,10 +84,11 @@ export default function Home() {
                   key={service.serviceName}
                   className="flex flex-col items-center lg:flex-row lg:justify-between text-lg font-normal lg:font-medium"
                   >
-                    <span>{service.serviceName}</span>
-                    <div className="grid grid-cols-3">
-                      <span>{service.servicePrice} €</span> ·
-                      <span>{service.serviceTime ? `(${service.serviceTime} min)` : ''}</span>
+                    <span className="w-full lg:w-1/3">{service.serviceName}</span>
+                    <div className="grid grid-cols-3 lg:w-1/2 pb-3 lg:pb-0">
+                    <span>{service.serviceTime ? `(${service.serviceTime} min)` : ''}</span>
+                      ·
+                      <span>{service.servicePrice} €</span>
                     </div>
                     <button onClick={() => getService(service)} className="pt-1 pb-1 w-1/">Izberi</button>
                   </li>
@@ -104,7 +105,7 @@ export default function Home() {
         </div>
            { servicesPicked.length > 0 && (    
             <div className=" justify-center items-center p-10 mx-auto w-full">
-                <div className="flex flex-col gap-4 justify-center items-center border-2  p-6 bg-[var(--beige)] shadow-lg rounded-2xl w-full lg:sticky lg:top-[10px] lg:bottom-[10px]">
+                <div className="flex flex-col gap-4 justify-center items-center border-1  p-6 bg-[var(--warm-gray)] shadow-lg rounded-2xl w-full lg:sticky lg:top-[10px] lg:bottom-[10px]">
                     <div className="w-full flex flex-col gap-4 justify-center items-center">
                         <h3 className="text-2xl">Storitve:</h3>
                             {servicesPicked.map((service, index) => (

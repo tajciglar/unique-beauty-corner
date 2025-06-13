@@ -2,6 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
+console.log(apiBaseUrl);
+// Check if the environment variable is set
+if (!apiBaseUrl) {
+  console.error("NEXT_PUBLIC_API_URL is not set in the environment variables.");
+}
 
 export default function Login() {
   const [code, setCode] = useState("");
@@ -10,16 +16,18 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      const res = await fetch("http://localhost:4000/api/login", {
+      console.log(`${apiBaseUrl}/api/login`);
+      const res = await fetch(`${apiBaseUrl}/api/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ code }),
       });
+      console.log("Response status:", res.status);
 
       const data = await res.json();
-
+      console.log(data);
       if (data.success) {
         sessionStorage.setItem("accessGranted", data.role);
         router.push(data.role === "admin" ? "/admin" : "/");
@@ -28,13 +36,14 @@ export default function Login() {
       }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
+      console.log("ERROR:",err);
       setError("Something went wrong. Try again.");
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[var(--cream-white)]">
-      <h1 className="text-2xl font-bold mb-4">Login</h1>
+      <h1 className="text-2xl font-bold mb-4">Prijavi se</h1>
       <input
         type="password"
         placeholder="Enter access code"
@@ -50,7 +59,7 @@ export default function Login() {
         onClick={handleLogin}
         className="px-4 py-2 bg-[var(--terracotta)] text-white rounded-md hover:opacity-90 transition-opacity"
       >
-        Submit
+        Potrdi
       </button>
     </div>
   );

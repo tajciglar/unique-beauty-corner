@@ -72,9 +72,9 @@ export default function Termini() {
 
   return (
     <>
-      <div className="min-h-screen flex flex-col gap-6 p-4 bg-[var(--cream-white)] lg:flex-row lg:items-center lg:justify-center lg:gap-10 lg:p-6">
+      <div className="min-h-screen flex flex-col gap-6 m-0 p-2 bg-[var(--cream-white)] items-center lg:flex-row lg:items-center lg:justify-center lg:gap-10 lg:p-6">
       <ClientCalander onSelectTimeSlot={handleSelectTimeSlot} />
-      <div className="w-full max-w-md bg-[var(--warm-gray)] p-6 rounded-2xl shadow-lg text-base flex flex-col items-center text-center space-y-4 lg:p-8 mb-4">
+      <div className="w-3/4 lg:w-full max-w-md bg-[var(--warm-gray)] p-6 rounded-2xl shadow-lg text-base flex flex-col items-center text-center space-y-4 lg:p-8 mb-4">
         <h3 className="text-3xl font-bold text-[var(--terracotta)]">Izbrali ste:</h3>
         <div className="text-base text-[var(--dark-brown)]">
           <ul>
@@ -101,7 +101,7 @@ export default function Termini() {
     </div>
     {appointment && (
         <div className="fixed inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.5)] px-4">
-          <div className="bg-[#fff2e2] bg-opacity-90 p-4 rounded-lg w-full max-w-md text-base flex flex-col gap-4 overflow-y-auto max-h-[90vh]">
+          <div className="bg-[#fff2e2] bg-opacity-100 p-4 rounded-lg w-full max-w-md text-base flex flex-col gap-4 overflow-y-auto max-h-[90vh]">
           <h2 className="text-xl">Obrazec za naročilo</h2>
           <form onSubmit={bookAppointment} className="flex flex-col gap-3">
             <label htmlFor="name">Ime in priimek:</label>

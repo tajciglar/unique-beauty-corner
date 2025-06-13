@@ -29,7 +29,7 @@ const NewAppointment: React.FC = () => {
     }, []);
 
     return (
-        <div>
+        <div className="">
             <h1 className="text-2xl font-bold mb-4">Današnja naročila</h1>
 
             {loading && <p className="text-gray-500">Nalagam...</p>}
@@ -38,11 +38,11 @@ const NewAppointment: React.FC = () => {
             {newOrders.length > 0 ? (
                 <ul className="space-y-4 overflow-y-auto max-h-screen">
                     {newOrders.map((order) => (
-                        <li key={order.appointment.id} className="border p-4 rounded shadow-sm">
+                        <li key={order.appointment.id} className="border p-2  lg:p-4 rounded shadow-sm">
                             <div className="flex justify-between items-center">
                                 <div>
-                                    <h2 className="text-xl font-semibold">{order.name}</h2>
-                                    <p className="text-lg text-gray-600">{changeDate(order.appointment.date)} / {order.appointment.startTime} – {order.appointment.endTime}</p>
+                                    <h2 className="text-lg lg:text-xl font-semibold">{order.name}</h2>
+                                    <p className="text-base lg:text-lg text-gray-600">{changeDate(order.appointment.date).split("-").join(".")} / {order.appointment.startTime} – {order.appointment.endTime}</p>
                                     <p className="text-sm">Telefon:{order.phone}</p>
                                     <p className="text-sm">E-pošta:{order.email}</p>
                                 </div>

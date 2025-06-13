@@ -53,7 +53,7 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: ClientCalendarPro
   };
 
   return (
-    <div className="flex flex-col justify-center px-4 sm:px-6 md:px-8">
+    <div className="flex flex-col justify-center lg:px-4 m-0 sm:px-6 md:px-8">
       <h2 className="text-3xl font-bold">Izberite datum:</h2>
       <DayPicker
         mode="single"
@@ -69,6 +69,7 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: ClientCalendarPro
       />
       {selectedDate && (
       <div className="mt-8 w-full space-y-6">
+        <h3 className="text-2xl font-bold text-[var(--terracotta)] p-0 mb-0 flex justify-center">{selectedDate?.toLocaleDateString("sl-SI").split(" ")}</h3>
         <div>
           <h4 className="text-xl font-semibold text-[var(--terracotta)] mb-2">Ljubljana</h4>
           <ul className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -96,7 +97,7 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: ClientCalendarPro
               timeSlots.DOMZALE.map((slot, index) => (
                 <li key={`dom-${index}`}>
                   <button
-                    className="px-4 py-2 bg-[var(--soft-rose)] text-white rounded-lg  focus:bg-[var(--soft-rose)] w-full"
+                    className="px-4 py-2 bg-[var(--terracotta)] text-white rounded-lg  focus:bg-[var(--soft-rose)] w-full"
                     onClick={() => pickAppointment(selectedDate, slot)}
                   >
                     {slot}

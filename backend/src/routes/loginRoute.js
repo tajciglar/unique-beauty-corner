@@ -9,7 +9,6 @@ const CODES = {
 
 router.post('/', (req, res) => {
   const { code } = req.body;
-
   if (code === CODES.user) {
     return res.json({ success: true, role: 'user' });
   }
@@ -17,6 +16,7 @@ router.post('/', (req, res) => {
   if (code === CODES.admin) {
     return res.json({ success: true, role: 'admin' });
   }
+
 
   return res.status(401).json({ success: false, message: 'Invalid code' });
 });

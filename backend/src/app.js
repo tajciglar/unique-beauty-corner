@@ -14,7 +14,8 @@ const prisma = new PrismaClient();
 const corsOptions = {
     origin: function (origin, callback) {
         const allowedOrigins = [
-            'http://localhost:3000' // Development URL
+            'http://localhost:3000',// Development URL
+            'http://192.168.8.118:3000' 
         ];
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
@@ -28,7 +29,11 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+app.get('/', (req, res) => {
+    res.send('API is running...');
+});
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/services', servicesRoutes);

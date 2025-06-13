@@ -62,7 +62,6 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
       const { newAppointment } = await response.json();
       // Update state instantly
       if (!newAppointment.available) {
-        console.log(newAppointment)
         setClientAppointmentsState((prev) => [...prev, newAppointment]);
       } else {
         setAvailableAppointmentsState((prev) => [...prev, newAppointment]);
@@ -111,10 +110,13 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
         initialView="dayGridMonth"
         dateClick={handleDateClick}
         headerToolbar={{
-          left: 'prev next today',
+          left: 'prev next',
           center: 'title',
           right: 'dayGridMonth,timeGridWeek,timeGridDay',
         }}
+        slotMinTime="05:00:00"
+        slotMaxTime="24:00:00"
+        allDaySlot={false}
        events={[
           ...availableAppointmentsState.map((appointment) => {
             return {
@@ -127,18 +129,23 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
             };
           }),
         ...clientAppointmentsState.map((appointment) => { 
-          return {
-            id:`${appointment.id}`,
+            return {
+            id: `${appointment.id}`,
             title: appointment.order?.name || 'Unknown',
             email: appointment.order?.email || 'Unknown',
             phone: appointment.order?.phone || 'Unknown',
             services: appointment.order?.services || [],
             price: appointment.order?.price || 0,
             start: `${appointment.date}T${appointment.startTime}:00`,
-            end: `${appointment.date}T${appointment.endTime}:00`, 
+            end: `${appointment.date}T${appointment.endTime}:00`,
             location: `${appointment.location}`,
-            backgroundColor: '#FF5733',
-          }
+            backgroundColor:
+              appointment.location === 'DOMŽALE'
+              ? '#FFD700'
+              : appointment.location === 'LJUBLJANA'
+              ? '##45f542'
+              : '#FFF',
+            }
         })
         ]}
         eventClick={(info) => getTermin(info.event)}

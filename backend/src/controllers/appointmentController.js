@@ -114,24 +114,33 @@ const updateAppointment = async (req, res) => {
 };
 
 const deleteAppointment = async (req, res) => {
-    const appointmentId = req.params.id;
+    const appointmentId = Number(req.params.id);
+
     if (!appointmentId) {
         return res.status(400).json({ message: 'Appointment ID is required' });
     }
+
     try {
-        const deletedAppointment = await prisma.appointment.delete({
+        // First, delete the related order if it exists
+        await prisma.order.deleteMany({
             where: {
-                id: Number(appointmentId),
+                appointmentId: appointmentId,
             }
         });
+
+        // Then, delete the appointment
+        const deletedAppointment = await prisma.appointment.delete({
+            where: {
+                id: appointmentId,
+            }
+        });
+
         res.status(200).json({ message: 'Appointment deleted', deletedAppointment });
-        if (!deletedAppointment) {
-            return res.status(404).json({ message: 'Appointment not found' });
-        } 
-    }   catch (error) { 
+
+    } catch (error) {
         console.error("Error deleting appointment:", error);
         res.status(500).json({ message: 'Server error' });
     }
-}
+};
 
 export { getAppointments, createAppointment, deleteAppointment, getAvailableAppointments, updateAppointment };

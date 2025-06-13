@@ -28,7 +28,7 @@ export default function ConfirmationPage() {
                 })}</li>
                 <li>Cena: {bookingData?.price}€</li>
                 <li>Čas trajanja: {bookingData?.duration} minut</li>
-                <li>Datum in ura: {changeDate(bookingData?.appointment?.date || "").split("-")} ob {bookingData?.appointment?.startTime}</li>
+                <li>Datum in ura: {changeDate(bookingData?.appointment?.date || "").split("-").join(".")} ob {bookingData?.appointment?.startTime}</li>
             </ul>
         </div>
         <p className="text-lg mb-4">Vaš termin je bil uspešno potrjen!</p>

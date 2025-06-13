@@ -64,3 +64,36 @@ footer {
   @apply bg-[var(--soft-rose)] border border-[var(--warm-gray)] rounded-lg p-4 shadow-sm;
 }
 
+
+/* admin calendar styling */
+
+/* Default (Desktop-first approach) */
+.fc-header-toolbar {
+  height: 3rem; 
+  font-size: 14px; /* Slightly increased for better readability */
+}
+
+.fc-header-toolbar button {
+  height: 36px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+
+.fc {
+  height: 100%;
+}
+
+/* Phone-specific styles */
+@media (max-width: 768px) {
+  .fc-header-toolbar {
+    height: 2.5rem;
+    font-size: 10px;
+  }
+
+
+  .fc-header-toolbar button {
+    height: 28px;
+    padding: 0 8px;
+    font-size: 10px;
+  }
+}

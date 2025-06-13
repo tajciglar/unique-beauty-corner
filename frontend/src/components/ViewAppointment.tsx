@@ -9,7 +9,6 @@ interface ViewAppointmentProps {
 
 const ViewAppointment: React.FC<ViewAppointmentProps> = ({ appointment, onClose, onDelete }) => {
   if (!appointment) return null;
-  console.log("Appointment details:", appointment);
   const isAvailableSlot = appointment.title === "Prosti termin";
 
   return (
