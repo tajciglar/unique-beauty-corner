@@ -58,7 +58,6 @@ export default function Termini() {
       });
       if (response.ok) {
         const result = await response.json();
-        console.log("Appointment booked successfully:", result);
         localStorage.setItem("lastBooking", JSON.stringify(result));
         router.push("/termin/confirmation");
       } else {
@@ -88,7 +87,7 @@ export default function Termini() {
         </div> 
         {selectedTimeSlot && (
             <>
-              <p className="mt-1 text-lg text-[var(--terracotta)]">
+              <p className="m-0  text-lg text-[var(--terracotta)]">
                   Izbrani termin: <span className="font-extrabold text-[var(--dark-brown)]">{selectedDate?.toLocaleDateString("sl").split(" ")} {selectedTimeSlot}</span>
               </p>
               <div className="flex justify-center">

@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 // Function to send an email using Nodemailer
 
-export async function sendEmail(name, phone, email, date, startTime, duration, services, price) {
+export async function sendEmail(name, phone, email, date, startTime, duration, services, price, location) {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -27,7 +27,7 @@ export async function sendEmail(name, phone, email, date, startTime, duration, s
           "Zahvaljujemo se vam za vašo rezervacijo termina na dan <b>" + formattedDate + "</b> ob <b>" + startTime + " uri</b>.<br><br>" +
           "<b>Trajanje:</b> " + duration + " minut<br>" +
           "<b>Storitev:</b> " + services.map(service => service.name).join(', ') + "<br>" +
-          "<b>Cena:</b> €" + price.toFixed(2) + "<br>" +
+          "<b>Cena:</b> €" + price + "<br>" +
           "<b>Lokacija:</b> Unique Beauty Studio, Ljubljana<br><br>" +
           "Veselimo se vašega obiska!<br><br>" +
           "<b>Za odpoved ali spremembo termina</b> me prosim pravočasno obvestite na tel: <a href='tel:+38670654560'>070 654 560</a>.<br><br>" +
@@ -47,7 +47,7 @@ export async function sendEmail(name, phone, email, date, startTime, duration, s
           `<b>Čas začetka:</b> ${startTime}<br>` +
           `<b>Trajanje:</b> ${duration} minut<br>` +
           `<b>Storitev:</b> ${services.map(service => service.name).join(', ')}<br>` +
-          `<b>Cena:</b> €${price.toFixed(2)}<br><br>`
+          `<b>Cena:</b> €${price}<br><br>`
           `<b>Lokacija:</b> €${location}<br><br>`
   };
 

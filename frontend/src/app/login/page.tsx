@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
-console.log(apiBaseUrl);
-// Check if the environment variable is set
+
 if (!apiBaseUrl) {
   console.error("NEXT_PUBLIC_API_URL is not set in the environment variables.");
 }

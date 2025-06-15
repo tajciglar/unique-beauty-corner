@@ -22,10 +22,10 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: ClientCalendarPro
     if (!date) return;
 
     setSelectedDate(date);
+    console.log("Selected date:", date.toLocaleDateString("sl-SI"));
     const response = await fetchAvaliableAppointments(formatDateToLocalISO(date));
 
     if (response) {
-      console.log("Available appointments:", response);
       setAvailableAppointments(response);
       
       const availableTimeSlotsLjubljana = response
@@ -68,11 +68,11 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: ClientCalendarPro
         }}
       />
       {selectedDate && (
-      <div className="mt-8 w-full space-y-6">
-        <h3 className="text-2xl font-bold text-[var(--terracotta)] p-0 mb-0 flex justify-center">{selectedDate?.toLocaleDateString("sl-SI").split(" ")}</h3>
-        <div>
+      <div className="mt-8 w-full space-y-6 grid grid-cols-1 gap-2 items-center justify-items-center">
+        <h3 className="text-2xl font-bold text-[var(--terracotta)] p-0 mb-0 ">{selectedDate?.toLocaleDateString("sl-SI").split(" ")}</h3>
+        <div className="flex flex-col items-center">
           <h4 className="text-xl font-semibold text-[var(--terracotta)] mb-2">Ljubljana</h4>
-          <ul className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <ul className="flex gap-4">
             {timeSlots.LJUBLJANA.length > 0 ? (
               timeSlots.LJUBLJANA.map((slot, index) => (
                 <li key={`lj-${index}`}>
@@ -90,9 +90,9 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: ClientCalendarPro
           </ul>
         </div>
 
-        <div>
+        <div className="flex flex-col items-center">
           <h4 className="text-xl font-semibold text-[var(--terracotta)] mb-2">Domžale</h4>
-          <ul className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <ul className="flex gap-4">
             {timeSlots.DOMZALE.length > 0 ? (
               timeSlots.DOMZALE.map((slot, index) => (
                 <li key={`dom-${index}`}>
