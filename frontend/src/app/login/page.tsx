@@ -15,7 +15,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      console.log(`${apiBaseUrl}/api/login`);
+      
       const res = await fetch(`${apiBaseUrl}/api/login`, {
         method: "POST",
         headers: {
@@ -26,7 +26,7 @@ export default function Login() {
       console.log("Response status:", res.status);
 
       const data = await res.json();
-      console.log(data);
+      
       if (data.success) {
         sessionStorage.setItem("accessGranted", data.role);
         router.push(data.role === "admin" ? "/admin" : "/");

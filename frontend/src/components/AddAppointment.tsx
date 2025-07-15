@@ -21,7 +21,7 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
   const [duration, setDuration] = useState<number>(0);
   const [services, setServices] = useState<ServiceCategory[] | null>(null);
   const [selectedServices, setSelectedServices] = useState<Service[]>([]);
-  
+
   useEffect(() => {
     if (purpose === "client") {
       const fetchServices = async () => {
@@ -87,6 +87,7 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
   };
 
   const handleSubmit = (e: React.FormEvent) => {
+  
   e.preventDefault();
 
   if (!selectedDate || !startTime || !endTime) {

@@ -20,7 +20,7 @@ model Appointment {
   startTime String
   endTime   String
   available Boolean  @default(true)
-  location  Location @default(DOMŽALE)
+  location  Location @default(Domžale)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   order     Order?
@@ -59,6 +59,6 @@ model Services {
 }
 
 enum Location {
-  DOMŽALE
-  LJUBLJANA
+  Domžale
+  Ljubljana
 }

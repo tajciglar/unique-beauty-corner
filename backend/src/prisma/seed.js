@@ -1,5 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+ import { PrismaClient } from '@prisma/client';
 import { addDays, format, setHours, setMinutes, addMinutes } from 'date-fns';
+import { Location } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -53,7 +54,7 @@ async function main() {
     let duration = 60; // Default duration for available appointments
     let endTime = addMinutes(startTime, duration);
     const available = Math.random() > 0.3; // 70% available, 30% booked
-    const location = Math.random() > 0.5 ? "DOMŽALE" : "LJUBLJANA";
+    const location = Math.random() > 0.5 ? Location.Domžale : Location.Ljubljana;
     
     // If the appointment is booked, assign a real duration based on services
     let selectedServices = [];

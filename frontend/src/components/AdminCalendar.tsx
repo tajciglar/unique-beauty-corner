@@ -38,7 +38,6 @@ useEffect(() => {
 }, [availableAppointments]);
 
 const handleSaveAppointment = async (appointmentData: Appointment) => {
-
   const appointmentExists = clientAppointmentsState.some(
     (appointment) => appointment.date === appointmentData.date && appointment.startTime === appointmentData.startTime
   ) || availableAppointmentsState.some(
@@ -125,7 +124,6 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
               start: `${appointment.date}T${appointment.startTime}:00`, 
               end: `${appointment.date}T${appointment.endTime}:00`,     
               location: `${appointment.location}`,
-              
             };
           }),
         ...clientAppointmentsState.map((appointment) => { 
@@ -140,10 +138,10 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
             end: `${appointment.date}T${appointment.endTime}:00`,
             location: `${appointment.location}`,
             backgroundColor:
-              appointment.location === 'DOMŽALE'
+              appointment.location === 'Domžale'
               ? '#FFD700'
-              : appointment.location === 'LJUBLJANA'
-              ? '##45f542'
+              : appointment.location === 'Ljubljana'
+              ? '#45f542'
               : '#FFF',
             }
         })

@@ -54,6 +54,7 @@ const getAvailableAppointments = async (req, res) => {
 const createAppointment = async (req, res) => {
     const appointment = req.body;
 
+  
     let newAppointment;
    
     const checkAppointment = await prisma.appointment.findFirst({
@@ -71,6 +72,7 @@ const createAppointment = async (req, res) => {
                 startTime: appointment.startTime,
                 endTime: appointment.endTime,
                 available: appointment.available,
+                location: appointment.location,
                 order: {
                     create: {
                         name: appointment.order.name,
@@ -102,6 +104,7 @@ const createAppointment = async (req, res) => {
                 startTime: appointment.startTime,
                 endTime: appointment.endTime,
                 available: appointment.available,
+                location: appointment.location,
             }
         });
     }
