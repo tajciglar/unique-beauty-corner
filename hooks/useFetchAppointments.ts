@@ -2,7 +2,7 @@ import { Appointment } from "../types/types";
 
 const fetchAppointments = async (): Promise<{ availableAppointments: Appointment[]; bookedAppointments: Appointment[] } | null> => {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments`, {
+    const response = await fetch("/api/appointments", {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

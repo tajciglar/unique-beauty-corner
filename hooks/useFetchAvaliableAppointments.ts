@@ -2,7 +2,7 @@ const fetchAvaliableAppointments = async (date: string) => {
     if (!date) return null;
     try {
         const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/appointments/available?date=${date}`,
+        "`${process.env.NEXT_PUBLIC_API_URL}/api/appointments/available?date=${date}",
         {
             method: 'GET',
             headers: {

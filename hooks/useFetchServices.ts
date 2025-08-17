@@ -1,12 +1,10 @@
 // Get all the services from the backend
 import { ServiceCategory } from "../types/types";
 
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
-console.log(apiBaseUrl);
-
 const getServices = async (): Promise<ServiceCategory[] | null> => { 
+  console.log("Fetching services from backend...");
     try {
-      const response = await fetch(`${apiBaseUrl}/api/services`,
+      const response = await fetch("api/services",
         {
           method: 'GET',
           headers: {
@@ -24,8 +22,8 @@ const getServices = async (): Promise<ServiceCategory[] | null> => {
       return data as ServiceCategory[];
       
     } catch (error) { 
-      console.log(error);
-      return null;
+        console.log(error);
+        return null;
     }
 }
 

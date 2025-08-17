@@ -2,11 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
-
-if (!apiBaseUrl) {
-  console.error("NEXT_PUBLIC_API_URL is not set in the environment variables.");
-}
 
 export default function Login() {
   const [code, setCode] = useState("");
@@ -16,7 +11,7 @@ export default function Login() {
   const handleLogin = async () => {
     try {
       
-      const res = await fetch(`${apiBaseUrl}/api/login`, {
+      const res = await fetch("/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

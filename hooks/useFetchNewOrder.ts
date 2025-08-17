@@ -2,7 +2,7 @@ import { Order } from "../types/types";
 
 const fetchNewOrder = async (): Promise<Order | null> => {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders`, {
+        const response = await fetch("/api/orders", {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
