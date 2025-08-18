@@ -20,7 +20,6 @@ model Appointment {
   startTime String
   endTime   String
   available Boolean  @default(true)
-  location  Location @default(Domžale)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   order     Order?
@@ -56,9 +55,4 @@ model Services {
   serviceCategory   ServiceCategory @relation(fields: [serviceCategoryId], references: [id])
   Order             Order?          @relation(fields: [OrderId], references: [id])
   OrderId           Int?
-}
-
-enum Location {
-  Domžale
-  Ljubljana
 }

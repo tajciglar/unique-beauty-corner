@@ -51,7 +51,7 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
   }
 
   try { 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments`, {
+    const response = await fetch("/api/appointments", {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(appointmentData),
@@ -77,7 +77,7 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
 
   const deleteAppointment = async (id: string) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments/${id}`, {
+      const response = await fetch("/api/appointments/${id}", {
         method: 'DELETE',
       });
 
@@ -140,8 +140,6 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
             backgroundColor:
               appointment.location === 'Domžale'
               ? '#FFD700'
-              : appointment.location === 'Ljubljana'
-              ? '#45f542'
               : '#FFF',
             }
         })

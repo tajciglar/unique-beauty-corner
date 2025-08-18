@@ -30,10 +30,10 @@ export async function GET() {
   }
 }
 
-// POST /api/orders
+// POST /api/orders - from termin/page.tsx
 export async function POST(req: Request) {
   try {
-    const { name, phone, email, date, startTime, duration, services, price, appointmentId } = await req.json();
+    const { name, phone, email, date, startTime, duration, services, appointmentId } = await req.json();
 
     const existingOrder = await prisma.order.findFirst({
       where: {
@@ -56,9 +56,9 @@ export async function POST(req: Request) {
         email,
         phone,
         duration,
-        price: services.reduce((sum: number, s: any) => sum + Number(s.price), 0),
+        price: services.reduce((sum: number, s: { price: number }) => sum + Number(s.price), 0),
         appointment: { connect: { id: appointmentId } },
-        services: { connect: services.map((s: any) => ({ id: s.id })) },
+        services: { connect: services.map((s: { id: number }) => ({ id: s.id })) },
       },
       include: { appointment: true, services: true },
     });
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
     });
 
     // Send confirmation email
-    sendEmail(name, phone, email, date, startTime, duration, services, price);
+    sendEmail(newOrder);
 
     return NextResponse.json(newOrder, { status: 201 });
   } catch (error) {

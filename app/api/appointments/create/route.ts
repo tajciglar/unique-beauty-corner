@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@lib/prisma";
+import prisma from "@lib/prisma";
 
 export async function POST(req: Request) {
   try {
@@ -26,7 +26,6 @@ export async function POST(req: Request) {
           startTime: appointment.startTime,
           endTime: appointment.endTime,
           available: appointment.available,
-          location: appointment.location,
           order: {
             create: {
               name: appointment.order.name,
@@ -57,7 +56,6 @@ export async function POST(req: Request) {
           startTime: appointment.startTime,
           endTime: appointment.endTime,
           available: appointment.available,
-          location: appointment.location,
         },
       });
     }
