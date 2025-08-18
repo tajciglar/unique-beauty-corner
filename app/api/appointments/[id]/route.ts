@@ -1,11 +1,14 @@
-// app/api/appointments/delete/[id]/route.ts
+// app/api/appointments/[id]/route.ts
 import { NextResponse } from "next/server";
-import {prisma} from "@lib/prisma";
+import prisma from "@lib/prisma";
 
+// DELETE appointment
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
+  // Explicitly await params
+  const params = await Promise.resolve(context.params);
   const appointmentId = Number(params.id);
 
   if (!appointmentId) {
@@ -16,22 +19,16 @@ export async function DELETE(
   }
 
   try {
-    // First, delete the related order if it exists
-    await prisma.order.deleteMany({
-      where: {
-        appointmentId: appointmentId,
-      },
-    });
+    // Delete related orders first
+    await prisma.order.deleteMany({ where: { appointmentId } });
 
-    // Then, delete the appointment
+    // Delete appointment
     const deletedAppointment = await prisma.appointment.delete({
-      where: {
-        id: appointmentId,
-      },
+      where: { id: appointmentId },
     });
 
     return NextResponse.json({
-      message: "Appointment deleted",
+      message: "Appointment deleted successfully",
       deletedAppointment,
     });
   } catch (error) {
@@ -40,11 +37,12 @@ export async function DELETE(
   }
 }
 
-// app/api/appointments/update/[id]/route.ts
+// PUT update appointment
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
+  const params = await Promise.resolve(context.params);
   const appointmentId = Number(params.id);
   const updatedData = await req.json();
 
@@ -60,16 +58,12 @@ export async function PUT(
       where: { id: appointmentId },
       data: updatedData,
       include: {
-        order: {
-          include: {
-            services: true,
-          },
-        },
+        order: { include: { services: true } },
       },
     });
 
     return NextResponse.json({
-      message: "Appointment updated",
+      message: "Appointment updated successfully",
       updatedAppointment,
     });
   } catch (error) {

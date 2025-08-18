@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@lib/prisma";
-import { ServiceCategory } from "../../../types/types";
+import prisma from "@lib/prisma";
 console.log("IN");
 export async function GET() {
     console.log("Fetching services...");
@@ -11,12 +10,12 @@ export async function GET() {
             },
         });
 
-        const formattedServices = services.map((category: ServiceCategory & { services: { servicePrice: number }[] }) => ({
+        const formattedServices = services.map((category) => ({
             ...category,
-            services: category.services.map((service: { servicePrice: number }) => ({
+            services: category.services.map((service) => ({
                 ...service,
-            servicePrice: service.servicePrice.toFixed(2) // Format price to two decimal places
-        }))
+                servicePrice: Number(service.servicePrice) // Format price to two decimal places
+            }))
         }));
 
         return NextResponse.json(formattedServices);

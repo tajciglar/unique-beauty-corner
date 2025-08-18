@@ -1,8 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+
 import { sendEmail } from "@utility/sendEmail";
 import { NextResponse } from "next/server";
-
-const prisma = new PrismaClient();
+import prisma from "@lib/prisma";
 
 // GET /api/orders
 export async function GET() {

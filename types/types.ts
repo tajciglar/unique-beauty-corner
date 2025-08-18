@@ -6,7 +6,6 @@ export interface Appointment {
   startTime: string;
   endTime: string;
   available: boolean;
-  location: string;
   order?: Order; 
 }
 

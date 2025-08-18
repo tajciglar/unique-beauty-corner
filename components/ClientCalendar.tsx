@@ -60,11 +60,10 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: ClientCalendarPro
       {selectedDate && (
         <div className="mt-8 w-full space-y-6 flex flex-col items-center">
           <h3 className="text-2xl font-bold text-[var(--terracotta)]">
-            {selectedDate?.toLocaleDateString("sl-SI")}
+            {selectedDate?.toLocaleDateString("sl-SI").split(" ")}
           </h3>
 
           <div className="flex flex-col items-center">
-            <h4 className="text-xl font-semibold text-[var(--terracotta)] mb-2">Domžale</h4>
             <ul className="flex flex-wrap gap-4 justify-center">
               {timeSlots.length > 0 ? (
                 timeSlots.map((slot, index) => (

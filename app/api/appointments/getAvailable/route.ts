@@ -1,11 +1,13 @@
 // app/api/appointments/getAvailable/route.ts
 import { NextResponse } from "next/server";
-import { prisma } from "@lib/prisma";
+import  prisma  from "@lib/prisma";
 
 export async function GET(req: Request) {
   try {
+    console.log("Fetching available appointments...");
     const { searchParams } = new URL(req.url);
-    const date = searchParams.get("date");
+    const date = searchParams.get("date"); // Extract date from query parameter
+    console.log("Fetching available appointments for date:", date);
 
     if (!date) {
       return NextResponse.json(

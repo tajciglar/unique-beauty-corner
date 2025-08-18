@@ -16,7 +16,6 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
   const [name, setName] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-  const [location, setLocation] = useState<string>("Domžale");
   const [price, setPrice] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
   const [services, setServices] = useState<ServiceCategory[] | null>(null);
@@ -42,7 +41,6 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
       setName("");
       setPhone("");
       setEmail("");
-      setLocation("Domžale");
       setPrice(0);
       setDuration(0);
       setSelectedServices([]);
@@ -125,7 +123,6 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
       date: selectedDate,
       startTime,
       endTime,
-      location,
       available: false,
       order: {
         name,
@@ -139,7 +136,6 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
           startTime,
           endTime,
           available: false,
-          location,
         },
       },
     };
@@ -149,7 +145,6 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
       date: selectedDate,
       startTime,
       endTime,
-      location,
       available: true,
     };
   }
@@ -180,12 +175,6 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
 
               <label htmlFor="endTime">Konec</label>
               <input type="time" id="endTime" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="border p-2 rounded" />
-
-              <label htmlFor="location">Lokacija</label>
-              <select id="location" className="border p-2 rounded" value={location} onChange={(e) => setLocation(e.target.value)}>
-                <option value="Domžale">Domžale</option>
-                <option value="Ljubljana">Ljubljana</option>
-              </select>
             </>
           )}
 
@@ -231,12 +220,6 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
               <label htmlFor="endTime">End Time</label>
               <input type="time" id="endTime" value={endTime} readOnly className="border p-2 rounded" />
 
-              <label htmlFor="location">Lokacija</label>
-              <select id="location" className="border p-2 rounded" onChange={(e) => setLocation(e.target.value)}>
-                <option value="Domžale">Domžale</option>
-                <option value="Ljubljana">Ljubljana</option>
-              </select>
-
               <label>Price</label>
               <div className="border p-2 rounded">{price}€</div>
 
@@ -245,8 +228,8 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
             </>
           )}
 
-          <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg">Dodaj</button>
-          <button type="button" className="bg-gray-500 text-white py-2 px-4 rounded-lg" onClick={onClose}>Zapri</button>
+          <button type="submit" className=" text-white py-2 px-4 rounded-lg">Dodaj</button>
+          <button type="button" className="bg-[var(--soft-rose)] text-white py-2 px-4 rounded-lg" onClick={onClose}>Zapri</button>
         </form>
       </div>
     </div>

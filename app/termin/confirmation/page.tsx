@@ -34,6 +34,7 @@ export default function ConfirmationPage() {
         <p className="text-lg mb-4">Vaš termin je bil uspešno potrjen!</p>
         <p className="text-lg mb-4">Hvala, da ste izbrali našo storitev.</p>
         <p className="text-lg mb-4">Veselimo se srečanja z vami!</p>
+        <h4>Lokacija termina: <a href="https://maps.app.goo.gl/EeHtG1MYY8LKpWgQA">Jesenova ulica 31, 1230 Domžale</a></h4>
         </div>
     );
 }

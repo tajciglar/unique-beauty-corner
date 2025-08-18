@@ -100,7 +100,7 @@ export default function Termini() {
     </div>
     {appointment && (
         <div className="fixed inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.5)] px-4">
-          <div className="bg-[#fff2e2] bg-opacity-100 p-4 rounded-lg w-full max-w-md text-base flex flex-col gap-4 overflow-y-auto max-h-[90vh]">
+          <div className="bg-[#fae9e1] bg-opacity-100 p-4 rounded-lg w-full max-w-md text-base flex flex-col gap-4 overflow-y-auto max-h-[90vh]">
           <h2 className="text-xl">Obrazec za naročilo</h2>
           <form onSubmit={bookAppointment} className="flex flex-col gap-3">
             <label htmlFor="name">Ime in priimek:</label>

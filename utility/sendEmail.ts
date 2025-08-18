@@ -1,4 +1,4 @@
-import { Order, Service } from './../types/types';
+import { Order } from './../types/types';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -26,20 +26,22 @@ export async function sendEmail(order: Order) {
   }).replaceAll(' ','');
   console.log('Formatted date:', formattedDate);
   const mailToClient = {
-    from: process.env.EMAIL_USER, // sender address
-    to: email, // client email
-    subject: "Potrditev termina ",
-    html: "Pozdravljeni,<br><br>" +
-          "Zahvaljujemo se vam za vašo rezervacijo termina na dan <b>" + formattedDate + "</b> ob <b>" + startTime + " uri</b>.<br><br>" +
-          "<b>Trajanje:</b> " + duration + " minut<br>" +
-          "<b>Storitev:</b> " + services.map((service: Service) => service.serviceName).join(', ') + "<br>" +
-          "<b>Cena:</b> €" + price + "<br>" +
-          "<b>Lokacija:</b> Unique Beauty Studio, Jesenova ulica 31, 1230 Domžale <a>https://maps.app.goo.gl/ip2rtBSkh8jA225v8</a><br><br>" +
-          "Veselimo se vašega obiska!<br><br>" +
-          "<b>Za odpoved ali spremembo termina</b> me prosim pravočasno obvestite na tel: <a href='tel:+38670654560'>070 654 560</a>.<br><br>" +
-          "Lep pozdrav,<br>" +
-          "Unique Beauty Studio"
-  };
+  from: process.env.EMAIL_USER,
+  to: email,
+  subject: "Potrditev termina",
+  html: `
+    Pozdravljeni,<br><br>
+    Zahvaljujemo se vam za vašo rezervacijo termina na dan <b>${formattedDate}</b> ob <b>${startTime} uri</b>.<br><br>
+    <b>Trajanje:</b> ${duration} minut<br>
+    <b>Storitev:</b> ${services.map(service => service.serviceName).join(', ')}<br>
+    <b>Cena:</b> €${price}<br>
+    <b>Lokacija:</b> <a href="https://maps.app.goo.gl/ip2rtBSkh8jA225v8">Unique Beauty Studio, Jesenova ulica 31, 1230 Domžale</a><br><br>
+    Veselimo se vašega obiska!<br><br>
+    <b>Za odpoved ali spremembo termina</b> me prosim pravočasno obvestite na tel: <a href='tel:+38670654560'>070 654 560</a>.<br><br>
+    Lep pozdrav,<br>
+    Unique Beauty Studio
+  `
+};
 
   const mailToAdmin = {
     from: process.env.EMAIL_USER, // sender address
@@ -53,8 +55,7 @@ export async function sendEmail(order: Order) {
           `<b>Čas začetka:</b> ${startTime}<br>` +
           `<b>Trajanje:</b> ${duration} minut<br>` +
           `<b>Storitev:</b> ${services.map(service => service.serviceName).join(', ')}<br>` +
-          `<b>Cena:</b> €${price}<br><br>` +
-          `<b>Lokacija:</b> €${location}<br><br>`
+          `<b>Cena:</b> €${price}<br><br>`,
   };
 
   return transporter.sendMail(mailToClient)

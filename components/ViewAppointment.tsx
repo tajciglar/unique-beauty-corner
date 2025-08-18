@@ -21,7 +21,6 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({ appointment, onClose,
             <p><span className="font-semibold">Termin:</span> {appointment.title}</p>
             <p><span className="font-semibold">Začetek:</span> {formatTime(appointment.start)}</p>
             <p><span className="font-semibold">Konec:</span> {formatTime(appointment.end)}</p>
-            <p><span className="font-semibold">Lokacija:</span> {appointment.extendedProps.location}</p>
           </>
         ) : (
           <>
@@ -44,19 +43,18 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({ appointment, onClose,
               <span className="font-semibold">Cena:</span>{" "}
               {appointment.extendedProps.price ? `${appointment.extendedProps.price}€` : "Ni podatka"}
             </p>
-            <p><span className="font-semibold">Lokacija:</span> {appointment.extendedProps.location}</p>
           </>
         )}
 
         <div className="flex gap-4 mt-6">
-          {!isAvailableSlot && (
+         
             <button
               className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg"
               onClick={() => onDelete(appointment.id)}
             >
               Izbriši termin
             </button>
-          )}
+        
           <button
             className="flex-1 bg-[var(--terracotta)] hover:bg-[var(--soft-rose)] text-white py-2 px-4 rounded-lg"
             onClick={onClose}
