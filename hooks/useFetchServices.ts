@@ -2,7 +2,6 @@
 import { ServiceCategory } from "../types/types";
 
 const getServices = async (): Promise<ServiceCategory[] | null> => { 
-  console.log("Fetching services from backend...");
     try {
       const response = await fetch("api/services",
         {

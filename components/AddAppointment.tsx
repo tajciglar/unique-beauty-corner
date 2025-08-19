@@ -171,10 +171,10 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
           {purpose === "availableSlot" && (
             <>
               <label htmlFor="startTime">Začetek</label>
-              <input type="time" id="startTime" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="border p-2 rounded" />
+              <input type="time" lang="en-GB" id="startTime" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="border p-2 rounded" />
 
               <label htmlFor="endTime">Konec</label>
-              <input type="time" id="endTime" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="border p-2 rounded" />
+              <input type="time" lang="en-GB" id="endTime" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="border p-2 rounded" />
             </>
           )}
 
@@ -187,10 +187,10 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
               <input type="tel" id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} className="border p-2 rounded" required />
 
               <label htmlFor="email">Email</label>
-              <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} className="border p-2 rounded" required />
+              <input type="email" lang="en-GB" id="email" value={email} onChange={(e) => setEmail(e.target.value)} className="border p-2 rounded" required />
 
               <label htmlFor="startTime">Start Time</label>
-              <input type="time" id="startTime" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="border p-2 rounded" />
+              <input type="time" lang="en-GB" id="startTime" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="border p-2 rounded" />
 
               <label htmlFor="services">Storitve</label>
               {services?.map((category) => (
