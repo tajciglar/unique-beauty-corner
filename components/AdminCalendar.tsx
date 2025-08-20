@@ -15,6 +15,7 @@ interface AdminCalendarProps {
 const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, availableAppointments }) => {
 
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  console.log("selectedAppointment", selectedAppointment);
   const [openTermin, setOpenTermin] = useState(false);
 
   // dodaj nov termin z klikom na določen datum
@@ -29,7 +30,7 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, avail
   const [clientAppointmentsState, setClientAppointmentsState] = useState(clientAppointments);
   const [availableAppointmentsState, setAvailableAppointmentsState] = useState(availableAppointments);
   
-  useEffect(() => {
+useEffect(() => {
   setClientAppointmentsState(clientAppointments);
 }, [clientAppointments]);
 
@@ -84,7 +85,6 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
       if (response.ok) {
         setClientAppointmentsState((prev) => prev.filter((appointment) => `${appointment.id}` !== id));
         setAvailableAppointmentsState((prev) => prev.filter((appointment) => `${appointment.id}` !== id));
-        console.log('Appointment deleted successfully');
         setOpenTermin(false)
       } else {
         console.error('Failed to delete appointment');
@@ -93,6 +93,41 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
       console.error(err);
     }
   }
+
+  const updateAppointment = async (id: number, updatedData: Partial<Appointment>) => {
+  try {
+    const response = await fetch(`/api/appointments/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedData),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const updatedAppointment = data.updatedAppointment; // <-- extract correctly
+
+      // Update client appointments
+      setClientAppointmentsState((prev) =>
+        prev.map((appointment) =>
+          appointment.id === updatedAppointment.id ? updatedAppointment : appointment
+        )
+      );
+
+      // Update available appointments
+      setAvailableAppointmentsState((prev) =>
+        prev.map((appointment) =>
+          appointment.id === updatedAppointment.id ? updatedAppointment : appointment
+        )
+      );
+
+      console.log("Appointment updated successfully:", updatedAppointment);
+    } else {
+      console.error('Failed to update appointment');
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   // odpri termin z klikom
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -148,6 +183,10 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
               appointment={selectedAppointment} 
               onClose={() => setOpenTermin(false)}
               onDelete={(id) => deleteAppointment(id)} 
+              onUpdate={(id, updatedData) => {
+                // Logic to update appointment
+                updateAppointment(id, updatedData);
+              }}
             />
         )}
         {showAddForm && (

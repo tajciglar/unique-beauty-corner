@@ -45,7 +45,7 @@ export async function PUT(
   const params = await Promise.resolve(context.params);
   const appointmentId = Number(params.id);
   const updatedData = await req.json();
-
+  console.log("Updating appointment with ID:", appointmentId, "Data:", updatedData);
   if (!appointmentId || !updatedData) {
     return NextResponse.json(
       { message: "Appointment ID and data are required" },
