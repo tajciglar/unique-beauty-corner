@@ -13,7 +13,6 @@ export default function AdminPage() {
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchAppointments();
-      console.log('Fetched appointments:', data);
       if (data) {
         setClientAppointments(data.bookedAppointments as Appointment[]);
         setAvailableAppointments(data.availableAppointments);

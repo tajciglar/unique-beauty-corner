@@ -131,12 +131,6 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
         price,
         duration,
         services: selectedServices,
-        appointment: {
-          date: selectedDate,
-          startTime,
-          endTime,
-          available: false,
-        },
       },
     };
   } else {

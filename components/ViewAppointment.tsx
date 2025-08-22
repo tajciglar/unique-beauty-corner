@@ -1,17 +1,8 @@
 import { useState, useEffect } from "react";
-import { formatTime } from "../utility/changeDate";
+import { changeDate, formatTime } from "../utility/changeDate";
 import getServices from "../hooks/useFetchServices";
-import { Appointment as PrismaAppointment, ServiceCategory as PrismaServiceCategory } from "@prisma/client";
+import { ServiceCategory, Appointment } from "../types/types";
 
-interface Appointment extends PrismaAppointment {
-  name: string;
-  email: string;
-  phone: string;
-  price: number;
-  services: Service[];
-  startTime: string;
-  endTime: string;
-}
 
 interface Service {
   id: number;
@@ -20,18 +11,14 @@ interface Service {
   serviceTime?: number;
 }
 
-interface ServiceCategory extends PrismaServiceCategory {
-  services: Service[];
-}
 
 interface ViewAppointmentProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   appointment: any | null;
   onClose: () => void;
   onDelete: (id: string) => void;
-  onUpdate: (id: number, updatedData: Appointment) => void;
-}
-
+  onUpdate: (id: number, appointmentForm: Appointment) => void;
+} 
 
 const ViewAppointment: React.FC<ViewAppointmentProps> = ({
   appointment,
@@ -40,23 +27,29 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
   onUpdate,
 }) => {
   const [updateMode, setUpdateMode] = useState(false);
-  console.log("ViewAppointment component rendered with appointment:", appointment);
   const isAvailableSlot = appointment?.title === "Prosti termin";
 
-  const [formData, setFormData] = useState({
-    name: appointment?.title || "",
+  const [orderForm, setOrderForm] = useState({
+    name: appointment.title || "",
     email: appointment?.extendedProps?.email || "",
     phone: appointment?.extendedProps?.phone || "",
     price: appointment?.extendedProps?.price || "",
-    startTime: formatTime(appointment?.start),
-    endTime: formatTime(appointment?.end),
+    duration: appointment?.extendedProps?.duration || 0,
     services: appointment?.extendedProps?.services || [],
   });
-  console.log("Initial form data:", formData);
 
-  const [selectedServices, setSelectedServices] = useState<Service[]>(
-    formData.services || []
-  );
+  const [appointmentForm, setAppointmentForm] = useState({
+    id: appointment?.id ? Number(appointment.id) : undefined,
+    date: changeDate(appointment.start.toISOString().split("T")[0]) || "",
+    startTime: formatTime(appointment?.start),
+    endTime: formatTime(appointment?.end),
+    order: orderForm,
+    createdAt: appointment?.createdAt || new Date().toISOString(),
+    updatedAt: appointment?.updatedAt || new Date().toISOString(),
+    available: appointment?.available || false,
+  });
+  console.log("Appointment Form:", appointmentForm);
+  const [selectedServices, setSelectedServices] = useState<Service[]>(orderForm.services || []);
   const [services, setServices] = useState<ServiceCategory[]>([]);
 
   // Fetch services only when in update mode
@@ -71,43 +64,24 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
 
   if (!appointment) return null;
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleAppointmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAppointmentForm({ ...appointmentForm, [e.target.name]: e.target.value });
   };
 
-  const handleServiceChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    service: Service
-  ) => {
-    setSelectedServices((prev) => {
-      const updatedServices = e.target.checked
-        ? [...prev, service]
-        : prev.filter((s) => s.id !== service.id);
-      setFormData({ ...formData, services: updatedServices });
-      return updatedServices;
-    });
+  const handleOrderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setOrderForm({ ...orderForm, [e.target.name]: e.target.value });
+  };
+
+  const handleServiceChange = (e: React.ChangeEvent<HTMLInputElement>, service: Service) => {
+    const updatedServices = e.target.checked
+      ? [...selectedServices, service]
+      : selectedServices.filter((s) => s.id !== service.id);
+    setSelectedServices(updatedServices);
+    setOrderForm({ ...orderForm, services: updatedServices });
   };
 
   const handleUpdate = () => {
-    // Construct updated appointment object with all required fields
-    const updatedAppointment: Appointment = {
-      id: Number(appointment.id),
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      price: formData.price ? Number(formData.price) : 0,
-      services: selectedServices,
-      date: appointment.date,
-      startTime: formData.startTime,
-      endTime: formData.endTime,
-      available: appointment.available,
-      createdAt: appointment.createdAt,
-      updatedAt: new Date(), 
-    };
-    console.log("Updated appointment data:", updatedAppointment);
-    onUpdate(appointment.id, updatedAppointment);
+    onUpdate(Number(appointment.id), appointmentForm);
 
     setUpdateMode(false);
     onClose();
@@ -119,9 +93,8 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
         <h2 className="text-2xl font-bold text-[var(--terracotta)]">
           Podrobnosti termina
         </h2>
-
+        {/* If in update mode, show editable form */}
         {updateMode ? (
-          // --- UPDATE FORM ---
           <div className="space-y-3 overflow-y-auto max-h-[70vh]">
             {!isAvailableSlot ? (
               <>
@@ -129,9 +102,9 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
                   <label className="block font-semibold">Ime</label>
                   <input
                     type="text"
-                    name="title"
-                    value={formData.name}
-                    onChange={handleChange}
+                    name="name"
+                    value={orderForm.name}
+                    onChange={handleOrderChange}
                     className="w-full border rounded px-2 py-1"
                   />
                 </div>
@@ -140,8 +113,8 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
                   <input
                     type="email"
                     name="email"
-                    value={formData.email}
-                    onChange={handleChange}
+                    value={orderForm.email}
+                    onChange={handleOrderChange}
                     className="w-full border rounded px-2 py-1"
                   />
                 </div>
@@ -150,8 +123,18 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
                   <input
                     type="text"
                     name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
+                    value={orderForm.phone}
+                    onChange={handleOrderChange}
+                    className="w-full border rounded px-2 py-1"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold">Datum</label>
+                  <input
+                    type="date"
+                    name="date"
+                    value={changeDate(appointment.start.toISOString().split("T")[0])}
+                    onChange={handleAppointmentChange}
                     className="w-full border rounded px-2 py-1"
                   />
                 </div>
@@ -160,8 +143,8 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
                   <input
                     type="time"
                     name="startTime"
-                    value={formData.startTime}
-                    onChange={handleChange}
+                    value={appointmentForm.date}
+                    onChange={handleAppointmentChange}
                     className="w-full border rounded px-2 py-1"
                   />
                 </div>
@@ -170,8 +153,8 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
                   <input
                     type="time"
                     name="endTime"
-                    value={formData.endTime}
-                    onChange={handleChange}
+                    value={appointmentForm.endTime}
+                    onChange={handleAppointmentChange}
                     className="w-full border rounded px-2 py-1"
                   />
                 </div>
@@ -179,9 +162,7 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
                   <label htmlFor="services">Storitve</label>
                   {services?.map((category) => (
                     <div key={category.id} className="mb-2">
-                      <label className="font-bold">
-                        {category.categoryName}
-                      </label>
+                      <label className="font-bold">{category.categoryName}</label>
                       <ul className="ml-4">
                         {category.services.map((service) => (
                           <li key={service.id} className="flex items-center">
@@ -189,12 +170,8 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
                               type="checkbox"
                               id={`service-${service.id}`}
                               value={service.id}
-                              onChange={(e) =>
-                                handleServiceChange(e, service)
-                              }
-                              checked={selectedServices.some(
-                                (s) => s.id === service.id
-                              )}
+                              onChange={(e) => handleServiceChange(e, service)}
+                              checked={selectedServices.some((s) => s.id === service.id)}
                               className="mr-2"
                             />
                             <label htmlFor={`service-${service.id}`}>
@@ -211,26 +188,34 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
                   <input
                     type="number"
                     name="price"
-                    value={formData.price}
-                    onChange={handleChange}
+                    value={orderForm.price}
+                    onChange={handleOrderChange}
                     className="w-full border rounded px-2 py-1"
                   />
                 </div>
               </>
             ) : (
-              // --- AVAILABLE SLOT FORM ---
               <>
+              
                 <p>
-                  <span className="font-semibold">Termin:</span>{" "}
-                  {appointment.title}
+                  <span className="font-semibold">Termin:</span> {appointment.title}
                 </p>
+                <label htmlFor="startTime">Datum</label>
+                <input
+                  type="date"
+                  id="date"
+                  name="date"
+                  value={appointmentForm.startTime}
+                  onChange={handleAppointmentChange}
+                  className="border p-2 rounded w-full"
+                />
                 <label htmlFor="startTime">Začetek</label>
                 <input
                   type="time"
                   id="startTime"
                   name="startTime"
-                  value={formData.startTime}
-                  onChange={handleChange}
+                  value={appointmentForm.startTime}
+                  onChange={handleAppointmentChange}
                   className="border p-2 rounded w-full"
                 />
                 <label htmlFor="endTime">Konec</label>
@@ -238,13 +223,12 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
                   type="time"
                   id="endTime"
                   name="endTime"
-                  value={formData.endTime}
-                  onChange={handleChange}
+                  value={appointmentForm.endTime}
+                  onChange={handleAppointmentChange}
                   className="border p-2 rounded w-full"
                 />
               </>
             )}
-
             <div className="flex gap-4 mt-4">
               <button
                 className="flex-1 text-white py-2 px-4 rounded-lg"
@@ -261,53 +245,27 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
             </div>
           </div>
         ) : (
-          // --- DETAILS VIEW ---
           <>
             {isAvailableSlot ? (
               <>
-                <p>
-                  <span className="font-semibold">Termin:</span>{" "}
-                  {appointment.title}
-                </p>
-                <p>
-                  <span className="font-semibold">Začetek:</span>{" "}
-                  {formatTime(appointment.start)}
-                </p>
-                <p>
-                  <span className="font-semibold">Konec:</span>{" "}
-                  {formatTime(appointment.end)}
-                </p>
+                <p><span className="font-semibold">Termin:</span> {appointment.title}</p>
+                <p><span className="font-semibold">Datum:</span> {changeDate(appointment.start.toISOString().split("T")[0]).split("-").join(".")}</p>
+                <p><span className="font-semibold">Začetek:</span> {formatTime(appointment.start)}</p>
+                <p><span className="font-semibold">Konec:</span> {formatTime(appointment.end)}</p>
               </>
             ) : (
               <>
-                <p>
-                  <span className="font-semibold">Ime:</span>{" "}
-                  {appointment.title}
-                </p>
-                <p>
-                  <span className="font-semibold">E-pošta:</span>{" "}
-                  {appointment.extendedProps.email}
-                </p>
-                <p>
-                  <span className="font-semibold">Telefon:</span>{" "}
-                  {appointment.extendedProps.phone}
-                </p>
-                <p>
-                  <span className="font-semibold">Začetek:</span>{" "}
-                  {formatTime(appointment.start)}
-                </p>
-                <p>
-                  <span className="font-semibold">Konec:</span>{" "}
-                  {formatTime(appointment.end)}
-                </p>
+                <p><span className="font-semibold">Ime:</span> {appointment.title}</p>
+                <p><span className="font-semibold">E-pošta:</span> {appointment.extendedProps.email}</p>
+                <p><span className="font-semibold">Telefon:</span> {appointment.extendedProps.phone}</p>
+                <p><span className="font-semibold">Začetek:</span> {formatTime(appointment.start)}</p>
+                <p><span className="font-semibold">Konec:</span> {formatTime(appointment.end)}</p>
                 <div>
                   <p className="font-semibold">Storitve:</p>
                   <ul className="list-disc list-inside ml-2">
                     {appointment.extendedProps.services.map(
                       (service: { serviceName: string }) => (
-                        <li key={service.serviceName}>
-                          {service.serviceName}
-                        </li>
+                        <li key={service.serviceName}>{service.serviceName}</li>
                       )
                     )}
                   </ul>
@@ -320,7 +278,6 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
                 </p>
               </>
             )}
-
             <div className="flex flex-col gap-4 mt-6">
               <button
                 className="flex-1 text-white py-2 px-4 rounded-lg"

@@ -94,35 +94,32 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
     }
   }
 
-  const updateAppointment = async (id: number, updatedData: Partial<Appointment>) => {
+const updateAppointment = async (id: number, updatedData: Appointment) => {
   try {
     const response = await fetch(`/api/appointments/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedData),
     });
 
     if (response.ok) {
       const data = await response.json();
-      const updatedAppointment = data.updatedAppointment; // <-- extract correctly
+      const updatedAppointment = data.updatedAppointment;
 
-      // Update client appointments
       setClientAppointmentsState((prev) =>
         prev.map((appointment) =>
           appointment.id === updatedAppointment.id ? updatedAppointment : appointment
         )
       );
 
-      // Update available appointments
       setAvailableAppointmentsState((prev) =>
         prev.map((appointment) =>
           appointment.id === updatedAppointment.id ? updatedAppointment : appointment
         )
       );
 
-      console.log("Appointment updated successfully:", updatedAppointment);
     } else {
-      console.error('Failed to update appointment');
+      console.error("Failed to update appointment");
     }
   } catch (err) {
     console.error(err);
@@ -133,6 +130,7 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getTermin = (event: any) => {
     setSelectedAppointment(event);
+    console.log(event)
     setOpenTermin(true);
   };
 
@@ -155,6 +153,7 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
           ...availableAppointmentsState.map((appointment) => {
             return {
               id: `${appointment.id}`, 
+              date: appointment.date,
               title: "Prosti termin",
               start: `${appointment.date}T${appointment.startTime}:00`, 
               end: `${appointment.date}T${appointment.endTime}:00`,     
@@ -168,6 +167,7 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
             phone: appointment.order?.phone || 'Unknown',
             services: appointment.order?.services || [],
             price: appointment.order?.price || 0,
+            date: appointment.date,
             start: `${appointment.date}T${appointment.startTime}:00`,
             end: `${appointment.date}T${appointment.endTime}:00`,
             backgroundColor: '#FFD700',

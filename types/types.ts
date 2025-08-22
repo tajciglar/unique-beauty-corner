@@ -1,7 +1,7 @@
 
 
 export interface Appointment {
-  id?: number;
+  id?: number;   
   date: string;
   startTime: string;
   endTime: string;
@@ -17,7 +17,6 @@ export interface Order {
   price: number;
   duration: number; 
   services: Service[];
-  appointment: Appointment  
 }
 
 

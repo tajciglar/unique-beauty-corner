@@ -38,6 +38,7 @@ export async function DELETE(
 }
 
 // PUT update appointment
+// PUT update appointment
 export async function PUT(
   req: Request,
   context: { params: { id: string } }
@@ -45,7 +46,9 @@ export async function PUT(
   const params = await Promise.resolve(context.params);
   const appointmentId = Number(params.id);
   const updatedData = await req.json();
+
   console.log("Updating appointment with ID:", appointmentId, "Data:", updatedData);
+
   if (!appointmentId || !updatedData) {
     return NextResponse.json(
       { message: "Appointment ID and data are required" },
@@ -54,6 +57,9 @@ export async function PUT(
   }
 
   try {
+    // ✅ Remove id before updating
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     const updatedAppointment = await prisma.appointment.update({
       where: { id: appointmentId },
       data: updatedData,
