@@ -9,7 +9,7 @@ import NewAppointment from '../../components/NewAppointment';
 export default function AdminPage() {
   const [clientAppointments, setClientAppointments] = useState<Appointment[]>([]);
   const [availableAppointments, setAvailableAppointments] = useState<Appointment[]>([]);
-
+  console.log("clientAppointments", clientAppointments);
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchAppointments();

@@ -29,7 +29,8 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, avail
 
   const [clientAppointmentsState, setClientAppointmentsState] = useState(clientAppointments);
   const [availableAppointmentsState, setAvailableAppointmentsState] = useState(availableAppointments);
-  
+  console.log("clientAppointmentsState", clientAppointmentsState);
+  console.log("availableAppointmentsState", availableAppointmentsState);
 useEffect(() => {
   setClientAppointmentsState(clientAppointments);
 }, [clientAppointments]);
@@ -96,6 +97,7 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
 
 const updateAppointment = async (id: number, updatedData: Appointment) => {
   try {
+    console.log("Updating appointment ID:", id, "with data:", updatedData);
     const response = await fetch(`/api/appointments/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },

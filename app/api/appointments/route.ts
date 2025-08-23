@@ -1,3 +1,4 @@
+
 import { NextResponse } from "next/server";
 import prisma from "@lib/prisma"; 
 
@@ -18,7 +19,11 @@ export async function GET() {
               include: {
                   order: {
                       include: {
-                          services: true,
+                          services: {
+                            include: { 
+                                serviceCategory: true 
+                            }
+                          },
                       }
                   }
               },

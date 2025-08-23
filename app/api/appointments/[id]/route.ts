@@ -1,44 +1,8 @@
-// app/api/appointments/[id]/route.ts
+// PUT update appointment
+import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
-import prisma from "@lib/prisma";
-
-// DELETE appointment
-export async function DELETE(
-  req: Request,
-  context: { params: { id: string } }
-) {
-  // Explicitly await params
-  const params = await Promise.resolve(context.params);
-  const appointmentId = Number(params.id);
-
-  if (!appointmentId) {
-    return NextResponse.json(
-      { message: "Appointment ID is required" },
-      { status: 400 }
-    );
-  }
-
-  try {
-    // Delete related orders first
-    await prisma.order.deleteMany({ where: { appointmentId } });
-
-    // Delete appointment
-    const deletedAppointment = await prisma.appointment.delete({
-      where: { id: appointmentId },
-    });
-
-    return NextResponse.json({
-      message: "Appointment deleted successfully",
-      deletedAppointment,
-    });
-  } catch (error) {
-    console.error("Error deleting appointment:", error);
-    return NextResponse.json({ message: "Server error" }, { status: 500 });
-  }
-}
-
-// PUT update appointment
-// PUT update appointment
+import prisma from "@lib/prisma"
+import { Service } from '../../../../types/types';
 export async function PUT(
   req: Request,
   context: { params: { id: string } }
@@ -57,14 +21,48 @@ export async function PUT(
   }
 
   try {
-    // ✅ Remove id before updating
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // Separate appointment fields from order fields
+    const { order, ...appointmentData } = updatedData;
 
     const updatedAppointment = await prisma.appointment.update({
       where: { id: appointmentId },
-      data: updatedData,
+      data: {
+        ...appointmentData,
+        order: order
+          ? {
+              upsert: {
+                create: {
+                  name: order.name,
+                  email: order.email,
+                  phone: order.phone,
+                  price: new Prisma.Decimal(order.price || 0),
+                  duration: order.duration,
+                  services: {
+                    connect: order.services?.map((service: Service) => ({
+                      id: service.id,
+                    })) || [],
+                  },
+                },
+                update: {
+                  name: order.name,
+                  email: order.email,
+                  phone: order.phone,
+                  price: new Prisma.Decimal(order.price || 0),
+                  duration: order.duration,
+                  services: {
+                    set: order.services?.map((service: Service) => ({
+                      id: service.id,
+                    })) || [],
+                  },
+                },
+              },
+            }
+          : undefined, // Leave order unchanged if no data provided
+      },
       include: {
-        order: { include: { services: true } },
+        order: {
+          include: { services: true },
+        },
       },
     });
 
