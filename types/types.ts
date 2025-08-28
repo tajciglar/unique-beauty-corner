@@ -30,9 +30,9 @@ export interface ServiceCategory {
 export interface Service {
   id: number;
   serviceName: string;
-  servicePrice: number;
-  serviceTime: number;  
-  serviceCategoryId: number;  
-  serviceCategory: ServiceCategory; 
+  servicePrice?: number;
+  serviceTime?: number;  
+  serviceCategoryId?: number;  
+  serviceCategor?: ServiceCategory; 
   orders?: Order[]; 
 }

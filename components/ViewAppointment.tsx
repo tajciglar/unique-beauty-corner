@@ -62,7 +62,7 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
   const handleAppointmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    if (!appointment) return; // <-- Early exit if there's no appointment loaded yet
+    if (!appointment) return; 
 
     setAppointment((prev) => {
       // At this point, prev is guaranteed to be non-null
@@ -80,10 +80,34 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
   };
 
   const handleServiceChange = (e: React.ChangeEvent<HTMLInputElement>, service: Service) => {
-    const updatedServices = e.target.checked
-      ? [...selectedServices, service]
-      : selectedServices.filter((s) => s.id !== service.id);
-    setSelectedServices(updatedServices);
+    setAppointment((prev) => {
+      if (!prev) return prev;
+
+      // Compute updated services
+      const updatedServices = e.target.checked
+        ? [...(prev.order?.services || []), service]
+        : (prev.order?.services || []).filter((s) => s.id !== service.id);
+      const updatedPrice = updatedServices.reduce((sum, s) => sum + Number(s.servicePrice || 0), 0);
+      return {
+        ...prev!,
+        order: prev!.order
+          ? { ...prev!.order, price: updatedPrice, services: updatedServices }
+          : {
+              id: undefined,
+              name: "",
+              email: "",
+              phone: "",
+              price: 0,
+              duration: 0,
+              services: updatedServices,
+            },
+      };
+    });
+
+  // Update local state for checkboxes as well
+    setSelectedServices((prev) =>
+      e.target.checked ? [...prev!, service] : prev!.filter((s) => s.id !== service.id)
+    );
   };
 
   
@@ -262,7 +286,7 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
           <>
             {isAvailableSlot ? (
               <>
-                <p><span className="font-semibold">Termin:</span> {appointment.order?.name}</p>
+                <p><span className="font-semibold">Termin:</span> Prosti termin</p>
                 <p><span className="font-semibold">Datum:</span> {appointment.date}</p>
                 <p><span className="font-semibold">Začetek:</span> {appointment.startTime}</p>
                 <p><span className="font-semibold">Konec:</span> {appointment.endTime}</p>
