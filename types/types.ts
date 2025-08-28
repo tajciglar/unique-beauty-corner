@@ -11,12 +11,12 @@ export interface Appointment {
 
 export interface Order {
   id?: number;
-  name: string;
-  email: string;
-  phone: string;
-  price: number;
-  duration: number; 
-  services: Service[];
+  name?: string;
+  email?: string;
+  phone?: string;
+  price?: number;
+  duration?: number; 
+  services?: Service[];
 }
 
 

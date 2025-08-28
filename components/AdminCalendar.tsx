@@ -13,69 +13,67 @@ interface AdminCalendarProps {
 }
 
 const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, availableAppointments }) => {
-
-  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
-  console.log("selectedAppointment", selectedAppointment);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState<number | null>(null);
   const [openTermin, setOpenTermin] = useState(false);
 
-  // dodaj nov termin z klikom na določen datum
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
+  const [clientAppointmentsState, setClientAppointmentsState] = useState(clientAppointments);
+  const [availableAppointmentsState, setAvailableAppointmentsState] = useState(availableAppointments);
+
+  useEffect(() => {
+    setClientAppointmentsState(clientAppointments);
+  }, [clientAppointments]);
+
+  useEffect(() => {
+    setAvailableAppointmentsState(availableAppointments);
+  }, [availableAppointments]);
 
   const handleDateClick = (info: { dateStr: string }) => {
     setSelectedDate(info.dateStr);
     setShowAddForm(true);
   };
 
-  const [clientAppointmentsState, setClientAppointmentsState] = useState(clientAppointments);
-  const [availableAppointmentsState, setAvailableAppointmentsState] = useState(availableAppointments);
-  console.log("clientAppointmentsState", clientAppointmentsState);
-  console.log("availableAppointmentsState", availableAppointmentsState);
-useEffect(() => {
-  setClientAppointmentsState(clientAppointments);
-}, [clientAppointments]);
+  const handleSaveAppointment = async (appointmentData: Appointment) => {
+    const appointmentExists =
+      clientAppointmentsState.some(
+        (appointment) =>
+          appointment.date === appointmentData.date && appointment.startTime === appointmentData.startTime
+      ) ||
+      availableAppointmentsState.some(
+        (appointment) =>
+          appointment.date === appointmentData.date && appointment.startTime === appointmentData.startTime
+      );
 
-useEffect(() => {
-  setAvailableAppointmentsState(availableAppointments);
-}, [availableAppointments]);
-
-const handleSaveAppointment = async (appointmentData: Appointment) => {
-  const appointmentExists = clientAppointmentsState.some(
-    (appointment) => appointment.date === appointmentData.date && appointment.startTime === appointmentData.startTime
-  ) || availableAppointmentsState.some(
-    (appointment) => appointment.date === appointmentData.date && appointment.startTime === appointmentData.startTime
-  );
-
-  if (appointmentExists) {
-    console.error('Appointment already exists at this time.');
-    alert('Appointment already exists at this time.');
-    return;
-  }
-
-  try { 
-    const response = await fetch("/api/appointments/create", {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(appointmentData),
-    });
-    
-    if (response.ok) {
-      const { newAppointment } = await response.json();
-      // Update state instantly
-      if (!newAppointment.available) {
-        setClientAppointmentsState((prev) => [...prev, newAppointment]);
-      } else {
-        setAvailableAppointmentsState((prev) => [...prev, newAppointment]);
-      }
-    } else {
-      console.error('Failed to save appointment');
+    if (appointmentExists) {
+      alert('Appointment already exists at this time.');
+      return;
     }
-  } catch (err) {
-    console.error(err);
-  }
 
-  setShowAddForm(false);
-};
+    try {
+      const response = await fetch('/api/appointments/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(appointmentData),
+      });
+
+      if (response.ok) {
+        const { newAppointment } = await response.json();
+        if (!newAppointment.available) {
+          setClientAppointmentsState((prev) => [...prev, newAppointment]);
+        } else {
+          setAvailableAppointmentsState((prev) => [...prev, newAppointment]);
+        }
+      } else {
+        console.error('Failed to save appointment');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+
+    setShowAddForm(false);
+  };
 
   const deleteAppointment = async (id: string) => {
     try {
@@ -86,53 +84,45 @@ const handleSaveAppointment = async (appointmentData: Appointment) => {
       if (response.ok) {
         setClientAppointmentsState((prev) => prev.filter((appointment) => `${appointment.id}` !== id));
         setAvailableAppointmentsState((prev) => prev.filter((appointment) => `${appointment.id}` !== id));
-        setOpenTermin(false)
+        setOpenTermin(false);
       } else {
         console.error('Failed to delete appointment');
       }
     } catch (err) {
       console.error(err);
     }
-  }
+  };
 
-const updateAppointment = async (id: number, updatedData: Appointment) => {
-  try {
-    console.log("Updating appointment ID:", id, "with data:", updatedData);
-    const response = await fetch(`/api/appointments/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedData),
-    });
+  const updateAppointment = async (id: number, updatedData: Appointment) => {
+    try {
+      const response = await fetch(`/api/appointments/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedData),
+      });
 
-    if (response.ok) {
-      const data = await response.json();
-      const updatedAppointment = data.updatedAppointment;
-
-      setClientAppointmentsState((prev) =>
-        prev.map((appointment) =>
-          appointment.id === updatedAppointment.id ? updatedAppointment : appointment
-        )
-      );
-
-      setAvailableAppointmentsState((prev) =>
-        prev.map((appointment) =>
-          appointment.id === updatedAppointment.id ? updatedAppointment : appointment
-        )
-      );
-
-    } else {
-      console.error("Failed to update appointment");
+      if (response.ok) {
+        const { updatedAppointment } = await response.json();
+        setClientAppointmentsState((prev) =>
+          prev.map((appointment) => (appointment.id === updatedAppointment.id ? updatedAppointment : appointment))
+        );
+        setAvailableAppointmentsState((prev) =>
+          prev.map((appointment) => (appointment.id === updatedAppointment.id ? updatedAppointment : appointment))
+        );
+      } else {
+        console.error('Failed to update appointment');
+      }
+    } catch (err) {
+      console.error(err);
     }
-  } catch (err) {
-    console.error(err);
-  }
-};
+  };
 
-  // odpri termin z klikom
+  // Handle event click → pass ID only
+  
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const getTermin = (event: any) => {
-    setSelectedAppointment(event);
-    console.log(event)
+  const handleEventClick = (event: any) => {
+    const appointmentId = Number(event.id);
+    setSelectedAppointmentId(appointmentId);
     setOpenTermin(true);
   };
 
@@ -151,18 +141,15 @@ const updateAppointment = async (id: number, updatedData: Appointment) => {
         slotMinTime="05:00:00"
         slotMaxTime="24:00:00"
         allDaySlot={false}
-       events={[
-          ...availableAppointmentsState.map((appointment) => {
-            return {
-              id: `${appointment.id}`, 
-              date: appointment.date,
-              title: "Prosti termin",
-              start: `${appointment.date}T${appointment.startTime}:00`, 
-              end: `${appointment.date}T${appointment.endTime}:00`,     
-            };
-          }),
-        ...clientAppointmentsState.map((appointment) => { 
-            return {
+        events={[
+          ...availableAppointmentsState.map((appointment) => ({
+            id: `${appointment.id}`,
+            date: appointment.date,
+            title: 'Prosti termin',
+            start: `${appointment.date}T${appointment.startTime}:00`,
+            end: `${appointment.date}T${appointment.endTime}:00`,
+          })),
+          ...clientAppointmentsState.map((appointment) => ({
             id: `${appointment.id}`,
             title: appointment.order?.name || 'Unknown',
             email: appointment.order?.email || 'Unknown',
@@ -173,35 +160,30 @@ const updateAppointment = async (id: number, updatedData: Appointment) => {
             start: `${appointment.date}T${appointment.startTime}:00`,
             end: `${appointment.date}T${appointment.endTime}:00`,
             backgroundColor: '#FFD700',
-        
-            }
-        })
+          })),
         ]}
-        eventClick={(info) => getTermin(info.event)}
+        eventClick={(info) => handleEventClick(info.event)}
         locale="sl"
       />
-      {openTermin && selectedAppointment && (
-          <ViewAppointment 
-              appointment={selectedAppointment} 
-              onClose={() => setOpenTermin(false)}
-              onDelete={(id) => deleteAppointment(id)} 
-              onUpdate={(id, updatedData) => {
-                // Logic to update appointment
-                updateAppointment(id, updatedData);
-              }}
-            />
-        )}
-        {showAddForm && (
-          <AddAppointment 
-            selectedDate={selectedDate} 
-            onClose={() => setShowAddForm(false)} 
-            onSave={handleSaveAppointment} 
-          />
-        )}
+
+      {openTermin && selectedAppointmentId && (
+        <ViewAppointment
+          appointmentId={selectedAppointmentId}
+          onClose={() => setOpenTermin(false)}
+          onDelete={deleteAppointment}
+          onUpdate={updateAppointment}
+        />
+      )}
+
+      {showAddForm && (
+        <AddAppointment
+          selectedDate={selectedDate}
+          onClose={() => setShowAddForm(false)}
+          onSave={handleSaveAppointment}
+        />
+      )}
     </>
   );
-}
+};
 
 export default AdminCalendar;
-
-

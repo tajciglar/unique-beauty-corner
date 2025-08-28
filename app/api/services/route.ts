@@ -1,12 +1,17 @@
 import { NextResponse } from "next/server";
 import prisma from "@lib/prisma";
-console.log("IN");
+
 export async function GET() {
     console.log("Fetching services...");
     try {
         const services = await prisma.serviceCategory.findMany({
             include: {
-                services: true,
+                services: {
+                    include: {
+                        serviceCategory: true,
+                    },
+                },
+                    
             },
         });
 
@@ -17,7 +22,7 @@ export async function GET() {
                 servicePrice: Number(service.servicePrice) // Format price to two decimal places
             }))
         }));
-
+    
         return NextResponse.json(formattedServices);
     } catch (error) {
         console.error('Error fetching services:', error);

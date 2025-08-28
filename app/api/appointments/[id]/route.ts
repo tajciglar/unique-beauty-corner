@@ -3,6 +3,54 @@ import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import prisma from "@lib/prisma"
 import { Service } from '../../../../types/types';
+
+export async function GET(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    // Await the params properly
+    const { id } = await context.params;
+    const appointmentId = Number(id);
+
+    // Validate appointment ID
+    if (isNaN(appointmentId)) {
+      return NextResponse.json(
+        { message: "Invalid appointment ID" },
+        { status: 400 }
+      );
+    }
+
+    // Fetch the appointment including related order & services
+    const appointment = await prisma.appointment.findUnique({
+      where: { id: appointmentId },
+      include: {
+        order: {
+          include: {
+            services: {
+              include: {
+                serviceCategory: true, // Include service category
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!appointment) {
+      return NextResponse.json(
+        { message: "Appointment not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(appointment);
+  } catch (error) {
+    console.error("Error fetching appointment:", error);
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
+  }
+}
+
 export async function PUT(
   req: Request,
   context: { params: { id: string } }
@@ -10,8 +58,6 @@ export async function PUT(
   const params = await Promise.resolve(context.params);
   const appointmentId = Number(params.id);
   const updatedData = await req.json();
-
-  console.log("Updating appointment with ID:", appointmentId, "Data:", updatedData);
 
   if (!appointmentId || !updatedData) {
     return NextResponse.json(

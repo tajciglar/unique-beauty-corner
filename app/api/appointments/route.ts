@@ -28,7 +28,7 @@ export async function GET() {
                   }
               },
           });
-         
+          console.log("Fetched appointments:", {availableAppointments, bookedAppointments});
           return NextResponse.json({availableAppointments, bookedAppointments});
       } catch (error) {
           console.error("Error fetching termini:", error);
