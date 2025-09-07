@@ -49,7 +49,7 @@ model ServiceCategory {
 model Services {
   id                Int             @id @default(autoincrement())
   serviceName       String
-  servicePrice      Decimal
+  servicePrice      Float
   serviceTime       Int? // Optional time field (in minutes)
   serviceCategoryId Int
   serviceCategory   ServiceCategory @relation(fields: [serviceCategoryId], references: [id])

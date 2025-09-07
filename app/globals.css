@@ -47,10 +47,6 @@ input:focus {
   @apply border-[var(--highlight-gold)] outline-none shadow-lg;
 }
 
-button {
-  @apply bg-[var(--terracotta)] text-[var(--ivory)] px-4 py-2 rounded-lg shadow-md hover:bg-[var(--soft-rose)] hover:text-[var(--dark-brown)];
-}
-
 section {
   @apply bg-[var(--ivory)] p-6 shadow-lg rounded-md;
 }
@@ -66,7 +62,9 @@ footer {
 
 
 /* admin calendar styling */
-
+.button {
+  @apply bg-[var(--terracotta)] text-white px-4 py-2 rounded-md shadow-md transition hover:bg-[var(--soft-rose)] focus:bg-[var(--soft-rose)];
+}
 /* Default (Desktop-first approach) */
 .fc-header-toolbar {
   height: 3rem; 

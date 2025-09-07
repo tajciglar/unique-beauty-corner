@@ -33,6 +33,6 @@ export interface Service {
   servicePrice?: number;
   serviceTime?: number;  
   serviceCategoryId?: number;  
-  serviceCategor?: ServiceCategory; 
+  serviceCategory?: ServiceCategory; 
   orders?: Order[]; 
 }

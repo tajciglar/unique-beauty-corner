@@ -59,7 +59,7 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
       }
 
       const totalPrice = updatedServices.reduce((sum, s) => sum + Number(s.servicePrice), 0);
-      const totalDuration = updatedServices.reduce((sum, s) => sum + s.serviceTime, 0);
+      const totalDuration = updatedServices.reduce((sum, s) => sum + (s.serviceTime ?? 0), 0);
       
       setPrice(totalPrice);
       setDuration(totalDuration);
@@ -222,8 +222,8 @@ const AddAppointment: React.FC<AddAppointmentProps> = ({ selectedDate, onClose, 
             </>
           )}
 
-          <button type="submit" className=" text-white py-2 px-4 rounded-lg">Dodaj</button>
-          <button type="button" className="bg-[var(--soft-rose)] text-white py-2 px-4 rounded-lg" onClick={onClose}>Zapri</button>
+          <button type="submit" className="button text-white py-2 px-4 rounded-lg">Dodaj</button>
+          <button type="button" className="bg-[var(--soft-rose)]s text-white py-2 px-4 rounded-lg" onClick={onClose}>Zapri</button>
         </form>
       </div>
     </div>

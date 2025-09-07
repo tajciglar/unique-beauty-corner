@@ -75,23 +75,24 @@ export default function Termini() {
       <ClientCalander onSelectTimeSlot={handleSelectTimeSlot} />
       <div className="w-3/4 lg:w-full max-w-md bg-[var(--warm-gray)] p-6 rounded-2xl shadow-lg text-base flex flex-col items-center text-center space-y-4 lg:p-8 mb-4">
         <h3 className="text-3xl font-bold text-[var(--terracotta)]">Izbrali ste:</h3>
-        <div className="text-base text-[var(--dark-brown)]">
+        <div className="text-base text-[var(--dark-brown)] flex flex-col items-start">
           <ul>
             {servicesPicked.map((service, index) => (
-              <li key={index}>
-                {service.serviceName} - {service.servicePrice}€
+              <li className="flex" key={index}>
+                  {service.serviceCategory?.categoryName} -  <i className="pl-2">{service.serviceName}</i>
               </li>
             ))}
           </ul>
+          <p>Cena: {price} €</p>
           <p>Čas storitve: {totalTime} min</p>
-        </div> 
+        </div>
         {selectedTimeSlot && (
             <>
               <p className="m-0  text-lg text-[var(--terracotta)]">
                   Izbrani termin: <span className="font-extrabold text-[var(--dark-brown)]">{selectedDate?.toLocaleDateString("sl").split(" ")} {selectedTimeSlot}</span>
               </p>
               <div className="flex justify-center">
-                  <button className="mt-4 py-2 px-6 rounded-full hover:bg-[#ffd6b9] transition transform hover:scale-105" onClick={() => appointmentForm()}>Potrdi</button>
+                  <button className="button mt-4 py-2 px-6 rounded-full transition transform hover:scale-105 hover:bg-[var(--soft-rose)] focus:bg-[var(--soft-rose)]" onClick={() => appointmentForm()}>Potrdi</button>
               </div>
             </>
         )}
@@ -100,7 +101,7 @@ export default function Termini() {
     </div>
     {appointment && (
         <div className="fixed inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.5)] px-4">
-          <div className="bg-[#fae9e1] bg-opacity-100 p-4 rounded-lg w-full max-w-md text-base flex flex-col gap-4 overflow-y-auto max-h-[90vh]">
+          <div className="bg-[var(--warm-gray)] bg-opacity-100 p-4 rounded-lg w-full max-w-md text-base flex flex-col gap-4 overflow-y-auto max-h-[90vh]">
           <h2 className="text-xl">Obrazec za naročilo</h2>
           <form onSubmit={bookAppointment} className="flex flex-col gap-3">
             <label htmlFor="name">Ime in priimek:</label>
@@ -112,13 +113,13 @@ export default function Termini() {
             <h3 className="text-lg">Informacije o storitvi:</h3>
               <ul>
                 {servicesPicked.map((service, key) => (
-                <li key={key}>{service.serviceName}</li>
+                <li key={key}>{service.serviceCategory?.categoryName} -  <i className="pl-1">{service.serviceName}</i></li>
                 ))}
               </ul>
             <p> {selectedDate ? selectedDate.toLocaleDateString("sl").split(" ") : "Datum ni izbran"} ob {selectedTimeSlot} ({totalTime} min )</p>
             <p>{price} €</p>
-            <button type="submit">Naroči se</button>
-            <button onClick={() => setAppointment(false)}>Prekliči</button>
+            <button className="button" type="submit">Naroči se</button>
+            <button className="button" onClick={() => setAppointment(false)}>Prekliči</button>
           </form>
         </div>
       </div>

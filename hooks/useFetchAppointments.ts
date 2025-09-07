@@ -9,7 +9,7 @@ const fetchAppointments = async (): Promise<{ availableAppointments: Appointment
       },
     });
 
-    if (!response.ok) {
+    if (!response.ok) { 
       throw new Error('Error with getting appointments.');
     }
 

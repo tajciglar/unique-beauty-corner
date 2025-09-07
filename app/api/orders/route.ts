@@ -55,7 +55,7 @@ export async function POST(req: Request) {
         email,
         phone,
         duration,
-        price: services.reduce((sum: number, s: { price: number }) => sum + Number(s.price), 0),
+        price: Number(services.reduce((sum: number, s: { price: number }) => sum + Number(s.price), 0)),
         appointment: { connect: { id: appointmentId } },
         services: { connect: services.map((s: { id: number }) => ({ id: s.id })) },
       },

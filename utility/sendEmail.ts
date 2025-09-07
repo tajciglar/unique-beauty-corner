@@ -33,7 +33,7 @@ export async function sendEmail(order: Order) {
     Pozdravljeni,<br><br>
     Zahvaljujemo se vam za vašo rezervacijo termina na dan <b>${formattedDate}</b> ob <b>${startTime} uri</b>.<br><br>
     <b>Trajanje:</b> ${duration} minut<br>
-    <b>Storitev:</b> ${services.map(service => service.serviceName).join(', ')}<br>
+    <b>Storitev:</b> ${(services?.map(service => service.serviceName).join(', ')) || ''}<br>
     <b>Cena:</b> €${price}<br>
     <b>Lokacija:</b> <a href="https://maps.app.goo.gl/ip2rtBSkh8jA225v8">Unique Beauty Studio, Jesenova ulica 31, 1230 Domžale</a><br><br>
     Veselimo se vašega obiska!<br><br>
@@ -54,7 +54,7 @@ export async function sendEmail(order: Order) {
           `<b>Datum:</b> ${formattedDate}<br>` +
           `<b>Čas začetka:</b> ${startTime}<br>` +
           `<b>Trajanje:</b> ${duration} minut<br>` +
-          `<b>Storitev:</b> ${services.map(service => service.serviceName).join(', ')}<br>` +
+          `<b>Storitev:</b> ${(services?.map(service => service.serviceName).join(', ')) || ''}<br>` +
           `<b>Cena:</b> €${price}<br><br>`,
   };
 

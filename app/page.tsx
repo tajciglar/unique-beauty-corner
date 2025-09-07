@@ -29,7 +29,7 @@ export default function Home() {
  
   const router = useRouter();
   const getService = (service: Service) => {
-        const isServiceAlreadyPicked = servicesPicked.some((s) => s.serviceName === service.serviceName);
+        const isServiceAlreadyPicked = servicesPicked.some((s) => s.serviceName === service.serviceName && s.serviceCategoryId === service.serviceCategoryId);
         if (isServiceAlreadyPicked) {
           alert("Storitve že izbrana"); 
           return
@@ -57,7 +57,7 @@ export default function Home() {
         </div>
         <div className="w-3/4 flex flex-col items-center gap-4">
           <a href="#storitve" className="w-full">
-            <button className="px-3 py-2 w-full lg:w-1/4 rounded-lg hover:bg-terracotta-dark focus:outline-none focus:ring-opacity-50">
+            <button className="button px-3 py-2 w-full lg:w-1/4 rounded-lg hover:bg-terracotta-dark focus:outline-none focus:ring-opacity-50">
               Naroči se
             </button>
           </a>
@@ -90,7 +90,7 @@ export default function Home() {
                       ·
                       <span>{service.servicePrice} €</span>
                     </div>
-                    <button onClick={() => getService(service)} className="pt-1 pb-1 w-1/">Izberi</button>
+                    <button onClick={() => getService(service)} className="button pt-1 pb-1 w-1/">Izberi</button>
                   </li>
                 ))}
                 </ul>
@@ -110,19 +110,20 @@ export default function Home() {
                         <h3 className="text-2xl">Storitve:</h3>
                             {servicesPicked.map((service, index) => (
                             <div key={index} className="w-full font-light">
+                                <p className="font-bold">{service.serviceCategory?.categoryName}</p>
                                 <p>{service.serviceName}</p>
                                 <p>Cena: {service.servicePrice} €</p>
                                 <p>Trajanje: {service.serviceTime ? `${service.serviceTime} min` : 'N/A'}</p>
-                                <button className="text-sm px-2 py-1" onClick={() => setServicesPicked((prevServices: Service[]) => prevServices.filter((s) => s.serviceName !== service.serviceName))}>Odstrani</button>
+                                <button className="button text-sm px-2 py-1" onClick={() => setServicesPicked((prevServices: Service[]) => prevServices.filter((s) => !(s.serviceName === service.serviceName && s.serviceCategoryId === service.serviceCategoryId)))}>Odstrani</button>
                             </div>
                             ))}
                     </div>
                     <div className="mt-4 w-full">
                         <h3>Skupaj:</h3>
                         <p>Skupni čas: {servicesPicked.reduce((total, service) => total + (service.serviceTime || 0), 0)} min</p>
-                        <p>Skupna cena: {servicesPicked.reduce((total, service) => total + service.servicePrice, 0)} €</p>
+                        <p>Skupna cena: {servicesPicked.reduce((total, service) => total + (service.servicePrice ?? 0), 0)} €</p>
                     </div>
-                    <button onClick={bookService}>Izberi termin</button>
+                    <button className="button" onClick={bookService}>Izberi termin</button>
                 </div>
             </div>
         )}

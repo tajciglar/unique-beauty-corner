@@ -121,3 +121,35 @@ export async function PUT(
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  req: Request,
+  context: { params: { id: string } }
+) {
+  const params = await Promise.resolve(context.params);
+  const appointmentId = Number(params.id);
+
+  if (!appointmentId) {
+    return NextResponse.json(
+      { message: "Appointment ID is required" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    await prisma.order.deleteMany({
+      where: { appointmentId: appointmentId },
+    });
+
+    await prisma.appointment.delete({
+      where: { id: appointmentId },
+    });
+
+    return NextResponse.json({ message: "Appointment deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting appointment:", error);
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
+  }
+
+}
+  

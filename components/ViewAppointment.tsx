@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import getServices from "../hooks/useFetchServices";
 import { ServiceCategory, Appointment } from "../types/types";
+
 interface Service {
   id: number;
   serviceName: string;
@@ -162,7 +163,7 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
                     className="w-full border rounded px-2 py-1"
                   />
                 </div>
-                <div >
+                <div>
                   <label className="block font-semibold">Datum</label>
                   <input
                     type="date"
@@ -234,7 +235,7 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
                 <p className="!mb-2">
                   <span className="font-semibold">Termin:</span> {appointment.order?.name}
                 </p>
-
+               
                 <label htmlFor="startTime">Datum</label>
                 <input
                   type="date"
@@ -269,7 +270,7 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
 
             <div className="flex gap-4 mt-4">
               <button
-                className="flex-1 text-white py-2 px-4 rounded-lg"
+                className="button flex-1 text-white py-2 px-4 rounded-lg"
                 onClick={handleUpdate}
               >
                 Shrani spremembe
@@ -304,7 +305,7 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
                   <ul className="list-disc list-inside ml-2">
                     {appointment.order?.services?.map(
                       (service: { serviceName: string; serviceCategory?: { categoryName: string } }) => (
-                        <li key={service.serviceName}>
+                        <li key={service.serviceName + "-" + service.serviceCategory?.categoryName}>
                           <span className="font-semibold">
                             {service.serviceCategory?.categoryName}:
                           </span>{" "}
@@ -324,7 +325,7 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
             )}
             <div className="flex flex-col gap-4 mt-6">
               <button
-                className="flex-1 text-white py-2 px-4 rounded-lg"
+                className="button flex-1 text-white py-2 px-4 rounded-lg"
                 onClick={() => setUpdateMode(true)}
               >
                 Spremeni
@@ -337,7 +338,7 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
                   Izbriši termin
                 </button>
                 <button
-                  className="flex-1 bg-[var(--soft-rose)] hover:bg-[var(--soft-rose)] text-white py-2 px-4 rounded-lg"
+                  className=" flex-1 bg-[var(--soft-rose)] hover:bg-[var(--soft-rose)] text-white py-2 px-4 rounded-lg"
                   onClick={onClose}
                 >
                   Zapri
