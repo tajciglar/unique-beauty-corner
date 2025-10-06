@@ -77,7 +77,8 @@ export async function POST(req: Request) {
       price: typeof newOrder.price === 'object' && 'toNumber' in newOrder.price
         ? newOrder.price.toNumber()
         : Number(newOrder.price),
-      services: newOrder.services.map(service => ({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      services: newOrder.services.map((service: any) => ({
         ...service,
         serviceTime: service.serviceTime === null ? undefined : service.serviceTime
       }))
