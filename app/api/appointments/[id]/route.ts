@@ -1,5 +1,5 @@
 // app/api/appointments/[id]/route.ts
-import { Prisma } from "@prisma/client";
+
 import { NextResponse, NextRequest } from "next/server";
 import prisma from "@lib/prisma";
 import { Service } from "../../../../types/types";
@@ -73,7 +73,7 @@ export async function PUT(req: NextRequest, context: any) {
                   name: order.name,
                   email: order.email,
                   phone: order.phone,
-                  price: new Prisma.Decimal(order.price || 0),
+                  price: Number(order.price || 0),
                   duration: order.duration,
                   services:
                     order.services?.map((service: Service) => ({ id: service.id })) || [],
