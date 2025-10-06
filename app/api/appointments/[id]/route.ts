@@ -1,19 +1,16 @@
-// PUT update appointment
+// app/api/appointments/[id]/route.ts
 import { Prisma } from "@prisma/client";
 import { NextResponse, NextRequest } from "next/server";
-import prisma from "@lib/prisma"
-import { Service } from '../../../../types/types';
+import prisma from "@lib/prisma";
+import { Service } from "../../../../types/types";
 
-export async function GET(
-  req: Request,
-  context: { params: Promise<{ id: string }> }
-) {
+// GET appointment by ID
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function GET(req: NextRequest, context: any) {
   try {
-    // Await the params properly
-    const { id } = await context.params;
+    const { id } = context.params;
     const appointmentId = Number(id);
 
-    // Validate appointment ID
     if (isNaN(appointmentId)) {
       return NextResponse.json(
         { message: "Invalid appointment ID" },
@@ -21,16 +18,13 @@ export async function GET(
       );
     }
 
-    // Fetch the appointment including related order & services
     const appointment = await prisma.appointment.findUnique({
       where: { id: appointmentId },
       include: {
         order: {
           include: {
             services: {
-              include: {
-                serviceCategory: true, // Include service category
-              },
+              include: { serviceCategory: true },
             },
           },
         },
@@ -51,10 +45,9 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
+// PUT update appointment
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function PUT(req: NextRequest, context: any) {
   const { id } = context.params;
   const appointmentId = Number(id);
   const updatedData = await req.json();
@@ -67,7 +60,6 @@ export async function PUT(
   }
 
   try {
-    // Separate appointment fields from order fields
     const { order, ...appointmentData } = updatedData;
 
     const updatedAppointment = await prisma.appointment.update({
@@ -83,11 +75,8 @@ export async function PUT(
                   phone: order.phone,
                   price: new Prisma.Decimal(order.price || 0),
                   duration: order.duration,
-                  services: {
-                    connect: order.services?.map((service: Service) => ({
-                      id: service.id,
-                    })) || [],
-                  },
+                  services:
+                    order.services?.map((service: Service) => ({ id: service.id })) || [],
                 },
                 update: {
                   name: order.name,
@@ -95,21 +84,14 @@ export async function PUT(
                   phone: order.phone,
                   price: new Prisma.Decimal(order.price || 0),
                   duration: order.duration,
-                  services: {
-                    set: order.services?.map((service: Service) => ({
-                      id: service.id,
-                    })) || [],
-                  },
+                  services:
+                    order.services?.map((service: Service) => ({ id: service.id })) || [],
                 },
               },
             }
-          : undefined, // Leave order unchanged if no data provided
+          : undefined,
       },
-      include: {
-        order: {
-          include: { services: true },
-        },
-      },
+      include: { order: { include: { services: true } } },
     });
 
     return NextResponse.json({
@@ -122,12 +104,11 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  req: Request,
-  context: { params: { id: string } }
-) {
-  const params = await Promise.resolve(context.params);
-  const appointmentId = Number(params.id);
+// DELETE appointment
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function DELETE(req: NextRequest, context: any) {
+  const { id } = context.params;
+  const appointmentId = Number(id);
 
   if (!appointmentId) {
     return NextResponse.json(
@@ -137,19 +118,12 @@ export async function DELETE(
   }
 
   try {
-    await prisma.order.deleteMany({
-      where: { appointmentId: appointmentId },
-    });
-
-    await prisma.appointment.delete({
-      where: { id: appointmentId },
-    });
+    await prisma.order.deleteMany({ where: { appointmentId } });
+    await prisma.appointment.delete({ where: { id: appointmentId } });
 
     return NextResponse.json({ message: "Appointment deleted successfully" });
   } catch (error) {
     console.error("Error deleting appointment:", error);
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
-
 }
-  

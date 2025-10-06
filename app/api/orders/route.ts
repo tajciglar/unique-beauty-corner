@@ -68,11 +68,20 @@ export async function POST(req: Request) {
 
     await prisma.appointment.update({
       where: { id: appointmentId },
-      data: { available: false },
+      data: { available: false }, 
     });
 
     // Send confirmation email
-    sendEmail(newOrder);
+    sendEmail({
+      ...newOrder,
+      price: typeof newOrder.price === 'object' && 'toNumber' in newOrder.price
+        ? newOrder.price.toNumber()
+        : Number(newOrder.price),
+      services: newOrder.services.map(service => ({
+        ...service,
+        serviceTime: service.serviceTime === null ? undefined : service.serviceTime
+      }))
+    });
 
     return NextResponse.json(newOrder, { status: 201 });
   } catch (error) {

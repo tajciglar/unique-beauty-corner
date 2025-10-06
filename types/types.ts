@@ -17,6 +17,7 @@ export interface Order {
   price?: number;
   duration?: number; 
   services?: Service[];
+  appointment?: Appointment;
 }
 
 

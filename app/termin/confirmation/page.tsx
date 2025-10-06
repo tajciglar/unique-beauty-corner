@@ -21,7 +21,7 @@ export default function ConfirmationPage() {
                 <li>Email: {bookingData?.email}</li>
                 <li>Telefon: {bookingData?.phone}</li>
                 
-                <li>Storitve: {bookingData?.services.map((service) => {
+                <li>Storitve: {bookingData?.services?.map((service) => {
                     return ( 
                            <div className="text-sm" key={service.id}> - {service.serviceName} </div> 
                     )
