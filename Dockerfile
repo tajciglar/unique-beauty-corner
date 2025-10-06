@@ -1,20 +1,31 @@
-# Use an official Node.js runtime as a parent image
-FROM node:18-alpine as build
+# Dockerfile
+FROM node:18-alpine AS builder
 
-# Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
+# Copy package files and install deps
+COPY package.json package-lock.json* ./
+RUN npm ci
 
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the application code
+# Copy project files and build the app
 COPY . .
+RUN npm run build
 
-# Expose port 3001 for the dev server
+# ----------------------------
+# Stage 2 - Production image
+# ----------------------------
+FROM node:18-alpine AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Copy only necessary files from builder
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/node_modules ./node_modules
+
 EXPOSE 3000
 
-# Run the development server
-CMD ["npm", "run", "dev"]
+CMD ["npm", "start"]

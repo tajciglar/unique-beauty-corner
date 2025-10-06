@@ -22,7 +22,7 @@ export async function GET() {
                 servicePrice: Number(service.servicePrice) // Format price to two decimal places
             }))
         }));
-    
+        console.log("Services fetched successfully:", formattedServices);
         return NextResponse.json(formattedServices);
     } catch (error) {
         console.error('Error fetching services:', error);

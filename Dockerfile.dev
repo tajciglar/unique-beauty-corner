@@ -1,0 +1,20 @@
+# Dockerfile.dev
+FROM node:18-alpine
+
+# Set working directory inside the container
+WORKDIR /app
+
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install all dependencies
+RUN npm install
+
+# Copy everything into the container
+COPY . .
+
+# Expose the Next.js port
+EXPOSE 3000
+
+# Run Next.js in development mode
+CMD ["npm", "run", "dev"]
