@@ -82,7 +82,7 @@ export async function PUT(req: NextRequest, context: any) {
                   name: order.name,
                   email: order.email,
                   phone: order.phone,
-                  price: new Prisma.Decimal(order.price || 0),
+                  price: Number(order.price || 0),
                   duration: order.duration,
                   services:
                     order.services?.map((service: Service) => ({ id: service.id })) || [],
