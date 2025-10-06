@@ -21,7 +21,7 @@ export default function Login() {
       console.log("Response status:", res.status);
 
       const data = await res.json();
-      
+      console.log("Response data:", data);
       if (data.success) {
         sessionStorage.setItem("accessGranted", data.role);
         router.push(data.role === "admin" ? "/admin" : "/");

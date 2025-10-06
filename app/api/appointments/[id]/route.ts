@@ -53,9 +53,8 @@ export async function GET(
 
 export async function PUT(
   req: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
-  const params = await Promise.resolve(context.params);
   const appointmentId = Number(params.id);
   const updatedData = await req.json();
 
