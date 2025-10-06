@@ -1,6 +1,6 @@
 // PUT update appointment
 import { Prisma } from "@prisma/client";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import prisma from "@lib/prisma"
 import { Service } from '../../../../types/types';
 
@@ -52,7 +52,7 @@ export async function GET(
 }
 
 export async function PUT(
-  req: Request,
+  req: NextRequest,
   context: { params: { id: string } }
 ) {
   const { id } = context.params;
