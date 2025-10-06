@@ -53,9 +53,10 @@ export async function GET(
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
-  const appointmentId = Number(params.id);
+  const { id } = context.params;
+  const appointmentId = Number(id);
   const updatedData = await req.json();
 
   if (!appointmentId || !updatedData) {
