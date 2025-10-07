@@ -9,6 +9,7 @@ RUN npm ci
 
 # Copy project files and build the app
 COPY . .
+RUN npx prisma generate
 RUN npm run build
 
 # ----------------------------
