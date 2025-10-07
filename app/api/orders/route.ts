@@ -74,7 +74,7 @@ export async function POST(req: Request) {
     // Send confirmation email
     sendEmail({
       ...newOrder,
-      price: typeof newOrder.price === "object" && "toNumber" in newOrder.price ? newOrder.price.toNumber() : Number(newOrder.price),
+      price: typeof newOrder.price === "object" && "toNumber" in newOrder.price ? newOrder.price : Number(newOrder.price),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       services: newOrder.services.map((service: any) => ({
         ...service,
