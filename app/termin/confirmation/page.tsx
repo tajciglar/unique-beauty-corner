@@ -26,7 +26,7 @@ export default function ConfirmationPage() {
                            <div className="text-sm" key={service.id}> - {service.serviceName} </div> 
                     )
                 })}</li>
-                <li>Cena: {bookingData?.price}€</li>
+                <li>Cena: {Number(bookingData?.price)}€</li>
                 <li>Čas trajanja: {bookingData?.duration} minut</li>
                 <li>Datum in ura: {changeDate(bookingData?.appointment?.date || "").split("-").join(".")} ob {bookingData?.appointment?.startTime}</li>
             </ul>
