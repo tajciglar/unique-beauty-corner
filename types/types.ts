@@ -1,3 +1,4 @@
+import { Decimal } from "@prisma/client/runtime/library";
 
 
 export interface Appointment {
@@ -14,7 +15,7 @@ export interface Order {
   name?: string;
   email?: string;
   phone?: string;
-  price?: number;
+  price?: number | Decimal;
   duration?: number; 
   services?: Service[];
   appointment?: Appointment;
