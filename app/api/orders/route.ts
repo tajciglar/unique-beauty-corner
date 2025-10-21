@@ -3,6 +3,7 @@ import { sendEmail } from "@utility/sendEmail";
 import { NextResponse } from "next/server";
 import prisma from "@lib/prisma";
 
+
 // GET /api/orders
 export async function GET() {
   try {
@@ -32,7 +33,7 @@ export async function GET() {
 // POST /api/orders - from termin/page.tsx
 export async function POST(req: Request) {
   try {
-    const { name, phone, email, date, startTime, duration, services, appointmentId } = await req.json();
+    const { name, phone, email, date, startTime, endTime, duration, services, appointmentId } = await req.json();
 
     const existingOrder = await prisma.order.findFirst({
       where: {
@@ -48,6 +49,27 @@ export async function POST(req: Request) {
     if (existingOrder) {
       return NextResponse.json({ message: "Termin zaseden" }, { status: 400 });
     }
+    // delete overlapping available appointments
+    const overlappingAppointments = await prisma.appointment.findMany({
+      where: {
+        date, 
+        available: true,
+        startTime: { lt: endTime },
+      },
+    });
+
+      console.log(overlappingAppointments)
+      await prisma.appointment.deleteMany({
+      where: {
+        date, // keep your existing date filter if you store a separate date field
+        available: true,
+        startTime: { lt: endTime },
+        NOT: { id: appointmentId },
+      },
+    });
+    console.log(overlappingAppointments)
+
+
 
     const newOrder = await prisma.order.create({
       data: {
@@ -70,7 +92,7 @@ export async function POST(req: Request) {
       where: { id: appointmentId },
       data: { available: false }, 
     });
-    console.log()
+ 
     // Send confirmation email
     sendEmail({
       ...newOrder,

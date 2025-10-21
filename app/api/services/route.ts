@@ -3,7 +3,7 @@ import prisma from "@lib/prisma";
 import type { ServiceCategory, Services } from "@prisma/client";
 
 export async function GET() {
-  console.log("Fetching services...");
+ 
   try {
     const services = await prisma.serviceCategory.findMany({
       include: {
@@ -23,7 +23,6 @@ export async function GET() {
       })),
     }));
 
-    console.log("Services fetched successfully");
     return NextResponse.json(formattedServices);
   } catch (error) {
     console.error("Error fetching services:", error);

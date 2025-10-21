@@ -16,7 +16,6 @@ const NewAppointment: React.FC = () => {
                 const data = await fetchNewOrders();
                 if (data) {
                     setNewOrders(Array.isArray(data) ? data : [data]);
-                    console.log(data);
                 }
             } catch (error) {
                 setError("Napaka pri nalaganju naročil.");

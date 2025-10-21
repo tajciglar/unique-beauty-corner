@@ -11,7 +11,7 @@ export default function ConfirmationPage() {
         const lastBooking = localStorage.getItem("lastBooking");
         setBookingData(lastBooking ? JSON.parse(lastBooking) as Order : undefined)
     }, [])
-    console.log(bookingData);
+   
     return (
         <div className="flex flex-col items-center justify-center h-screen">
         <h1 className="text-2xl font-bold mb-4">Potrditev termina</h1>
