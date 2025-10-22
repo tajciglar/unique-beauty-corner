@@ -23,8 +23,7 @@ export default function Termini() {
 
   const durationMinutes = totalTime; // already a number (sum of service times)
   const endDateTime = new Date(startDateTime.getTime() + durationMinutes * 60000);
-  console.log(endDateTime)
-  console.log(startDateTime)
+ 
 
   const handleSelectTimeSlot = (date: Date, time: string, selectedAppointment: Appointment) => {
     setSelectedAppointment(selectedAppointment);
@@ -35,7 +34,7 @@ export default function Termini() {
   const appointmentForm = () => { 
     setAppointment(true);
   }
-  console.log("selected", selectedDate)
+
   const bookAppointment = async (e: React.FormEvent) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget as HTMLFormElement);
