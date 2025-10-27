@@ -11,6 +11,9 @@ export async function GET() {
           include: {
             serviceCategory: true,
           },
+          orderBy: {
+          servicePrice: 'asc',
+        },
         },
       },
     });

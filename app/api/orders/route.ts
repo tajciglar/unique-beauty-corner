@@ -49,16 +49,7 @@ export async function POST(req: Request) {
     if (existingOrder) {
       return NextResponse.json({ message: "Termin zaseden" }, { status: 400 });
     }
-    // delete overlapping available appointments
-    const overlappingAppointments = await prisma.appointment.findMany({
-      where: {
-        date, 
-        available: true,
-        startTime: { lt: endTime },
-      },
-    });
-
-      console.log(overlappingAppointments)
+  
       await prisma.appointment.deleteMany({
       where: {
         date, // keep your existing date filter if you store a separate date field
@@ -67,7 +58,7 @@ export async function POST(req: Request) {
         NOT: { id: appointmentId },
       },
     });
-    console.log(overlappingAppointments)
+    
 
 
 
