@@ -1,6 +1,6 @@
 // app/api/appointments/getAvailable/route.ts
 import { NextResponse } from "next/server";
-import  prisma  from "@lib/prisma";
+import prisma from "@lib/prisma";
 
 export async function GET(req: Request) {
   try {
@@ -14,10 +14,26 @@ export async function GET(req: Request) {
       );
     }
 
+    const now = new Date();
+
     const availableAppointments = await prisma.appointment.findMany({
       where: {
         date: date,
         available: true,
+        // Only include future appointments
+        OR: [
+          {
+            date: {
+              gt: now.toISOString().split("T")[0], // Dates after today
+            },
+          },
+          {
+            date: date, // If it's today, filter by startTime
+            startTime: {
+              gte: now.toTimeString().split(" ")[0], // Start time later than now
+            },
+          },
+        ],
       },
       orderBy: {
         startTime: "asc",
