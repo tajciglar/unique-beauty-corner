@@ -84,16 +84,24 @@ export async function POST(req: Request) {
       data: { available: false }, 
     });
  
-    // Send confirmation email
-    sendEmail({
-      ...newOrder,
-      price: typeof newOrder.price === "object" && "toNumber" in newOrder.price ? newOrder.price : Number(newOrder.price),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      services: newOrder.services.map((service: any) => ({
-        ...service,
-        serviceTime: service.serviceTime === null ? undefined : service.serviceTime
-      }))
-    });
+    try {
+      await sendEmail({
+        ...newOrder,
+        price: typeof newOrder.price === "object" && "toNumber" in newOrder.price 
+          ? newOrder.price 
+          : Number(newOrder.price),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        services: newOrder.services.map((service: any) => ({
+          ...service,
+          serviceTime: service.serviceTime === null ? undefined : service.serviceTime
+        }))
+      });
+      console.log('Email sent successfully');
+    } catch (emailError) {
+      // Log the error but don't fail the entire request
+      console.error('Failed to send email:', emailError);
+      // You might want to add the order to a retry queue here
+    }
 
     return NextResponse.json(newOrder, { status: 201 });
   } catch (error) {
