@@ -3,7 +3,7 @@ import prisma from "@lib/prisma";
 import type { ServiceCategory, Services } from "@prisma/client";
 
 export async function GET() {
-  console.log("Fetching services...");
+ 
   try {
     const services = await prisma.serviceCategory.findMany({
       include: {
@@ -11,6 +11,9 @@ export async function GET() {
           include: {
             serviceCategory: true,
           },
+          orderBy: {
+          servicePrice: 'asc',
+        },
         },
       },
     });

@@ -1,20 +1,22 @@
-# Dockerfile.dev
 FROM node:18-alpine
 
-# Set working directory inside the container
 WORKDIR /app
 
-# Copy package files
-COPY package.json package-lock.json* ./
-
-# Install all dependencies
+# Copy package files and install dependencies
+COPY package*.json ./
 RUN npm install
 
-# Copy everything into the container
+# Copy project files
 COPY . .
 
-# Expose the Next.js port
+# Enable Prisma client generation
+RUN npx prisma generate
+
+# Environment variables for Next.js/Express hot reload
+ENV CHOKIDAR_USEPOLLING=true
+ENV WATCHPACK_POLLING=true
+
 EXPOSE 3000
 
-# Run Next.js in development mode
+# 👇 Run in dev mode (hot reload)
 CMD ["npm", "run", "dev"]

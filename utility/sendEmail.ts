@@ -27,6 +27,7 @@ export async function sendEmail(order: Order) {
     month: '2-digit',
     day: '2-digit',
   }).replaceAll(' ','');
+
   const mailToClient = {
   from: process.env.EMAIL_USER,
   to: email,

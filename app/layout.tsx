@@ -13,6 +13,9 @@ const bodoniModa = Bodoni_Moda({
 export const metadata: Metadata = {
   title: "Unique Beauty Corner",
   description: "Welcome to Unique Beauty Corner",
+  icons: {
+    icon: "/logo.png", 
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode;}>) {

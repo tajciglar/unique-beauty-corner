@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useService } from "../../context/ServiceContext";
 import ClientCalander from "../../components/ClientCalendar";
 import { Appointment } from "../../types/types";
+import { formatDateToLocalISO } from "@utility/changeDate";
 
 
 export default function Termini() {
@@ -16,7 +17,13 @@ export default function Termini() {
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const totalTime = servicesPicked.reduce((acc, curr) => acc + (curr.serviceTime || 0), 0);
   const price = servicesPicked.reduce((acc, curr) => acc + (curr.servicePrice || 0), 0);
-  
+  const [hours, minutes] = (selectedTimeSlot || "00:00").split(":").map(Number);
+  const startDateTime = new Date(selectedDate as Date);
+  startDateTime.setHours(hours, minutes, 0, 0);
+
+  const durationMinutes = totalTime; // already a number (sum of service times)
+  const endDateTime = new Date(startDateTime.getTime() + durationMinutes * 60000);
+ 
 
   const handleSelectTimeSlot = (date: Date, time: string, selectedAppointment: Appointment) => {
     setSelectedAppointment(selectedAppointment);
@@ -35,8 +42,9 @@ export default function Termini() {
       name: formData.get("name"),
       phone: formData.get("phone"),
       email: formData.get("email"),
-      date: selectedDate,
-      startTime: selectedTimeSlot,
+      date: selectedDate ? formatDateToLocalISO(selectedDate) : undefined,
+      startTime: startDateTime.toISOString(),
+      endTime: endDateTime.toISOString(),
       duration: totalTime,  
       price: servicesPicked.reduce((acc, curr) => acc + (curr.servicePrice || 0), 0),
       appointmentId: selectedAppointment?.id,
