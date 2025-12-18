@@ -98,7 +98,7 @@ export default function Home() {
               ))
             ) : (
               <p className="text-center text-lg font-medium text-[var(--terracotta)]">
-              Naročanje preko spleta trenutno ni možno. Obrnite se na +386 70 206 506
+              Naročanje preko spleta trenutno ni možno. Obrnite se na +386 70 654 560
               </p>
             )}
           </div>

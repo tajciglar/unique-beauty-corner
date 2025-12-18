@@ -70,7 +70,7 @@ export async function POST(req: Request) {
       where: { id: appointmentId },
       data: { available: false }, 
     });
-    console.log()
+    console.log("order created:", newOrder);
     // Send confirmation email
     sendEmail({
       ...newOrder,

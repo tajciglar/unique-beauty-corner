@@ -6,7 +6,7 @@ dotenv.config();
 
 export async function sendEmail(order: Order) {
   const { name, phone, email, duration, price, services, appointment } = order;
-
+  console.log("Preparing to send email for order:", order);
   // Use appointment data
   if (!appointment) {
     throw new Error("Appointment is undefined.");
@@ -27,7 +27,6 @@ export async function sendEmail(order: Order) {
     month: '2-digit',
     day: '2-digit',
   }).replaceAll(' ','');
-  console.log('Formatted date:', formattedDate);
   const mailToClient = {
   from: process.env.EMAIL_USER,
   to: email,

@@ -23,7 +23,6 @@ export async function GET() {
       })),
     }));
 
-    console.log("Services fetched successfully");
     return NextResponse.json(formattedServices);
   } catch (error) {
     console.error("Error fetching services:", error);
