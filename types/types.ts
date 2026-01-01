@@ -33,7 +33,8 @@ export interface Service {
   id: number;
   serviceName: string;
   servicePrice?: number;
-  serviceTime?: number;  
+  serviceTime?: number;
+  serviceDescription?: string;
   serviceCategoryId?: number;  
   serviceCategory?: ServiceCategory; 
   orders?: Order[]; 

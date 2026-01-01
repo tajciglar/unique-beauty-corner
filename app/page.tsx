@@ -15,6 +15,7 @@ export default function Home() {
 
   const { servicesPicked, setServicesPicked } = useService();
   const [serviceCategory, setServiceCategory] = useState<ServiceCategory[]>([]);
+  const [expandedService, setExpandedService] = useState<number | null>(null);
   
   const fetchServices = async () => { 
     const data = await getServices();
@@ -25,6 +26,10 @@ export default function Home() {
   useEffect(() => {
     fetchServices();
   }, []);
+
+  const toggleServiceDetails = (serviceId: number) => {
+    setExpandedService(expandedService === serviceId ? null : serviceId);
+  };
 
  
   const router = useRouter();
@@ -79,20 +84,50 @@ export default function Home() {
                 {category.categoryName}
                 </h3>
                 <ul className="space-y-2">
-                {category.services.map((service) => (
+                {category.services.map((service) => {
+                  const hasDescription = service.serviceDescription && service.serviceDescription.trim() !== '';
+                  return (
                   <li
                   key={service.serviceName}
-                  className="flex flex-col items-center lg:flex-row lg:justify-between text-lg font-normal lg:font-medium"
+                  className="border-b border-gray-200 last:border-b-0"
                   >
-                    <span className="w-full lg:w-1/3">{service.serviceName}</span>
-                    <div className="grid grid-cols-3 lg:w-1/2 pb-3 lg:pb-0">
-                    <span>{service.serviceTime ? `(${service.serviceTime} min)` : ''}</span>
-                      ·
-                      <span>{service.servicePrice} €</span>
+                    <div 
+                      className={`flex flex-col items-center lg:flex-row lg:justify-between text-lg font-normal lg:font-medium p-2 rounded transition-colors ${
+                        hasDescription ? 'cursor-pointer hover:bg-gray-50' : ''
+                      }`}
+                      onClick={hasDescription ? () => toggleServiceDetails(service.id) : undefined}
+                    >
+                      <span className="w-full lg:w-1/3">{service.serviceName}</span>
+                      <div className="grid grid-cols-3 lg:w-1/2 pb-3 lg:pb-0">
+                        <span>{service.serviceTime ? `(${service.serviceTime} min)` : ''}</span>
+                        ·
+                        <span>{service.servicePrice} €</span>
+                      </div>
+                      <div className="flex gap-2 items-center">
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            getService(service);
+                          }} 
+                          className="button pt-1 pb-1 px-3"
+                        >
+                          Izberi
+                        </button>
+                        {hasDescription && (
+                          <span className="text-sm text-gray-500">
+                            {expandedService === service.id ? '▼' : '▶'}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <button onClick={() => getService(service)} className="button pt-1 pb-1 w-1/">Izberi</button>
+                    {expandedService === service.id && hasDescription && (
+                      <div className="mt-2 p-4 bg-[var(--cream-white)] rounded-lg border border-gray-200 animate-in slide-in-from-top-2 duration-200">
+                        <p className="text-base">{service.serviceDescription}</p>
+                      </div>
+                    )}
                   </li>
-                ))}
+                  );
+                })}
                 </ul>
               </div>
               ))

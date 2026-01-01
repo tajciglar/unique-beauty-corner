@@ -47,12 +47,13 @@ model ServiceCategory {
 }
 
 model Services {
-  id                Int             @id @default(autoincrement())
-  serviceName       String
-  servicePrice      Float
-  serviceTime       Int? // Optional time field (in minutes)
-  serviceCategoryId Int
-  serviceCategory   ServiceCategory @relation(fields: [serviceCategoryId], references: [id])
-  Order             Order?          @relation(fields: [OrderId], references: [id])
-  OrderId           Int?
+  id                 Int             @id @default(autoincrement())
+  serviceName        String
+  servicePrice       Float
+  serviceTime        Int? // Optional time field (in minutes)
+  serviceDescription String? // Optional description field
+  serviceCategoryId  Int
+  serviceCategory    ServiceCategory @relation(fields: [serviceCategoryId], references: [id])
+  Order              Order?          @relation(fields: [OrderId], references: [id])
+  OrderId            Int?
 }
