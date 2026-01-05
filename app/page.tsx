@@ -80,9 +80,14 @@ export default function Home() {
                 key={category.id}
                 className="border-b-1 p-2 lg:p-6 bg-[var(--warm-gray)] shadow-lg rounded-2xl"
               >
-                <h3 className="text-xl font-bold mb-4 text-[var(--terracotta)]">
+                <h3 className="text-xl font-bold mb-2 text-[var(--terracotta)]">
                 {category.categoryName}
                 </h3>
+                {category.categoryDescription && (
+                  <p className="text-sm text-gray-700 mb-4 italic">
+                    {category.categoryDescription}
+                  </p>
+                )}
                 <ul className="space-y-2">
                 {category.services.map((service) => {
                   const hasDescription = service.serviceDescription && service.serviceDescription.trim() !== '';

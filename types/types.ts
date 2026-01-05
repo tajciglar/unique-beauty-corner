@@ -1,8 +1,5 @@
-import { Decimal } from "@prisma/client/runtime/library";
-
-
 export interface Appointment {
-  id?: number;   
+  id?: number;   
   date: string;
   startTime: string;
   endTime: string;
@@ -15,7 +12,7 @@ export interface Order {
   name?: string;
   email?: string;
   phone?: string;
-  price?: number | Decimal;
+  price?: number;
   duration?: number; 
   services?: Service[];
   appointment?: Appointment;
@@ -25,6 +22,7 @@ export interface Order {
 export interface ServiceCategory {
   id: number;
   categoryName: string;
+  categoryDescription?: string;
   services: Service[];
 }
 
@@ -35,6 +33,7 @@ export interface Service {
   servicePrice?: number;
   serviceTime?: number;
   serviceDescription?: string;
+  displayOrder?: number,
   serviceCategoryId?: number;  
   serviceCategory?: ServiceCategory; 
   orders?: Order[]; 
