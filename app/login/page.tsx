@@ -1,12 +1,24 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
+  const [isChecking, setIsChecking] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const accessGranted = sessionStorage.getItem('accessGranted');
+    if (accessGranted) {
+      // Redirect based on role
+      router.push(accessGranted === "admin" ? "/admin" : "/");
+    } else {
+      setIsChecking(false);
+    }
+  }, [router]);
 
   const handleLogin = async () => {
     try {
@@ -33,6 +45,14 @@ export default function Login() {
       setError("Something went wrong. Try again.");
     }
   };
+
+  if (isChecking) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[var(--cream-white)]">
+        <div className="text-[var(--terracotta)]">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[var(--cream-white)]">
