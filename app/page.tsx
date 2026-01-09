@@ -97,24 +97,21 @@ export default function Home() {
                   className="border-b border-gray-200 last:border-b-0"
                   >
                     <div 
-                      className={`flex flex-col items-center lg:flex-row lg:justify-between text-lg font-normal lg:font-medium p-2 rounded transition-colors ${
+                      className={`grid grid-cols-1 lg:grid-cols-[2fr_auto_auto_auto] gap-2 lg:gap-4 items-center text-lg font-normal lg:font-medium p-2 rounded transition-colors ${
                         hasDescription ? 'cursor-pointer hover:bg-gray-50' : ''
                       }`}
                       onClick={hasDescription ? () => toggleServiceDetails(service.id) : undefined}
                     >
-                      <span className="w-full lg:w-1/3">{service.serviceName}</span>
-                      <div className="grid grid-cols-3 lg:w-1/2 pb-3 lg:pb-0">
-                        <span>{service.serviceTime ? `(${service.serviceTime} min)` : ''}</span>
-                        ·
-                        <span>{service.servicePrice} €</span>
-                      </div>
-                      <div className="flex gap-2 items-center">
+                      <span className="w-full">{service.serviceName}</span>
+                      <span className="text-center lg:text-left">{service.serviceTime ? `(${service.serviceTime} min)` : ''}</span>
+                      <span className="text-center lg:text-left whitespace-nowrap">{service.servicePrice} €</span>
+                      <div className="flex gap-2 items-center justify-end lg:justify-start">
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
                             getService(service);
                           }} 
-                          className="button pt-1 pb-1 px-3"
+                          className="button pt-1 pb-1 px-3 whitespace-nowrap"
                         >
                           Izberi
                         </button>
