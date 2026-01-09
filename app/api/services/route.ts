@@ -12,7 +12,7 @@ export async function GET() {
             serviceCategory: true,
           },
           orderBy: {
-          servicePrice: 'asc',
+          displayOrder: 'asc',
         },
         },
       },
