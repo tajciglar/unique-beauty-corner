@@ -17,13 +17,7 @@
     "@fullcalendar/interaction": "^6.1.15",
     "@fullcalendar/react": "^6.1.15",
     "@fullcalendar/timegrid": "^6.1.15",
-<<<<<<< HEAD
-    "@prisma/client": "^6.16.3",
-    "@prisma/extension-accelerate": "^2.0.2",
-    "next": "^15.4.8",
-=======
     "next": "^15.4.6",
->>>>>>> 6fdd65790ac879105630fa1cddd92c1ff7970895
     "nodemailer": "^7.0.5",
     "pg": "^8.16.3",
     "react": "^19.0.0",
