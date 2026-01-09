@@ -97,15 +97,15 @@ export default function Home() {
                   className="border-b border-gray-200 last:border-b-0"
                   >
                     <div 
-                      className={`grid grid-cols-1 lg:grid-cols-[2fr_auto_auto_auto] gap-2 lg:gap-4 items-center text-lg font-normal lg:font-medium p-2 rounded transition-colors ${
+                      className={`grid grid-cols-[1fr_auto_auto] lg:grid-cols-[1fr_120px_80px_140px] gap-x-2 gap-y-2 lg:gap-4 items-start text-lg font-normal lg:font-medium p-2 rounded transition-colors ${
                         hasDescription ? 'cursor-pointer hover:bg-gray-50' : ''
                       }`}
                       onClick={hasDescription ? () => toggleServiceDetails(service.id) : undefined}
                     >
-                      <span className="w-full">{service.serviceName}</span>
-                      <span className="text-center lg:text-left">{service.serviceTime ? `(${service.serviceTime} min)` : ''}</span>
-                      <span className="text-center lg:text-left whitespace-nowrap">{service.servicePrice} €</span>
-                      <div className="flex gap-2 items-center justify-end lg:justify-start">
+                      <span className="col-span-3 lg:col-span-1">{service.serviceName}</span>
+                      <span className="text-left whitespace-nowrap lg:col-start-2">{service.serviceTime ? `(${service.serviceTime} min)` : ''}</span>
+                      <span className="text-left whitespace-nowrap lg:col-start-3">{service.servicePrice} €</span>
+                      <div className="flex gap-2 items-center justify-start lg:col-start-4">
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
