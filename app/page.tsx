@@ -105,24 +105,21 @@ export default function Home() {
                   className="border-b border-gray-200 last:border-b-0"
                   >
                     <div 
-                      className={`flex flex-col items-center lg:flex-row lg:justify-between text-lg font-normal lg:font-medium p-2 rounded transition-colors ${
+                      className={`grid grid-cols-[1fr_auto_auto] lg:grid-cols-[1fr_120px_80px_140px] gap-x-2 gap-y-2 lg:gap-4 items-start text-lg font-normal lg:font-medium p-2 rounded transition-colors ${
                         hasDescription ? 'cursor-pointer hover:bg-gray-50' : ''
                       }`}
                       onClick={hasDescription ? () => toggleServiceDetails(service.id) : undefined}
                     >
-                      <span className="w-full lg:w-1/3">{service.serviceName}</span>
-                      <div className="grid grid-cols-3 lg:w-1/2 pb-3 lg:pb-0">
-                        <span>{service.serviceTime ? `(${service.serviceTime} min)` : ''}</span>
-                        ·
-                        <span>{service.servicePrice} €</span>
-                      </div>
-                      <div className="flex gap-2 items-center">
+                      <span className="col-span-3 lg:col-span-1">{service.serviceName}</span>
+                      <span className="text-left whitespace-nowrap lg:col-start-2">{service.serviceTime ? `(${service.serviceTime} min)` : ''}</span>
+                      <span className="text-left whitespace-nowrap lg:col-start-3">{service.servicePrice} €</span>
+                      <div className="flex gap-2 items-center justify-start lg:col-start-4">
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
                             getService(service);
                           }} 
-                          className="button pt-1 pb-1 px-3"
+                          className="button pt-1 pb-1 px-3 whitespace-nowrap"
                         >
                           Izberi
                         </button>
@@ -146,7 +143,7 @@ export default function Home() {
               ))
             ) : (
               <p className="text-center text-lg font-medium text-[var(--terracotta)]">
-              Naročanje preko spleta trenutno ni možno. Obrnite se na +386 70 206 506
+              Naročanje preko spleta trenutno ni možno. Obrnite se na +386 70 654 560
               </p>
             )}
           </div>

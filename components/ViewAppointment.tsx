@@ -223,7 +223,7 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
                   <input
                     type="number"
                     name="price"
-                    value={appointment.order?.price ?? ""}
+                    value={appointment.order?.price != null ? String(appointment.order.price) : ""}
                     onChange={handleAppointmentChange}
                     className="w-full border rounded px-2 py-1"
                   />

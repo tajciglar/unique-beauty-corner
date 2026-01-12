@@ -10,7 +10,7 @@ import { formatDateToLocalISO } from "@utility/changeDate";
 
 export default function Termini() {
   const router = useRouter();
-  const { servicesPicked } = useService();
+  const { servicesPicked, clearServicesPicked } = useService();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
   const [appointment, setAppointment] = useState<boolean>(false);
@@ -67,6 +67,8 @@ export default function Termini() {
       if (response.ok) {
         const result = await response.json();
         localStorage.setItem("lastBooking", JSON.stringify(result));
+        // Clear selected services after successful booking
+        clearServicesPicked();
         router.push("/termin/confirmation");
       } else {
         console.error("Error booking appointment:", response.statusText);
