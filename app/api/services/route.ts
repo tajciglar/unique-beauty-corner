@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import prisma from "@lib/prisma";
-import type { ServiceCategory, Services } from "@prisma/client";
 
 export async function GET() {
  
@@ -18,9 +17,9 @@ export async function GET() {
       },
     });
 
-    const formattedServices = services.map((category: ServiceCategory & { services: Services[] }) => ({
+    const formattedServices = services.map((category: typeof services[0]) => ({
       ...category,
-      services: category.services.map((service: Services) => ({
+      services: category.services.map((service: typeof category.services[0]) => ({
         ...service,
         servicePrice: Number(service.servicePrice),
       })),

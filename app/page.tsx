@@ -1,6 +1,6 @@
 'use client'
 import { Bodoni_Moda } from "next/font/google";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef  } from "react";
 import { useRouter } from "next/navigation";
 import { useService } from "../context/ServiceContext";
 import getServices from "../hooks/useFetchServices";
@@ -16,6 +16,7 @@ export default function Home() {
   const { servicesPicked, setServicesPicked } = useService();
   const [serviceCategory, setServiceCategory] = useState<ServiceCategory[]>([]);
   const [expandedService, setExpandedService] = useState<number | null>(null);
+  const summaryRef = useRef<HTMLDivElement>(null);
   
   const fetchServices = async () => { 
     const data = await getServices();
@@ -40,6 +41,13 @@ export default function Home() {
           return
         } else {
           setServicesPicked((prevServices: Service[]) => prevServices ? [...prevServices, service] : [service]);
+
+          setTimeout(() => {
+            summaryRef.current?.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'start' 
+            });
+          }, 100);
         }
       };
 
@@ -141,7 +149,7 @@ export default function Home() {
           </div>
         </div>
            { servicesPicked.length > 0 && (    
-            <div className=" justify-center items-center p-10 mx-auto w-full">
+            <div ref={summaryRef} className=" justify-center items-center p-10 mx-auto w-full">
                 <div className="flex flex-col gap-4 justify-center items-center border-1  p-6 bg-[var(--warm-gray)] shadow-lg rounded-2xl w-full lg:sticky lg:top-[10px] lg:bottom-[10px]">
                     <div className="w-full flex flex-col gap-4 justify-center items-center">
                         <h3 className="text-2xl">Storitve:</h3>
