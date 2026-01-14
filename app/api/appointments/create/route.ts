@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@lib/prisma";
+import { sendEmail } from "@utility/sendEmail";
 
 export async function POST(req: Request) {
   try {
@@ -49,6 +50,25 @@ export async function POST(req: Request) {
           },
         },
       });
+      try {
+        await sendEmail({
+          ...newAppointment,
+          price: typeof newAppointment.order?.price === "object" && "toNumber" in newAppointment.order.price 
+            ? newAppointment.order?.price
+            : Number(newAppointment.order?.price),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          services: newAppointment.order?.services.map((service: any) => ({
+            ...service,
+            serviceTime: service.serviceTime === null ? undefined : service.serviceTime
+          }))
+        });
+        console.log('Email sent successfully');
+      } catch (emailError) {
+        // Log the error but don't fail the entire request
+        console.error('Failed to send email:', emailError);
+        // You might want to add the order to a retry queue here
+      }
+
     } else {
       newAppointment = await prisma.appointment.create({
         data: {
