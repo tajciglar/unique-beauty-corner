@@ -86,16 +86,17 @@ export async function POST(req: Request) {
  
     try {
       await sendEmail({
-        ...newOrder,
-        price: typeof newOrder.price === "object" && "toNumber" in newOrder.price 
-          ? newOrder.price 
-          : Number(newOrder.price),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        services: newOrder.services.map((service: any) => ({
-          ...service,
-          serviceTime: service.serviceTime === null ? undefined : service.serviceTime
-        }))
-      });
+      name: newOrder.name!,
+      phone: newOrder.phone!,
+      email: newOrder.email!,
+      duration: newOrder.duration ?? 0,
+      price: typeof newOrder.price === "object" && "toNumber" in newOrder.price
+        ? newOrder.price
+        : Number(newOrder.price),
+      services: newOrder.services,
+      date: newOrder.appointment!.date,
+      startTime: newOrder.appointment!.startTime,
+    });
       console.log('Email sent successfully');
     } catch (emailError) {
       // Log the error but don't fail the entire request

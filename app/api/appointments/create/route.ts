@@ -50,19 +50,24 @@ export async function POST(req: Request) {
           },
         },
       });
+      console.log("try email")
       try {
         await sendEmail({
-          ...newAppointment,
-          price: typeof newAppointment.order?.price === "object" && "toNumber" in newAppointment.order.price 
-            ? newAppointment.order?.price
-            : Number(newAppointment.order?.price),
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          services: newAppointment.order?.services.map((service: any) => ({
-            ...service,
-            serviceTime: service.serviceTime === null ? undefined : service.serviceTime
-          }))
-        });
-        console.log('Email sent successfully');
+          name: newAppointment.order!.name!,
+          phone: newAppointment.order!.phone!,
+          email: newAppointment.order!.email!,
+          duration: Number(newAppointment.order!.duration ?? 0),
+          price: Number(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            typeof newAppointment.order!.price === "object" && newAppointment.order!.price !== null && typeof (newAppointment.order!.price as any).toNumber === "function"
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              ? (newAppointment.order!.price as any).toNumber()
+              : newAppointment.order!.price
+          ),
+          services: newAppointment.order!.services,
+          date: newAppointment.date,
+          startTime: newAppointment.startTime,
+        })
       } catch (emailError) {
         // Log the error but don't fail the entire request
         console.error('Failed to send email:', emailError);
