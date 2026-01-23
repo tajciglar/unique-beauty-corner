@@ -5,17 +5,26 @@ import { useRouter } from "next/navigation";
 import { useService } from "../context/ServiceContext";
 import getServices from "../hooks/useFetchServices";
 import { ServiceCategory, Service } from "../types/types";
+import AdminNotificationBanner from "../components/AdminNotificationBanner";
+
 const bodoniModa = Bodoni_Moda({
   variable: "--font-bodoni-moda",
   subsets: ["latin"],
 });
 
+interface Notification {
+  id: string;
+  message: string;
+  type: 'info' | 'success' | 'warning' | 'alert';
+  isActive: boolean;
+  createdAt: Date;
+}
 
 export default function Home() {
-
   const { servicesPicked, setServicesPicked } = useService();
   const [serviceCategory, setServiceCategory] = useState<ServiceCategory[]>([]);
   const [expandedService, setExpandedService] = useState<number | null>(null);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const summaryRef = useRef<HTMLDivElement>(null);
   
   const fetchServices = async () => { 
@@ -24,42 +33,60 @@ export default function Home() {
       setServiceCategory(data);
     }
   }
+
   useEffect(() => {
     fetchServices();
+    
+    // Load notifications from localStorage
+    const savedNotifications = localStorage.getItem('adminNotifications');
+    if (savedNotifications) {
+      console.log(savedNotifications)
+      setNotifications(JSON.parse(savedNotifications));
+    }
   }, []);
 
   const toggleServiceDetails = (serviceId: number) => {
     setExpandedService(expandedService === serviceId ? null : serviceId);
   };
 
- 
   const router = useRouter();
   const getService = (service: Service) => {
-        const isServiceAlreadyPicked = servicesPicked.some((s) => s.serviceName === service.serviceName && s.serviceCategoryId === service.serviceCategoryId);
-        if (isServiceAlreadyPicked) {
-          alert("Storitve že izbrana"); 
-          return
-        } else {
-          setServicesPicked((prevServices: Service[]) => prevServices ? [...prevServices, service] : [service]);
+    const isServiceAlreadyPicked = servicesPicked.some((s) => s.serviceName === service.serviceName && s.serviceCategoryId === service.serviceCategoryId);
+    if (isServiceAlreadyPicked) {
+      alert("Storitve že izbrana"); 
+      return
+    } else {
+      setServicesPicked((prevServices: Service[]) => prevServices ? [...prevServices, service] : [service]);
 
-          setTimeout(() => {
-            summaryRef.current?.scrollIntoView({ 
-              behavior: 'smooth', 
-              block: 'start' 
-            });
-          }, 100);
-        }
-      };
-
-    const bookService = () => {
-      if (servicesPicked.length) {
-        router.push('/termin');
-        }
+      setTimeout(() => {
+        summaryRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }, 100);
     }
+  };
+
+  const bookService = () => {
+    if (servicesPicked.length) {
+      router.push('/termin');
+    }
+  }
 
   return (
     <div>
-      <section className="flex flex-col items-center justify-center h-screen bg-[var(--cream-white)] text-[var(--earth-brown)]">
+      {/* Notification Banner - Fixed at top */}
+      {notifications.some(n => n.isActive) && (
+        <div className="fixed top-0 left-0 right-0 z-50">
+          <div className="container mx-auto px-4 py-2">
+            <AdminNotificationBanner notifications={notifications} />
+          </div>
+        </div>
+      )}
+
+      <section className={`flex flex-col items-center justify-center h-screen bg-[var(--cream-white)] text-[var(--earth-brown)] ${
+        notifications.some(n => n.isActive) ? 'pt-20' : ''
+      }`}>
         <div className="mb-[30%] lg:mr-[30%]">
           <h1
             className={`${bodoniModa.variable} text-7xl font-bold m-3`}
@@ -148,29 +175,29 @@ export default function Home() {
             )}
           </div>
         </div>
-           { servicesPicked.length > 0 && (    
-            <div ref={summaryRef} className=" justify-center items-center p-10 mx-auto w-full">
-                <div className="flex flex-col gap-4 justify-center items-center border-1  p-6 bg-[var(--warm-gray)] shadow-lg rounded-2xl w-full lg:sticky lg:top-[10px] lg:bottom-[10px]">
-                    <div className="w-full flex flex-col gap-4 justify-center items-center">
-                        <h3 className="text-2xl">Storitve:</h3>
-                            {servicesPicked.map((service, index) => (
-                            <div key={index} className="w-full font-light">
-                                <p className="font-bold">{service.serviceCategory?.categoryName}</p>
-                                <p>{service.serviceName}</p>
-                                <p>Cena: {service.servicePrice} €</p>
-                                <p>Trajanje: {service.serviceTime ? `${service.serviceTime} min` : 'N/A'}</p>
-                                <button className="button text-sm px-2 py-1" onClick={() => setServicesPicked((prevServices: Service[]) => prevServices.filter((s) => !(s.serviceName === service.serviceName && s.serviceCategoryId === service.serviceCategoryId)))}>Odstrani</button>
-                            </div>
-                            ))}
-                    </div>
-                    <div className="mt-4 w-full">
-                        <h3>Skupaj:</h3>
-                        <p>Skupni čas: {servicesPicked.reduce((total, service) => total + (service.serviceTime || 0), 0)} min</p>
-                        <p>Skupna cena: {servicesPicked.reduce((total, service) => total + (service.servicePrice ?? 0), 0)} €</p>
-                    </div>
-                    <button className="button" onClick={bookService}>Izberi termin</button>
-                </div>
+        { servicesPicked.length > 0 && (    
+          <div ref={summaryRef} className=" justify-center items-center p-10 mx-auto w-full">
+            <div className="flex flex-col gap-4 justify-center items-center border-1  p-6 bg-[var(--warm-gray)] shadow-lg rounded-2xl w-full lg:sticky lg:top-[10px] lg:bottom-[10px]">
+              <div className="w-full flex flex-col gap-4 justify-center items-center">
+                <h3 className="text-2xl">Storitve:</h3>
+                {servicesPicked.map((service, index) => (
+                  <div key={index} className="w-full font-light">
+                    <p className="font-bold">{service.serviceCategory?.categoryName}</p>
+                    <p>{service.serviceName}</p>
+                    <p>Cena: {service.servicePrice} €</p>
+                    <p>Trajanje: {service.serviceTime ? `${service.serviceTime} min` : 'N/A'}</p>
+                    <button className="button text-sm px-2 py-1" onClick={() => setServicesPicked((prevServices: Service[]) => prevServices.filter((s) => !(s.serviceName === service.serviceName && s.serviceCategoryId === service.serviceCategoryId)))}>Odstrani</button>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 w-full">
+                <h3>Skupaj:</h3>
+                <p>Skupni čas: {servicesPicked.reduce((total, service) => total + (service.serviceTime || 0), 0)} min</p>
+                <p>Skupna cena: {servicesPicked.reduce((total, service) => total + (service.servicePrice ?? 0), 0)} €</p>
+              </div>
+              <button className="button" onClick={bookService}>Izberi termin</button>
             </div>
+          </div>
         )}
       </section>
     </div>
