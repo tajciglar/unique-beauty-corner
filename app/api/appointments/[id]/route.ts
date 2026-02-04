@@ -5,10 +5,12 @@ import prisma from "@lib/prisma";
 import { Service } from "../../../../types/types";
 
 // GET appointment by ID
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function GET(req: NextRequest, context: any) {
+export async function GET(
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = context.params;
+    const { id } = await context.params; // <- ADD AWAIT HERE
     const appointmentId = Number(id);
 
     if (isNaN(appointmentId)) {
@@ -46,9 +48,11 @@ export async function GET(req: NextRequest, context: any) {
 }
 
 // PUT update appointment
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function PUT(req: NextRequest, context: any) {
-  const { id } = context.params;
+export async function PUT(
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  const { id } = await context.params; // <- ADD AWAIT HERE
   const appointmentId = Number(id);
   const updatedData = await req.json();
 
@@ -105,9 +109,11 @@ export async function PUT(req: NextRequest, context: any) {
 }
 
 // DELETE appointment
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function DELETE(req: NextRequest, context: any) {
-  const { id } = context.params;
+export async function DELETE(
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  const { id } = await context.params; // <- ADD AWAIT HERE
   const appointmentId = Number(id);
 
   if (!appointmentId) {
