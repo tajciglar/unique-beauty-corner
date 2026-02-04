@@ -35,15 +35,24 @@ export default function Home() {
   }
 
   useEffect(() => {
-    fetchServices();
+  const fetchData = async () => {
+    await fetchServices();
     
-    // Load notifications from localStorage
-    const savedNotifications = localStorage.getItem('adminNotifications');
-    if (savedNotifications) {
-      console.log(savedNotifications)
-      setNotifications(JSON.parse(savedNotifications));
+    // Load notifications from API
+    try {
+      const notificationsRes = await fetch('/api/notifications');
+      if (notificationsRes.ok) {
+        console.log('Fetched notifications:', notificationsRes);
+        const notificationsData = await notificationsRes.json();
+        setNotifications(notificationsData);
+      }
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
     }
-  }, []);
+  };
+
+  fetchData();
+}, []);
 
   const toggleServiceDetails = (serviceId: number) => {
     setExpandedService(expandedService === serviceId ? null : serviceId);

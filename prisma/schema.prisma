@@ -59,3 +59,19 @@ model Services {
   Order              Order?          @relation(fields: [OrderId], references: [id])
   OrderId            Int?
 }
+
+model Notification {
+  id        Int              @id @default(autoincrement())
+  message   String
+  type      NotificationType
+  isActive  Boolean          @default(true)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+enum NotificationType {
+  info
+  success
+  warning
+  alert
+}
