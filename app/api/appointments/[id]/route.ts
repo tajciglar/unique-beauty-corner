@@ -47,12 +47,11 @@ export async function GET(
   }
 }
 
-// PUT update appointment
 export async function PUT(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await context.params; // <- ADD AWAIT HERE
+  const { id } = await context.params;
   const appointmentId = Number(id);
   const updatedData = await req.json();
 
@@ -79,8 +78,9 @@ export async function PUT(
                   phone: order.phone,
                   price: Number(order.price || 0),
                   duration: order.duration,
-                  services:
-                    order.services?.map((service: Service) => ({ id: service.id })) || [],
+                  services: {
+                    connect: order.services?.map((service: Service) => ({ id: service.id })) || []
+                  }
                 },
                 update: {
                   name: order.name,
@@ -88,8 +88,9 @@ export async function PUT(
                   phone: order.phone,
                   price: Number(order.price || 0),
                   duration: order.duration,
-                  services:
-                    order.services?.map((service: Service) => ({ id: service.id })) || [],
+                  services: {
+                    set: order.services?.map((service: Service) => ({ id: service.id })) || []
+                  }
                 },
               },
             }
