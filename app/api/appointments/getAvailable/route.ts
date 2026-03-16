@@ -1,9 +1,10 @@
 // app/api/appointments/getAvailable/route.ts
 import { NextResponse } from "next/server";
 import prisma from "@lib/prisma";
-import { z } from "zod";
 
-const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+const isValidDate = (date: string): boolean => {
+  return /^\d{4}-\d{2}-\d{2}$/.test(date);
+};
 
 export async function GET(req: Request) {
   try {
@@ -17,8 +18,7 @@ export async function GET(req: Request) {
         { status: 400 }
       );
     }
-    const parsedDate = dateSchema.safeParse(date);
-    if (!parsedDate.success) {
+    if (!isValidDate(date)) {
       return NextResponse.json(
         { message: "Invalid date format" },
         { status: 400 }
