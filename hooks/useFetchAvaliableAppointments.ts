@@ -1,8 +1,12 @@
-const fetchAvaliableAppointments = async (date: string) => {
+const fetchAvaliableAppointments = async (date: string, duration?: number) => {
     if (!date) return null;
     try {
+        const params = new URLSearchParams({ date });
+        if (duration) {
+            params.append('duration', duration.toString());
+        }
         const response = await fetch(
-        `/api/appointments/getAvailable?date=${date}`,
+        `/api/appointments/getAvailable?${params.toString()}`,
         {
             method: 'GET',
             headers: {
