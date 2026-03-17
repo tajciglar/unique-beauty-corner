@@ -3,6 +3,25 @@
 import { NextResponse, NextRequest } from "next/server";
 import prisma from "@lib/prisma";
 import { Service } from "../../../../types/types";
+import { getSessionFromRequest } from "@lib/auth";
+import { z } from "zod";
+
+const appointmentUpdateSchema = z.object({
+  date: z.string().min(1).optional(),
+  startTime: z.string().min(1).optional(),
+  endTime: z.string().min(1).optional(),
+  available: z.boolean().optional(),
+  order: z
+    .object({
+      name: z.string().min(1).optional(),
+      email: z.string().email().optional(),
+      phone: z.string().min(5).optional(),
+      price: z.number().nonnegative().optional(),
+      duration: z.number().int().nonnegative().optional(),
+      services: z.array(z.object({ id: z.number().int().positive() })).optional(),
+    })
+    .optional(),
+});
 
 // GET appointment by ID
 export async function GET(
@@ -10,6 +29,11 @@ export async function GET(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = getSessionFromRequest(req);
+    if (!session || session.role !== "admin") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     const { id } = await context.params; // <- ADD AWAIT HERE
     const appointmentId = Number(id);
 
@@ -51,18 +75,32 @@ export async function PUT(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await context.params;
-  const appointmentId = Number(id);
-  const updatedData = await req.json();
-
-  if (!appointmentId || !updatedData) {
-    return NextResponse.json(
-      { message: "Appointment ID and data are required" },
-      { status: 400 }
-    );
-  }
-
   try {
+    const session = getSessionFromRequest(req);
+    if (!session || session.role !== "admin") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await context.params;
+    const appointmentId = Number(id);
+
+    if (Number.isNaN(appointmentId)) {
+      return NextResponse.json(
+        { message: "Invalid appointment ID" },
+        { status: 400 }
+      );
+    }
+
+    const payload = await req.json();
+    const parsed = appointmentUpdateSchema.safeParse(payload);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { message: "Invalid payload", errors: parsed.error.flatten() },
+        { status: 400 }
+      );
+    }
+
+    const updatedData = parsed.data;
     const { order, ...appointmentData } = updatedData;
 
     const updatedAppointment = await prisma.appointment.update({
@@ -114,17 +152,22 @@ export async function DELETE(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await context.params; // <- ADD AWAIT HERE
-  const appointmentId = Number(id);
-
-  if (!appointmentId) {
-    return NextResponse.json(
-      { message: "Appointment ID is required" },
-      { status: 400 }
-    );
-  }
-
   try {
+    const session = getSessionFromRequest(req);
+    if (!session || session.role !== "admin") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await context.params; // <- ADD AWAIT HERE
+    const appointmentId = Number(id);
+
+    if (Number.isNaN(appointmentId)) {
+      return NextResponse.json(
+        { message: "Appointment ID is required" },
+        { status: 400 }
+      );
+    }
+
     await prisma.order.deleteMany({ where: { appointmentId } });
     await prisma.appointment.delete({ where: { id: appointmentId } });
 

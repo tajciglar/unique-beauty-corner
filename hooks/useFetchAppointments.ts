@@ -7,6 +7,7 @@ const fetchAppointments = async (): Promise<{ availableAppointments: Appointment
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
     });
 
     if (!response.ok) { 

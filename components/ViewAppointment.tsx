@@ -32,7 +32,9 @@ const ViewAppointment: React.FC<ViewAppointmentProps> = ({
   useEffect(() => {
     const fetchAppointment = async () => {
       try {
-        const response = await fetch(`/api/appointments/${appointmentId}`);
+        const response = await fetch(`/api/appointments/${appointmentId}`, {
+          credentials: 'include',
+        });
         const data = await response.json();
         setAppointment(data);
         setSelectedServices(data.order?.services || []);

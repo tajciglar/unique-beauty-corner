@@ -10,14 +10,20 @@ export default function Login() {
   const router = useRouter();
 
   useEffect(() => {
-    // Check if user is already logged in
-    const accessGranted = sessionStorage.getItem('accessGranted');
-    if (accessGranted) {
-      // Redirect based on role
-      router.push(accessGranted === "admin" ? "/admin" : "/");
-    } else {
-      setIsChecking(false);
-    }
+    const checkSession = async () => {
+      try {
+        const res = await fetch("/api/me", { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json();
+          router.push(data.role === "admin" ? "/admin" : "/");
+        } else {
+          setIsChecking(false);
+        }
+      } catch {
+        setIsChecking(false);
+      }
+    };
+    checkSession();
   }, [router]);
 
   const handleLogin = async () => {
@@ -28,6 +34,7 @@ export default function Login() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({ code }),
       });
       
@@ -35,7 +42,6 @@ export default function Login() {
       const data = await res.json();
       
       if (data.success) {
-        sessionStorage.setItem("accessGranted", data.role);
         router.push(data.role === "admin" ? "/admin" : "/");
       } else {
         setError(data.message || "Invalid code");

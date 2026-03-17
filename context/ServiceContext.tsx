@@ -66,13 +66,25 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    // Check authentication - use sessionStorage to match login page
-    const accessGranted = sessionStorage.getItem('accessGranted');
-    if (!accessGranted) {
-      router.push('/login');
-    } else {
-      setIsCheckingAuth(false);
-    }
+    let isActive = true;
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/me', { credentials: 'include' });
+        if (!res.ok) {
+          router.push('/login');
+          return;
+        }
+        if (isActive) setIsCheckingAuth(false);
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        router.push('/login');
+      }
+    };
+    checkAuth();
+
+    return () => {
+      isActive = false;
+    };
   }, [router, pathname]);
 
   // Show nothing while checking authentication to prevent flash

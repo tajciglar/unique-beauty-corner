@@ -16,6 +16,7 @@ export interface Order {
   duration?: number; 
   services?: Service[];
   appointment?: Appointment;
+  calendarToken?: string;
 }
 
 

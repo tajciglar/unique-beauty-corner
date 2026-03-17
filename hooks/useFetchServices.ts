@@ -3,7 +3,7 @@ import { ServiceCategory } from "../types/types";
 
 const getServices = async (): Promise<ServiceCategory[] | null> => { 
     try {
-      const response = await fetch("api/services",
+      const response = await fetch("/api/services",
         {
           method: 'GET',
           headers: {
