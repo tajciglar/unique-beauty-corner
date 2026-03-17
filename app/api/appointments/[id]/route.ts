@@ -111,23 +111,23 @@ export async function PUT(
           ? {
               upsert: {
                 create: {
-                  name: order.name,
-                  email: order.email,
-                  phone: order.phone,
+                  name: order.name || '',
+                  email: order.email || '',
+                  phone: order.phone || '',
                   price: Number(order.price || 0),
-                  duration: order.duration,
+                  duration: order.duration || 0,
                   services: {
-                    connect: order.services?.map((service: Service) => ({ id: service.id })) || []
+                    connect: order.services?.map((service: { id: number }) => ({ id: service.id })) || []
                   }
                 },
                 update: {
-                  name: order.name,
-                  email: order.email,
-                  phone: order.phone,
+                  name: order.name || '',
+                  email: order.email || '',
+                  phone: order.phone || '',
                   price: Number(order.price || 0),
-                  duration: order.duration,
+                  duration: order.duration || 0,
                   services: {
-                    set: order.services?.map((service: Service) => ({ id: service.id })) || []
+                    set: order.services?.map((service: { id: number }) => ({ id: service.id })) || []
                   }
                 },
               },
