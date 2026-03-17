@@ -55,6 +55,7 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, avail
       const response = await fetch('/api/appointments/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(appointmentData),
       });
 
@@ -79,6 +80,7 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, avail
     try {
       const response = await fetch(`/api/appointments/${id}`, {
         method: 'DELETE',
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -98,6 +100,7 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, avail
       const response = await fetch(`/api/appointments/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(updatedData),
       });
 

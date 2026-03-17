@@ -2,16 +2,17 @@ import React, { useState, useEffect } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { sl } from "date-fns/locale";
-import fetchAppointments from "../hooks/useFetchAppointments"; // <-- using this one now
+import fetchPublicAppointments from "../hooks/useFetchPublicAppointments";
 import fetchAvaliableAppointments from "../hooks/useFetchAvaliableAppointments";
 import { formatDateToLocalISO } from "../utility/changeDate";
 import { Appointment } from "../types/types";
 
 interface ClientCalendarProps {
   onSelectTimeSlot: (date: Date, time: string, appointment: Appointment) => void;
+  requiredDuration?: number;
 }
 
-export default function KoledarZaStranke({ onSelectTimeSlot }: ClientCalendarProps) {
+export default function KoledarZaStranke({ onSelectTimeSlot, requiredDuration }: ClientCalendarProps) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [timeSlots, setTimeSlots] = useState<string[]>([]);
   const [availableAppointments, setAvailableAppointments] = useState<Appointment[]>([]);
@@ -20,19 +21,16 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: ClientCalendarPro
   // Fetch all booked appointments when component mounts
   useEffect(() => {
     const fetchBookedAppointments = async () => {
-      const response = await fetchAppointments();
+      const availableAppointments = await fetchPublicAppointments();
 
-      if (response) {
-        const { availableAppointments } = response;
-        // Extract unique booked dates
-        const uniqueBookedDates = Array.from(
-          new Set(availableAppointments.map((appointment) => appointment.date))
-        );
+      if (!availableAppointments) return;
 
-        // Convert to JS Date objects
-        const bookedDays = uniqueBookedDates.map((date) => new Date(date));
-        setHighlightedDays(bookedDays);
-      }
+      const uniqueDates = Array.from(
+        new Set(availableAppointments.map((appointment) => appointment.date))
+      );
+
+      const bookedDays = uniqueDates.map((date) => new Date(date));
+      setHighlightedDays(bookedDays);
     };
 
     fetchBookedAppointments();
@@ -44,7 +42,7 @@ export default function KoledarZaStranke({ onSelectTimeSlot }: ClientCalendarPro
 
     setSelectedDate(date);
 
-    const response = await fetchAvaliableAppointments(formatDateToLocalISO(date));
+    const response = await fetchAvaliableAppointments(formatDateToLocalISO(date), requiredDuration);
 
     if (response) {
       setAvailableAppointments(response);

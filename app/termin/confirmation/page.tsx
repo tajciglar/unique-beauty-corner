@@ -6,11 +6,24 @@ import { changeDate } from "../../../utility/changeDate";
 export default function ConfirmationPage() {    
 
     const [bookingData, setBookingData] = useState<Order>()
+    const [calendarToken, setCalendarToken] = useState<string | null>(null);
 
     useEffect(() => {
         const lastBooking = localStorage.getItem("lastBooking");
-        setBookingData(lastBooking ? JSON.parse(lastBooking) as Order : undefined)
+        if (lastBooking) {
+            const parsed = JSON.parse(lastBooking);
+            setBookingData(parsed as Order);
+            setCalendarToken(parsed?.calendarToken ?? null);
+        } else {
+            setBookingData(undefined);
+            setCalendarToken(null);
+        }
     }, [])
+
+    const calendarUrl =
+        bookingData?.id && calendarToken
+            ? `/api/calendar?orderId=${bookingData.id}&token=${calendarToken}`
+            : null;
    
     return (
         <div className="flex flex-col items-center justify-center h-screen">
@@ -34,6 +47,14 @@ export default function ConfirmationPage() {
         <p className="text-lg mb-4">Vaš termin je bil uspešno potrjen!</p>
         <p className="text-lg mb-4">Hvala, da ste izbrali našo storitev.</p>
         <p className="text-lg mb-4">Veselimo se srečanja z vami!</p>
+        {calendarUrl && (
+            <a
+                className="button px-4 py-2 mb-4"
+                href={calendarUrl}
+            >
+                Dodaj v koledar
+            </a>
+        )}
         <h4>Lokacija termina: <a href="https://maps.app.goo.gl/EeHtG1MYY8LKpWgQA">Jesenova ulica 31, 1230 Domžale</a></h4>
         </div>
     );

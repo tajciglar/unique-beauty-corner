@@ -82,7 +82,7 @@ export default function Termini() {
   return (
     <>
       <div className="min-h-screen flex flex-col gap-6 m-0 p-2 bg-[var(--cream-white)] items-center lg:flex-row lg:items-center lg:justify-center lg:gap-10 lg:p-6">
-      <ClientCalander onSelectTimeSlot={handleSelectTimeSlot} />
+      <ClientCalander onSelectTimeSlot={handleSelectTimeSlot} requiredDuration={totalTime} />
       <div className="w-3/4 lg:w-full max-w-md bg-[var(--warm-gray)] p-6 rounded-2xl shadow-lg text-base flex flex-col items-center text-center space-y-4 lg:p-8 mb-4">
         <h3 className="text-3xl font-bold text-[var(--terracotta)]">Izbrali ste:</h3>
         <div className="text-base text-[var(--dark-brown)] flex flex-col items-start">

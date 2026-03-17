@@ -1,9 +1,29 @@
 import { NextResponse } from "next/server";
-import  prisma  from "@lib/prisma"; // Adjust path to your Prisma client
+import prisma from "@lib/prisma";
+import { getSessionFromRequest } from "@lib/auth";
+import { z } from "zod";
+
+const notificationCreateSchema = z.object({
+  message: z.string().min(1),
+  type: z.enum(["info", "success", "warning", "alert"]),
+  isActive: z.boolean().optional(),
+});
+
+const notificationUpdateSchema = z.object({
+  id: z.coerce.number().int().positive(),
+  message: z.string().min(1).optional(),
+  type: z.enum(["info", "success", "warning", "alert"]).optional(),
+  isActive: z.boolean().optional(),
+});
 
 // GET - Fetch all notifications
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const session = getSessionFromRequest(req);
+    if (!session || session.role !== "admin") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     const notifications = await prisma.notification.findMany({
       orderBy: { createdAt: 'desc' }
     });
@@ -20,8 +40,20 @@ export async function GET() {
 // POST - Create a new notification
 export async function POST(req: Request) {
   try {
+    const session = getSessionFromRequest(req);
+    if (!session || session.role !== "admin") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
-    const { message, type, isActive } = body;
+    const parsed = notificationCreateSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { message: "Invalid payload", errors: parsed.error.flatten() },
+        { status: 400 }
+      );
+    }
+    const { message, type, isActive } = parsed.data;
 
     const notification = await prisma.notification.create({
       data: {
@@ -44,11 +76,23 @@ export async function POST(req: Request) {
 // PATCH - Update a notification
 export async function PATCH(req: Request) {
   try {
+    const session = getSessionFromRequest(req);
+    if (!session || session.role !== "admin") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
-    const { id, ...updateData } = body;
+    const parsed = notificationUpdateSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { message: "Invalid payload", errors: parsed.error.flatten() },
+        { status: 400 }
+      );
+    }
+    const { id, ...updateData } = parsed.data;
 
     const notification = await prisma.notification.update({
-      where: { id: parseInt(id) },
+      where: { id },
       data: updateData,
     });
 
@@ -65,6 +109,11 @@ export async function PATCH(req: Request) {
 // DELETE - Delete a notification
 export async function DELETE(req: Request) {
   try {
+    const session = getSessionFromRequest(req);
+    if (!session || session.role !== "admin") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 

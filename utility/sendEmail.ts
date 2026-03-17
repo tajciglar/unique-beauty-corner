@@ -13,18 +13,22 @@ interface EmailPayload {
   services: Array<{ serviceName: string }>;
   date: Date | string;
   startTime: string;
+  calendarAttachment?: {
+    filename: string;
+    content: string;
+  };
 }
 
-export async function sendEmail(payload: EmailPayload) {
-  const { name, phone, email, duration, price, services, date, startTime } = payload;
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+export async function sendEmail(payload: EmailPayload) {
+  const { name, phone, email, duration, price, services, date, startTime, calendarAttachment } = payload;
 
   const datum = new Date(date);
   const formattedDate = datum.toLocaleDateString('sl-SI', {
@@ -50,7 +54,16 @@ export async function sendEmail(payload: EmailPayload) {
       <b>Za odpoved ali spremembo termina</b> me prosim pravočasno obvestite na tel: <a href='tel:+38670654560'>070 654 560</a>.<br><br>
       Lep pozdrav,<br>
       Unique Beauty Studio
-    `
+    `,
+    attachments: calendarAttachment
+      ? [
+          {
+            filename: calendarAttachment.filename,
+            content: calendarAttachment.content,
+            contentType: "text/calendar; charset=utf-8",
+          },
+        ]
+      : [],
   };
 
   const mailToAdmin = {
