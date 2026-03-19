@@ -25,11 +25,12 @@ export default function KoledarZaStranke({ onSelectTimeSlot, requiredDuration }:
 
       if (!availableAppointments) return;
 
+      const today = formatDateToLocalISO(new Date());
       const uniqueDates = Array.from(
         new Set(availableAppointments.map((appointment) => appointment.date))
-      );
+      ).filter((date) => date >= today);
 
-      const bookedDays = uniqueDates.map((date) => new Date(date));
+      const bookedDays = uniqueDates.map((date) => new Date(date + "T00:00:00"));
       setHighlightedDays(bookedDays);
     };
 
