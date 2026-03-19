@@ -20,7 +20,6 @@ const fetchAvaliableAppointments = async (date: string, duration?: number) => {
         }
 
         const data = await response.json();
-        console.log('Available appointments:', data);
         return data;
     } catch (error) {
         console.error(error);

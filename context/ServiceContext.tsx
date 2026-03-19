@@ -7,7 +7,8 @@ import { useRouter, usePathname } from 'next/navigation';
 interface ServiceContextType {
   servicesPicked: Service[];
   setServicesPicked: React.Dispatch<React.SetStateAction<Service[]>>;
-  clearServicesPicked: () => void; // Helper to clear services (useful after booking completion)
+  clearServicesPicked: () => void;
+  csrfToken: string | null;
 }
 
 // kreiranje konteksta za storitev (services)
@@ -51,6 +52,7 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
   // Initialize state from sessionStorage on mount
   const [servicesPicked, setServicesPicked] = useState<Service[]>(() => loadServicesFromStorage());
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [csrfToken, setCsrfToken] = useState<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -58,6 +60,22 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     saveServicesToStorage(servicesPicked);
   }, [servicesPicked]);
+
+  // Fetch CSRF token on mount
+  useEffect(() => {
+    const fetchCsrf = async () => {
+      try {
+        const res = await fetch('/api/csrf', { credentials: 'include' });
+        if (res.ok) {
+          const data = await res.json();
+          setCsrfToken(data.csrfToken);
+        }
+      } catch (error) {
+        console.error('Failed to fetch CSRF token:', error);
+      }
+    };
+    fetchCsrf();
+  }, []);
 
   useEffect(() => {
     // Skip auth check on login page
@@ -67,15 +85,20 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
     }
 
     let isActive = true;
+    const controller = new AbortController();
     const checkAuth = async () => {
       try {
-        const res = await fetch('/api/me', { credentials: 'include' });
+        const res = await fetch('/api/me', {
+          credentials: 'include',
+          signal: controller.signal,
+        });
         if (!res.ok) {
           router.push('/login');
           return;
         }
         if (isActive) setIsCheckingAuth(false);
       } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
         console.error('Auth check failed:', error);
         router.push('/login');
       }
@@ -84,6 +107,7 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
 
     return () => {
       isActive = false;
+      controller.abort();
     };
   }, [router, pathname]);
 
@@ -105,7 +129,7 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <ServiceContext.Provider value={{ servicesPicked, setServicesPicked, clearServicesPicked }}>
+    <ServiceContext.Provider value={{ servicesPicked, setServicesPicked, clearServicesPicked, csrfToken }}>
       {children}
     </ServiceContext.Provider>
   );

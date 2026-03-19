@@ -7,6 +7,8 @@ import { z } from "zod";
 import { createCalendarToken } from "@lib/calendarToken";
 import { buildAppointmentIcs } from "@utility/appointmentIcs";
 import { sendSms } from "@utility/sendSms";
+import { rateLimit, getClientIp } from "@lib/rateLimit";
+import { validateCsrf } from "@lib/csrf";
 
 const orderCreateSchema = z.object({
   name: z.string().min(1),
@@ -16,6 +18,9 @@ const orderCreateSchema = z.object({
   services: z
     .array(z.object({ id: z.coerce.number().int().positive() }))
     .min(1),
+  coveredSlotIds: z
+    .array(z.coerce.number().int().positive())
+    .optional(),
 });
 
 const normalizeTime = (value: string) => {
@@ -69,6 +74,24 @@ export async function GET(req: Request) {
 // POST /api/orders - from termin/page.tsx
 export async function POST(req: Request) {
   try {
+    // CSRF validation
+    if (!validateCsrf(req)) {
+      return NextResponse.json(
+        { message: "Invalid CSRF token" },
+        { status: 403 }
+      );
+    }
+
+    // Rate limit: 10 bookings per 60 seconds per IP
+    const ip = getClientIp(req);
+    const rl = rateLimit(`orders:${ip}`, { limit: 10, windowSeconds: 60 });
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { message: "Preveč zahtevkov. Počakajte minuto." },
+        { status: 429 }
+      );
+    }
+
     const payload = await req.json();
     const parsed = orderCreateSchema.safeParse(payload);
     if (!parsed.success) {
@@ -78,7 +101,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { name, phone, email, appointmentId, services } = parsed.data;
+    const { name, phone, email, appointmentId, services, coveredSlotIds } = parsed.data;
     const serviceIds = services.map((s) => s.id);
 
     const result = await prisma.$transaction(async (tx) => {
@@ -109,9 +132,45 @@ export async function POST(req: Request) {
       );
 
       const startTime = normalizeTime(appointment.startTime);
-      const endTime =
-        normalizeTime(appointment.endTime) ||
-        addMinutesToTime(startTime, duration);
+      const endTime = addMinutesToTime(startTime, duration);
+
+      // Handle multi-slot booking (coveredSlotIds contains all slot IDs that this booking spans)
+      if (coveredSlotIds && coveredSlotIds.length > 1) {
+        // Verify all covered slots are still available
+        const coveredSlots = await tx.appointment.findMany({
+          where: { id: { in: coveredSlotIds }, available: true },
+          orderBy: { startTime: "asc" },
+        });
+
+        if (coveredSlots.length !== coveredSlotIds.length) {
+          throw new Error("TERMIN_TAKEN");
+        }
+
+        // Find the last covered slot to check if it needs splitting
+        const lastSlot = coveredSlots[coveredSlots.length - 1];
+        const lastSlotEnd = lastSlot.endTime;
+        const bookingEnd = endTime;
+
+        // If the booking doesn't fully consume the last slot, create a remainder slot
+        if (bookingEnd < lastSlotEnd) {
+          await tx.appointment.create({
+            data: {
+              date: appointment.date,
+              startTime: bookingEnd,
+              endTime: lastSlotEnd,
+              available: true,
+            },
+          });
+        }
+
+        // Delete all covered slots except the primary one (which becomes the booked appointment)
+        const otherSlotIds = coveredSlotIds.filter((id) => id !== appointmentId);
+        if (otherSlotIds.length > 0) {
+          await tx.appointment.deleteMany({
+            where: { id: { in: otherSlotIds } },
+          });
+        }
+      }
 
       const newOrder = await tx.order.create({
         data: {
@@ -134,11 +193,12 @@ export async function POST(req: Request) {
         throw new Error("TERMIN_TAKEN");
       }
 
+      // Clean up any other overlapping available slots on the same date
       await tx.appointment.deleteMany({
         where: {
           date: appointment.date,
           available: true,
-          startTime: { lt: endTime },
+          startTime: { gte: startTime, lt: endTime },
           NOT: { id: appointmentId },
         },
       });

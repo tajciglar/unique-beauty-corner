@@ -1,10 +1,11 @@
 export interface Appointment {
-  id?: number;   
+  id?: number;
   date: string;
   startTime: string;
   endTime: string;
   available: boolean;
-  order?: Order; 
+  order?: Order;
+  coveredSlotIds?: number[];
 }
 
 export interface Order {
@@ -35,7 +36,15 @@ export interface Service {
   serviceTime?: number;
   serviceDescription?: string;
   displayOrder?: number,
-  serviceCategoryId?: number;  
-  serviceCategory?: ServiceCategory; 
-  orders?: Order[]; 
+  serviceCategoryId?: number;
+  serviceCategory?: ServiceCategory;
+  orders?: Order[];
+}
+
+export interface Notification {
+  id: string;
+  message: string;
+  type: 'info' | 'success' | 'warning' | 'alert';
+  isActive: boolean;
+  createdAt: Date;
 }

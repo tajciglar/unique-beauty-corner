@@ -37,6 +37,6 @@ export async function GET(req: Request) {
           return NextResponse.json({availableAppointments, bookedAppointments});
       } catch (error) {
           console.error("Error fetching termini:", error);
-          return NextResponse.json({ message: 'Server error' });
+          return NextResponse.json({ message: 'Server error' }, { status: 500 });
     }
 }

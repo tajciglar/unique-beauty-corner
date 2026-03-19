@@ -147,7 +147,6 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, avail
         events={[
           ...availableAppointmentsState.map((appointment) => ({
             id: `${appointment.id}`,
-            date: appointment.date,
             title: 'Prosti termin',
             start: `${appointment.date}T${appointment.startTime}:00`,
             end: `${appointment.date}T${appointment.endTime}:00`,
@@ -155,11 +154,6 @@ const AdminCalendar: React.FC<AdminCalendarProps> = ({ clientAppointments, avail
           ...clientAppointmentsState.map((appointment) => ({
             id: `${appointment.id}`,
             title: appointment.order?.name || 'Unknown',
-            email: appointment.order?.email || 'Unknown',
-            phone: appointment.order?.phone || 'Unknown',
-            services: appointment.order?.services || [],
-            price: appointment.order?.price || 0,
-            date: appointment.date,
             start: `${appointment.date}T${appointment.startTime}:00`,
             end: `${appointment.date}T${appointment.endTime}:00`,
             backgroundColor: '#FFD700',

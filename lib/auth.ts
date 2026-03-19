@@ -10,7 +10,13 @@ interface SessionPayload {
   exp: number;
 }
 
-const getSessionSecret = () => process.env.SESSION_SECRET || "";
+const getSessionSecret = () => {
+  const secret = process.env.SESSION_SECRET;
+  if (!secret) {
+    throw new Error("SESSION_SECRET environment variable is required");
+  }
+  return secret;
+};
 
 const base64UrlEncode = (value: string) =>
   Buffer.from(value).toString("base64url");

@@ -8,9 +8,9 @@ import { buildAppointmentIcs } from "@utility/appointmentIcs";
 import { sendSms } from "@utility/sendSms";
 
 const appointmentCreateSchema = z.object({
-  date: z.string().min(1),
-  startTime: z.string().min(1),
-  endTime: z.string().min(1),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)"),
+  startTime: z.string().regex(/^\d{2}:\d{2}$/, "Invalid time format (HH:MM)"),
+  endTime: z.string().regex(/^\d{2}:\d{2}$/, "Invalid time format (HH:MM)"),
   available: z.boolean(),
   order: z
     .object({
@@ -86,7 +86,6 @@ export async function POST(req: Request) {
           },
         },
       });
-      console.log("try email")
       try {
         const calendarToken = newAppointment.order
           ? createCalendarToken(newAppointment.order.id)
