@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(npx next:*)",
+      "Bash(find /Users/tajbrzovic/PROJECTS/unique-beauty-corner/.claude/worktrees/thirsty-lehmann -name next.config.* -o -name .env* -o -name tsconfig.json)",
+      "Bash(grep -r \"parseInt\\\\|parseFloat\\\\|JSON.parse\" /Users/tajbrzovic/PROJECTS/unique-beauty-corner/.claude/worktrees/thirsty-lehmann/app/api --include=*.ts)",
+      "Bash(npx prisma:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh pr:*)",
+      "Read(//Users/tajbrzovic/PROJECTS/unique-beauty-corner/**)",
+      "Bash(ls /Users/tajbrzovic/PROJECTS/unique-beauty-corner/.claude/worktrees/thirsty-lehmann/.env*)",
+      "Bash(ln -s /Users/tajbrzovic/PROJECTS/unique-beauty-corner/.env /Users/tajbrzovic/PROJECTS/unique-beauty-corner/.claude/worktrees/thirsty-lehmann/.env)"
+    ]
+  }
+}
