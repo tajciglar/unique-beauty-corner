@@ -229,9 +229,7 @@ export async function POST(req: Request) {
       phone: result.phone!,
       email: result.email!,
       duration: result.duration ?? 0,
-      price: typeof result.price === "object" && "toNumber" in result.price
-        ? result.price
-        : Number(result.price),
+      price: Number(result.price),
       services: result.services,
       date: result.appointment!.date,
       startTime: result.appointment!.startTime,

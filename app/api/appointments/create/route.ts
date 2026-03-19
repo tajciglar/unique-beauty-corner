@@ -111,13 +111,7 @@ export async function POST(req: Request) {
           phone: newAppointment.order!.phone!,
           email: newAppointment.order!.email!,
           duration: Number(newAppointment.order!.duration ?? 0),
-          price: Number(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            typeof newAppointment.order!.price === "object" && newAppointment.order!.price !== null && typeof (newAppointment.order!.price as any).toNumber === "function"
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              ? (newAppointment.order!.price as any).toNumber()
-              : newAppointment.order!.price
-          ),
+          price: Number(newAppointment.order!.price),
           services: newAppointment.order!.services,
           date: newAppointment.date,
           startTime: newAppointment.startTime,

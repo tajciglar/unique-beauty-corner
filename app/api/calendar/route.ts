@@ -39,7 +39,7 @@ export async function GET(req: Request) {
       startTime: order.appointment.startTime,
       endTime: order.appointment.endTime,
       duration: order.duration,
-      price: order.price,
+      price: Number(order.price),
       services: order.services,
     });
 
