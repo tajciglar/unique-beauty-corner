@@ -46,7 +46,7 @@ export default function KoledarZaStranke({ onSelectTimeSlot, requiredDuration }:
 
     if (response) {
       const isToday =
-        selectedDate?.toDateString() === new Date().toDateString();
+        date.toDateString() === new Date().toDateString();
 
       const nowTime = new Date().toLocaleTimeString("en-GB", {
         hour12: false,
@@ -101,7 +101,7 @@ export default function KoledarZaStranke({ onSelectTimeSlot, requiredDuration }:
       {selectedDate && (
         <div className="mt-8 w-full space-y-6 flex flex-col items-center">
           <h3 className="text-2xl font-bold text-[var(--terracotta)]">
-            {selectedDate?.toLocaleDateString("sl-SI").split(" ")}
+            {selectedDate?.toLocaleDateString("sl-SI")}
           </h3>
 
           <div className="flex flex-col items-center">

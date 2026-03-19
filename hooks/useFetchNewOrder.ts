@@ -9,17 +9,14 @@ const fetchNewOrder = async (): Promise<Order | null> => {
             },
         });
 
-        console.log(response)
-    
         if (!response.ok) {
             throw new Error('Error with getting new orders.');
         }
-    
+
         const data = await response.json();
-        console.log(data)
         return data as Order;
     } catch (error) {
-        console.error("Errow while fetching new orders", error);    
+        console.error("Error while fetching new orders", error);
         return null;
     }
 }

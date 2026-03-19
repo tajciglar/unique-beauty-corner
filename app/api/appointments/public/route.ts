@@ -1,8 +1,15 @@
 import { NextResponse } from "next/server";
 import prisma from "@lib/prisma";
+import { rateLimit, getClientIp } from "@lib/rateLimit";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const ip = getClientIp(req);
+    const rl = rateLimit(`public-appointments:${ip}`, { limit: 30, windowSeconds: 60 });
+    if (!rl.allowed) {
+      return NextResponse.json({ message: "Too many requests" }, { status: 429 });
+    }
+
     const availableAppointments = await prisma.appointment.findMany({
       where: { available: true },
       select: {

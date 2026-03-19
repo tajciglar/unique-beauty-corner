@@ -1,25 +1,23 @@
 'use client';
 import QRCode from "qrcode";
-import AdminCalendar from '../../components/AdminCalendar';
+import dynamic from 'next/dynamic';
 import fetchAppointments from '../../hooks/useFetchAppointments';
 import { useState, useEffect } from 'react';
-import { Appointment } from '../../types/types';
+import { Appointment, Notification } from '../../types/types';
 import NewAppointment from '../../components/NewAppointment';
 import NotificationManager from '../../components/NotificationManager';
 
-interface Notification {
-  id: string;
-  message: string;
-  type: 'info' | 'success' | 'warning' | 'alert';
-  isActive: boolean;
-  createdAt: Date;
-}
+const AdminCalendar = dynamic(() => import('../../components/AdminCalendar'), {
+  ssr: false,
+  loading: () => <div className="h-screen flex items-center justify-center"><p>Nalaganje koledarja...</p></div>,
+});
 
 export default function AdminPage() {
   const [clientAppointments, setClientAppointments] = useState<Appointment[]>([]);
   const [availableAppointments, setAvailableAppointments] = useState<Appointment[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
   const [icalToken, setIcalToken] = useState("");
   const [icalUrl, setIcalUrl] = useState("");
   const [icalCopied, setIcalCopied] = useState(false);
@@ -68,6 +66,8 @@ export default function AdminPage() {
         if (appointmentData) {
           setClientAppointments(appointmentData.bookedAppointments as Appointment[]);
           setAvailableAppointments(appointmentData.availableAppointments);
+        } else {
+          setFetchError(true);
         }
 
         // Fetch notifications from API
@@ -194,6 +194,20 @@ export default function AdminPage() {
     return (
       <div className="w-full h-full flex items-center justify-center">
         <p>Nalaganje...</p>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center gap-4">
+        <p className="text-red-600 text-lg">Napaka pri nalaganju podatkov. Preverite, ali ste prijavljeni kot admin.</p>
+        <button
+          className="button px-4 py-2"
+          onClick={() => window.location.reload()}
+        >
+          Poskusi znova
+        </button>
       </div>
     );
   }

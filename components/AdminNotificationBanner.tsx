@@ -1,14 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { X, AlertCircle, Info, CheckCircle, AlertTriangle } from 'lucide-react';
-
-interface Notification {
-  id: string;
-  message: string;
-  type: 'info' | 'success' | 'warning' | 'alert';
-  isActive: boolean;
-  createdAt: Date;
-}
+import { Notification } from '../types/types';
 
 interface AdminNotificationBannerProps {
   notifications?: Notification[];

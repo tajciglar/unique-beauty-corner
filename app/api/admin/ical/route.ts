@@ -14,7 +14,16 @@ const LOCATION = "Unique Beauty Studio, Jesenova ulica 31, 1230 Domžale";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const token = searchParams.get("token");
+
+  // Support both Authorization header (preferred) and URL token (for calendar clients)
+  let token: string | null = null;
+
+  const authHeader = req.headers.get("authorization");
+  if (authHeader?.startsWith("Bearer ")) {
+    token = authHeader.slice(7);
+  } else {
+    token = searchParams.get("token");
+  }
 
   if (!process.env.ADMIN_ICAL_TOKEN || token !== process.env.ADMIN_ICAL_TOKEN) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

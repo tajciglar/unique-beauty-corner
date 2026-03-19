@@ -1,14 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Plus, Edit2, Trash2, Save, X } from 'lucide-react';
-
-interface Notification {
-  id: string;
-  message: string;
-  type: 'info' | 'success' | 'warning' | 'alert';
-  isActive: boolean;
-  createdAt: Date;
-}
+import { Notification } from '../types/types';
 
 interface NotificationManagerProps {
   notifications: Notification[];

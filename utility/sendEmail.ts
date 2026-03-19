@@ -3,6 +3,14 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const escapeHtml = (text: string): string =>
+  text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+
 // Simple, flat interface for what we actually need
 interface EmailPayload {
   name: string;
@@ -37,7 +45,11 @@ export async function sendEmail(payload: EmailPayload) {
     day: '2-digit',
   }).replaceAll(' ', '');
 
-  const servicesList = services.map(s => s.serviceName).join(', ');
+  const servicesList = services.map(s => escapeHtml(s.serviceName)).join(', ');
+  const safeName = escapeHtml(name);
+  const safePhone = escapeHtml(phone);
+  const safeEmail = escapeHtml(email);
+  const safeStartTime = escapeHtml(startTime);
 
   const mailToClient = {
     from: process.env.EMAIL_USER,
@@ -45,7 +57,7 @@ export async function sendEmail(payload: EmailPayload) {
     subject: "Potrditev termina",
     html: `
       Pozdravljeni,<br><br>
-      Zahvaljujemo se vam za vašo rezervacijo termina na dan <b>${formattedDate}</b> ob <b>${startTime} uri</b>.<br><br>
+      Zahvaljujemo se vam za vašo rezervacijo termina na dan <b>${formattedDate}</b> ob <b>${safeStartTime} uri</b>.<br><br>
       <b>Trajanje:</b> ${duration} minut<br>
       <b>Storitev:</b> ${servicesList}<br>
       <b>Cena:</b> €${price}<br>
@@ -71,11 +83,11 @@ export async function sendEmail(payload: EmailPayload) {
     to: process.env.EMAIL_USER,
     subject: "Nova rezervacija termina",
     html: "Nova rezervacija termina je bila ustvarjena.<br><br>" +
-      `<b>Stranka:</b> ${name}<br>` +
-      `<b>Telefon:</b> ${phone}<br>` +
-      `<b>Email:</b> ${email}<br>` +
+      `<b>Stranka:</b> ${safeName}<br>` +
+      `<b>Telefon:</b> ${safePhone}<br>` +
+      `<b>Email:</b> ${safeEmail}<br>` +
       `<b>Datum:</b> ${formattedDate}<br>` +
-      `<b>Čas začetka:</b> ${startTime}<br>` +
+      `<b>Čas začetka:</b> ${safeStartTime}<br>` +
       `<b>Trajanje:</b> ${duration} minut<br>` +
       `<b>Storitev:</b> ${servicesList}<br>` +
       `<b>Cena:</b> €${price}<br><br>`,

@@ -10,10 +10,11 @@ import { formatDateToLocalISO } from "@utility/changeDate";
 
 export default function Termini() {
   const router = useRouter();
-  const { servicesPicked, clearServicesPicked } = useService();
+  const { servicesPicked, clearServicesPicked, csrfToken } = useService();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
   const [appointment, setAppointment] = useState<boolean>(false);
+  const [bookingError, setBookingError] = useState<string | null>(null);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const totalTime = servicesPicked.reduce((acc, curr) => acc + (curr.serviceTime || 0), 0);
   const price = servicesPicked.reduce((acc, curr) => acc + (curr.servicePrice || 0), 0);
@@ -48,6 +49,7 @@ export default function Termini() {
       duration: totalTime,  
       price: servicesPicked.reduce((acc, curr) => acc + (curr.servicePrice || 0), 0),
       appointmentId: selectedAppointment?.id,
+      coveredSlotIds: selectedAppointment?.coveredSlotIds,
       services: servicesPicked.map((service) => ({
         id: service.id,
         name: service.serviceName,
@@ -56,25 +58,31 @@ export default function Termini() {
       })),
     };
 
+    setBookingError(null);
     try {
-      const response = await fetch("/api/orders", { 
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (csrfToken) headers["x-csrf-token"] = csrfToken;
+
+      const response = await fetch("/api/orders", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
+        credentials: "include",
         body: JSON.stringify(data),
       });
       if (response.ok) {
         const result = await response.json();
         localStorage.setItem("lastBooking", JSON.stringify(result));
-        // Clear selected services after successful booking
         clearServicesPicked();
         router.push("/termin/confirmation");
       } else {
-        console.error("Error booking appointment:", response.statusText);
+        const errorData = await response.json().catch(() => null);
+        setBookingError(errorData?.message || "Napaka pri rezervaciji termina. Prosimo, poskusite znova.");
       }
     } catch (error) {
       console.error("Error booking appointment:", error);
+      setBookingError("Napaka pri povezavi. Prosimo, poskusite znova.");
     }
   };
 
@@ -99,7 +107,7 @@ export default function Termini() {
         {selectedTimeSlot && (
             <>
               <p className="m-0  text-lg text-[var(--terracotta)]">
-                  Izbrani termin: <span className="font-extrabold text-[var(--dark-brown)]">{selectedDate?.toLocaleDateString("sl").split(" ")} {selectedTimeSlot}</span>
+                  Izbrani termin: <span className="font-extrabold text-[var(--dark-brown)]">{selectedDate?.toLocaleDateString("sl-SI")} {selectedTimeSlot}</span>
               </p>
               <div className="flex justify-center">
                   <button className="button mt-4 py-2 px-6 rounded-full transition transform hover:scale-105 hover:bg-[var(--soft-rose)] focus:bg-[var(--soft-rose)]" onClick={() => appointmentForm()}>Potrdi</button>
@@ -126,10 +134,13 @@ export default function Termini() {
                 <li key={key}>{service.serviceCategory?.categoryName} -  <i className="pl-1">{service.serviceName}</i></li>
                 ))}
               </ul>
-            <p> {selectedDate ? selectedDate.toLocaleDateString("sl").split(" ") : "Datum ni izbran"} ob {selectedTimeSlot} ({totalTime} min )</p>
+            <p> {selectedDate ? selectedDate.toLocaleDateString("sl-SI") : "Datum ni izbran"} ob {selectedTimeSlot} ({totalTime} min )</p>
             <p>{price} €</p>
+            {bookingError && (
+              <p className="text-red-600 text-sm">{bookingError}</p>
+            )}
             <button className="button" type="submit">Naroči se</button>
-            <button className="button" onClick={() => setAppointment(false)}>Prekliči</button>
+            <button className="button" type="button" onClick={() => setAppointment(false)}>Prekliči</button>
           </form>
         </div>
       </div>

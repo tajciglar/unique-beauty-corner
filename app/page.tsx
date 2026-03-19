@@ -4,21 +4,13 @@ import { useEffect, useState, useRef  } from "react";
 import { useRouter } from "next/navigation";
 import { useService } from "../context/ServiceContext";
 import getServices from "../hooks/useFetchServices";
-import { ServiceCategory, Service } from "../types/types";
+import { ServiceCategory, Service, Notification } from "../types/types";
 import AdminNotificationBanner from "../components/AdminNotificationBanner";
 
 const bodoniModa = Bodoni_Moda({
   variable: "--font-bodoni-moda",
   subsets: ["latin"],
 });
-
-interface Notification {
-  id: string;
-  message: string;
-  type: 'info' | 'success' | 'warning' | 'alert';
-  isActive: boolean;
-  createdAt: Date;
-}
 
 export default function Home() {
   const { servicesPicked, setServicesPicked } = useService();
