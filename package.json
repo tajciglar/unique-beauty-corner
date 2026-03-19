@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "prisma migrate resolve --applied 20260105145817_add_display_order && prisma migrate deploy && prisma generate && next build",
+    "build": "prisma migrate resolve --applied 20260105145817_add_display_order && prisma migrate resolve --applied 20260204073641_add_notifications && prisma migrate deploy && prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "prisma:generate": "prisma generate",
