@@ -1,6 +1,7 @@
 'use client';
 import QRCode from "qrcode";
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import fetchAppointments from '../../hooks/useFetchAppointments';
 import { useState, useEffect } from 'react';
 import { Appointment, Notification } from '../../types/types';
@@ -13,6 +14,7 @@ const AdminCalendar = dynamic(() => import('../../components/AdminCalendar'), {
 });
 
 export default function AdminPage() {
+  const router = useRouter();
   const [clientAppointments, setClientAppointments] = useState<Appointment[]>([]);
   const [availableAppointments, setAvailableAppointments] = useState<Appointment[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -57,10 +59,22 @@ export default function AdminPage() {
     };
   }, [icalUrl]);
 
-  // Fetch appointments and notifications on mount
+  // Verify admin role and fetch data on mount
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Check admin role
+        const meRes = await fetch('/api/me', { credentials: 'include' });
+        if (!meRes.ok) {
+          router.push('/login');
+          return;
+        }
+        const meData = await meRes.json();
+        if (meData.role !== 'admin') {
+          router.push('/login');
+          return;
+        }
+
         // Fetch appointments
         const appointmentData = await fetchAppointments();
         if (appointmentData) {
