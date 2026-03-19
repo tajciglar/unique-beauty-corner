@@ -45,9 +45,25 @@ export default function KoledarZaStranke({ onSelectTimeSlot, requiredDuration }:
     const response = await fetchAvaliableAppointments(formatDateToLocalISO(date), requiredDuration);
 
     if (response) {
-      setAvailableAppointments(response);
-      setTimeSlots(response.map((slot: { startTime: string }) => slot.startTime));
+      const isToday =
+        selectedDate?.toDateString() === new Date().toDateString();
+
+      const nowTime = new Date().toLocaleTimeString("en-GB", {
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      const filtered = isToday
+        ? response.filter(
+            (slot: { startTime: string }) => slot.startTime >= nowTime
+          )
+        : response;
+
+      setAvailableAppointments(filtered);
+      setTimeSlots(filtered.map((slot: { startTime: string }) => slot.startTime));
     } else {
+      setAvailableAppointments([]);
       setTimeSlots([]);
     }
   };

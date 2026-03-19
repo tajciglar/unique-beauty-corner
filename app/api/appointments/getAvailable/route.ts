@@ -25,26 +25,12 @@ export async function GET(req: Request) {
       );
     }
 
-    const now = new Date();
-
+    // Return all available slots for the requested date.
+    // (Time filtering is handled client-side to avoid timezone-related issues.)
     let availableAppointments = await prisma.appointment.findMany({
       where: {
-        date: date,
+        date,
         available: true,
-        // Only include future appointments
-        OR: [
-          {
-            date: {
-              gt: now.toISOString().split("T")[0], // Dates after today
-            },
-          },
-          {
-            date: date, // If it's today, filter by startTime
-            startTime: {
-              gte: now.toTimeString().split(" ")[0], // Start time later than now
-            },
-          },
-        ],
       },
       orderBy: {
         startTime: "asc",
